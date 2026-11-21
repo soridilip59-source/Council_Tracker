@@ -1,0 +1,15 @@
+{
+  "name": "counciltrack-ai-workspace",
+  "version": "1.0.0",
+  "description": "CouncilTrack AI - Council Goal Management, Progress Tracking & Performance Analysis Platform",
+  "scripts": {
+    "dev": "npm --prefix counciltrack-ai run dev",
+    "dev:backend": "npm --prefix counciltrack-ai/backend run dev",
+    "dev:frontend": "npm --prefix counciltrack-ai run dev",
+    "build": "npm --prefix counciltrack-ai run build",
+    "start:backend": "npm --prefix counciltrack-ai/backend run start"
+  },
+  "keywords": ["counciltrack", "ai", "governance", "goals", "discord"],
+  "author": "CouncilTrack Team",
+  "license": "MIT"
+}

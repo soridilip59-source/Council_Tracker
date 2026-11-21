@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: counciltrack
+      POSTGRES_USER: counciltrack
+      POSTGRES_PASSWORD: counciltrack
+    ports:
+      - "5432:5432"
+    volumes:
+      - counciltrack-postgres:/var/lib/postgresql/data
+      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+
+volumes:
+  counciltrack-postgres:

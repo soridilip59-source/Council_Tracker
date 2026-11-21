@@ -1,0 +1,276 @@
+{
+  "Users": [
+    {
+      "userId": "usr_superadmin",
+      "name": "Super Administrator",
+      "email": "superadmin@counciltrack.org",
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "super_admin",
+      "councilId": "",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "userId": "usr_admin_1",
+      "name": "Academic Admin",
+      "email": "admin@counciltrack.org",
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "admin",
+      "councilId": "cnl_disco",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "userId": "usr_council_1",
+      "name": "Rahul Sharma",
+      "email": "rahul@counciltrack.org",
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "council_member",
+      "councilId": "cnl_disco",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "userId": "usr_council_2",
+      "name": "Priya Patel",
+      "email": "priya@counciltrack.org",
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "council_member",
+      "councilId": "cnl_english",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "userId": "usr_student_1",
+      "name": "Aman Verma",
+      "email": "student@counciltrack.org",
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "student",
+      "councilId": "",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    }
+  ],
+  "Councils": [
+    {
+      "councilId": "cnl_disco",
+      "councilName": "Discipline Council",
+      "description": "Promoting campus decorum, student safety, and cooperative living standards.",
+      "memberIds": "[\"usr_council_1\"]",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "councilId": "cnl_english",
+      "councilName": "English Facilitation Council",
+      "description": "Cultivating English fluency, conversational clubs, and presentation skills across all students.",
+      "memberIds": "[\"usr_council_2\"]",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "councilId": "cnl_tech",
+      "councilName": "Tech & Coding Council",
+      "description": "Supporting peer code reviews, open-source workshops, and technical hackathons.",
+      "memberIds": "[]",
+      "status": "active",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "councilId": "cnl_mwpxl7xn_578ba45aec48",
+      "councilName": "induction Coordinator",
+      "description": "making comfortable environment for new students",
+      "memberIds": "[]",
+      "status": "active",
+      "createdAt": "2026-11-21T04:51:56.651Z"
+    }
+  ],
+  "Goals": [
+    {
+      "goalId": "gol_daily_1",
+      "userId": "usr_council_1",
+      "councilId": "cnl_disco",
+      "goalType": "daily",
+      "title": "Morning Assembly & Cleanliness Inspection",
+      "description": "Ensure morning assembly starts punctually at 8:30 AM and dormitory zones adhere to cleanliness guidelines.",
+      "priority": "High",
+      "startDate": "2026-11-21",
+      "dueDate": "2026-11-21",
+      "status": "In Progress",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "goalId": "gol_weekly_1",
+      "userId": "usr_council_1",
+      "councilId": "cnl_disco",
+      "goalType": "weekly",
+      "title": "Revamp Study Hall Peer Attendance System",
+      "description": "Transition paper logs to automated daily tracking across all cohorts.",
+      "priority": "Medium",
+      "startDate": "2026-11-17",
+      "dueDate": "2026-11-23",
+      "status": "In Progress",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "goalId": "gol_daily_2",
+      "userId": "usr_council_2",
+      "councilId": "cnl_english",
+      "goalType": "daily",
+      "title": "Conduct 45-min Group Speaking Circle",
+      "description": "Moderate peer discussion topic on modern AI ethics with SOP batch.",
+      "priority": "High",
+      "startDate": "2026-11-21",
+      "dueDate": "2026-11-21",
+      "status": "Completed",
+      "createdAt": "2026-11-21T04:25:22.083Z"
+    }
+  ],
+  "Progress": [
+    {
+      "progressId": "prg_1",
+      "goalId": "gol_daily_1",
+      "userId": "usr_council_1",
+      "percentage": 60,
+      "status": "In Progress",
+      "updateNote": "Completed morning assembly check. 94% on-time attendance recorded. Dorm inspection ongoing.",
+      "updatedAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "progressId": "prg_2",
+      "goalId": "gol_daily_2",
+      "userId": "usr_council_2",
+      "percentage": 100,
+      "status": "Completed",
+      "updateNote": "Speaking circle concluded with 28 participants actively sharing viewpoints.",
+      "updatedAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "progressId": "prg_mwpxdrps_3b81e1625944",
+      "goalId": "gol_daily_1",
+      "userId": "usr_admin_1",
+      "percentage": 60,
+      "status": "In Progress",
+      "updateNote": "todays",
+      "updatedAt": "2026-11-21T04:46:09.040Z"
+    }
+  ],
+  "Reflections": [
+    {
+      "reflectionId": "ref_1",
+      "userId": "usr_council_1",
+      "periodType": "daily",
+      "periodStart": "2026-11-20",
+      "periodEnd": "2026-11-20",
+      "achievements": "Conducted dormitory orientation for new learners.",
+      "challenges": "Some students arrived late due to project deadlines.",
+      "learnings": "Need to coordinate schedule with programming lead.",
+      "nextSteps": "Send reminder announcement 15 minutes in advance.",
+      "submittedAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "reflectionId": "ref_2",
+      "userId": "usr_council_2",
+      "periodType": "weekly",
+      "periodStart": "2026-11-14",
+      "periodEnd": "2026-11-20",
+      "achievements": "Completed 5 daily speaking circles and 1 vocabulary contest.",
+      "challenges": "Learner hesitation in large auditorium settings.",
+      "learnings": "Smaller breakout groups of 4-5 increase participation drastically.",
+      "nextSteps": "Adopt micro-circles format for next week's sessions.",
+      "submittedAt": "2026-11-21T04:25:22.083Z"
+    }
+  ],
+  "Student_Feedback": [
+    {
+      "feedbackId": "fdb_1",
+      "studentId": "usr_student_1",
+      "councilId": "cnl_english",
+      "month": "2026-11",
+      "category": "Engagement",
+      "rating": 5,
+      "comments": "The morning conversation circles boosted my confidence significantly!",
+      "suggestions": "Please organize more mock interview practice sessions.",
+      "submittedAt": "2026-11-21T04:25:22.083Z"
+    },
+    {
+      "feedbackId": "fdb_2",
+      "studentId": "usr_student_1",
+      "councilId": "cnl_disco",
+      "month": "2026-11",
+      "category": "Support",
+      "rating": 4,
+      "comments": "Discipline council has been fair and supportive.",
+      "suggestions": "Clarify study room silence hours during weekend exam periods.",
+      "submittedAt": "2026-11-21T04:25:22.083Z"
+    }
+  ],
+  "Meetings": [
+    {
+      "meetingId": "mtg_1",
+      "title": "All-Council Monthly Review & Alignment",
+      "description": "Monthly coordination meeting to review council objectives, cross-council initiatives, and AI performance reports.",
+      "councilId": "cnl_disco",
+      "meetingDate": "2026-11-28",
+      "meetingTime": "17:00",
+      "discordStatus": "sent",
+      "createdBy": "usr_admin_1"
+    }
+  ],
+  "AI_Reports": [
+    {
+      "reportId": "rep_mwpwwiw2_c62a64e05910",
+      "userId": "usr_council_1",
+      "month": "2026-11",
+      "overallScore": 45,
+      "goalScore": 0,
+      "consistencyScore": 45,
+      "reflectionScore": 100,
+      "feedbackScore": 80,
+      "improvementScore": 50,
+      "strengths": "[\"Thoughtful, detailed reflections highlighting concrete learnings and proactive next steps.\",\"Strong student appreciation (rating: 4.0/5.0 across student submissions).\"]",
+      "weaknesses": "[\"Low goal completion rate (0/2 completed).\",\"Inconsistent daily progress logging across active weekdays.\"]",
+      "recommendations": "[\"Review capacity constraints with council lead and set more realistic weekly milestones.\",\"Establish a fixed 5-minute evening routine to log progress and flag impediments.\"]",
+      "status": "Approved",
+      "generatedAt": "2026-11-21T04:32:44.450Z"
+    },
+    {
+      "reportId": "rep_mwpx2k9z_d56047501879",
+      "userId": "usr_council_1",
+      "month": "2026-11",
+      "overallScore": 45,
+      "goalScore": 0,
+      "consistencyScore": 45,
+      "reflectionScore": 100,
+      "feedbackScore": 80,
+      "improvementScore": 50,
+      "strengths": "[\"Thoughtful, detailed reflections highlighting concrete learnings and proactive next steps.\",\"Strong student appreciation (rating: 4.0/5.0 across student submissions).\"]",
+      "weaknesses": "[\"Low goal completion rate (0/2 completed).\",\"Inconsistent daily progress logging across active weekdays.\"]",
+      "recommendations": "[\"Review capacity constraints with council lead and set more realistic weekly milestones.\",\"Establish a fixed 5-minute evening routine to log progress and flag impediments.\"]",
+      "status": "Approved",
+      "generatedAt": "2026-11-21T04:37:26.183Z"
+    }
+  ],
+  "Notifications": [
+    {
+      "notificationId": "notif_mwpx2kb7_288f763851b7",
+      "eventType": "test_event",
+      "recipientChannel": "#council-goals",
+      "message": "Test message",
+      "status": "Sent",
+      "retryCount": 0,
+      "createdAt": "2026-11-21T04:37:26.228Z",
+      "sentAt": "2026-11-21T04:37:26.228Z"
+    },
+    {
+      "notificationId": "notif_mwpy89n2_08ff33f67a67",
+      "eventType": "performance_approved",
+      "recipientChannel": "#council-performance",
+      "message": "Report rep_mwpwwiw2_c62a64e05910",
+      "status": "Pending",
+      "retryCount": 0,
+      "createdAt": "2026-11-21T05:09:51.950Z",
+      "sentAt": ""
+    }
+  ]
+}
