@@ -1,127 +1,205 @@
 const bcrypt = require("bcryptjs");
 const sheetsService = require("../services/sheetsService");
 const { generateId } = require("../utils/generateId");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-async function createUser(req, res, next) {
+// Helper to get today's date in YYYY-MM-DD
+function getTodayDate() {
+  const now = new Date();
+  return now.toISOString().split("T")[0];
+}
+
+async function getAllUsers(req, res) {
   try {
-    const { name, email, password, role, councilId } = req.body;
-    if (!name || !email || !password || !role) {
-      return errorResponse(res, "Name, email, password, and role are required", 400);
-    }
+    const { councilId, status, search } = req.query;
+    let users = await sheetsService.getAll("Users");
+    const councils = await sheetsService.getAll("Councils");
+    const goals = await sheetsService.getAll("Goals");
 
-    const existing = await sheetsService.findOne("Users", (u) => u.email.toLowerCase() === email.trim().toLowerCase());
-    if (existing) {
-      return errorResponse(res, "A user with this email already exists", 400);
-    }
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
+    const today = getTodayDate();
 
-    if (["super_admin", "admin"].includes(role) && req.user.role !== "super_admin") {
-      return errorResponse(res, "Only Super Admin can create Admin accounts", 403);
-    }
+    // Map user with progress & council
+    let result = users.map((u) => {
+      const userGoalsToday = goals.filter((g) => g.userId === u.userId && g.goalDate === today);
+      const totalGoals = userGoalsToday.length;
+      const completedGoals = userGoalsToday.filter((g) => (g.status || "").toUpperCase() === "COMPLETED").length;
+      const incompleteGoals = userGoalsToday.filter((g) => (g.status || "").toUpperCase() === "INCOMPLETE").length;
+      const pendingGoals = userGoalsToday.filter((g) => (g.status || "").toUpperCase() === "PENDING").length;
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const newUser = {
-      userId: generateId("usr"),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      passwordHash,
-      role,
-      councilId: councilId || "",
-      status: "active",
-      createdAt: new Date().toISOString(),
-    };
+      const finalized = completedGoals + incompleteGoals;
+      const completionRate = finalized > 0 ? Math.round((completedGoals / finalized) * 100) : "N/A";
 
-    await sheetsService.insert("Users", newUser);
+      // Do not return passwordHash
+      const { passwordHash, ...safeUser } = u;
+      return {
+        ...safeUser,
+        councilName: councilMap.get(u.councilId) || "None",
+        todayStats: {
+          totalGoals,
+          completedGoals,
+          incompleteGoals,
+          pendingGoals,
+          completionRate,
+        },
+      };
+    });
 
-    // If assigned to a council, add member to Council memberIds array
     if (councilId) {
-      const council = await sheetsService.getById("Councils", "councilId", councilId);
-      if (council) {
-        let members = [];
-        try {
-          members = JSON.parse(council.memberIds || "[]");
-        } catch (_) {}
-        if (!members.includes(newUser.userId)) {
-          members.push(newUser.userId);
-          await sheetsService.update("Councils", "councilId", councilId, {
-            memberIds: JSON.stringify(members),
-          });
-        }
-      }
+      result = result.filter((u) => u.councilId === councilId);
+    }
+    if (status) {
+      result = result.filter((u) => (u.status || "").toUpperCase() === status.toUpperCase());
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          u.position?.toLowerCase().includes(q)
+      );
     }
 
-    const { passwordHash: _, ...userSafe } = newUser;
-    return successResponse(res, userSafe, "User created successfully", 201);
+    return successResponse(res, result, "Users retrieved successfully");
   } catch (err) {
-    next(err);
+    console.error("getAllUsers error:", err);
+    return errorResponse(res, "Failed to retrieve users", 500);
   }
 }
 
-async function getUsers(req, res, next) {
-  try {
-    const allUsers = await sheetsService.getAll("Users");
-    const { role, councilId, status } = req.query;
-
-    let filtered = allUsers;
-    if (role) filtered = filtered.filter((u) => u.role === role);
-    if (councilId) filtered = filtered.filter((u) => u.councilId === councilId);
-    if (status) filtered = filtered.filter((u) => u.status === status);
-
-    const safeUsers = filtered.map(({ passwordHash, ...rest }) => rest);
-    return successResponse(res, safeUsers, "Users retrieved successfully");
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getUserById(req, res, next) {
-  try {
-    const user = await sheetsService.getById("Users", "userId", req.params.id);
-    if (!user) {
-      return errorResponse(res, "User not found", 404);
-    }
-    const { passwordHash, ...safeUser } = user;
-    return successResponse(res, safeUser, "User retrieved successfully");
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function updateUser(req, res, next) {
+async function getUserById(req, res) {
   try {
     const { id } = req.params;
-    const { name, role, councilId, status } = req.body;
+
+    // Authorization check: Admin or own member
+    if (req.user.role !== "ADMIN" && req.user.userId !== id) {
+      return errorResponse(res, "Access denied", 403);
+    }
 
     const user = await sheetsService.getById("Users", "userId", id);
     if (!user) {
       return errorResponse(res, "User not found", 404);
     }
 
-    if (role && role !== user.role && req.user.role !== "super_admin") {
-      return errorResponse(res, "Only Super Admin can change user roles", 403);
-    }
+    const councils = await sheetsService.getAll("Councils");
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
 
-    const updates = {};
-    if (name) updates.name = name.trim();
-    if (role) updates.role = role;
-    if (councilId !== undefined) updates.councilId = councilId;
-    if (status) updates.status = status;
+    const goals = await sheetsService.find("Goals", (g) => g.userId === id);
+    const reflections = await sheetsService.find("Reflections", (r) => r.userId === id);
 
-    const updated = await sheetsService.update("Users", "userId", id, updates);
-    const { passwordHash, ...safeUser } = updated;
-    return successResponse(res, safeUser, "User updated successfully");
+    const { passwordHash, ...safeUser } = user;
+
+    return successResponse(
+      res,
+      {
+        ...safeUser,
+        councilName: councilMap.get(user.councilId) || "None",
+        recentGoals: goals.slice(-10).reverse(),
+        reflections: reflections.slice(-10).reverse(),
+      },
+      "User details retrieved"
+    );
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve user details", 500);
   }
 }
 
-async function updateUserStatus(req, res, next) {
+async function createUser(req, res) {
+  try {
+    const { name, email, password, role = "COUNCIL", councilId = "", position = "" } = req.body;
+
+    const existing = await sheetsService.findOne(
+      "Users",
+      (u) => u.email?.toLowerCase() === email.toLowerCase().trim()
+    );
+    if (existing) {
+      return errorResponse(res, "A user with this email already exists", 409);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const now = new Date().toISOString();
+    const newUser = {
+      userId: generateId("USR"),
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      passwordHash,
+      role: role.toUpperCase(),
+      councilId: councilId || "",
+      position: position.trim(),
+      status: "ACTIVE",
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await sheetsService.insert("Users", newUser);
+    await sheetsService.logAudit(req.user.userId, "MEMBER_CREATED", "USER", newUser.userId, {
+      name: newUser.name,
+      email: newUser.email,
+      councilId: newUser.councilId,
+    });
+
+    const { passwordHash: _, ...safeUser } = newUser;
+    return successResponse(res, safeUser, "Member created successfully", 201);
+  } catch (err) {
+    console.error("createUser error:", err);
+    return errorResponse(res, "Failed to create user", 500);
+  }
+}
+
+async function updateUser(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, email, councilId, position, status, password } = req.body;
+
+    const user = await sheetsService.getById("Users", "userId", id);
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    const updates = {};
+    if (name !== undefined) updates.name = name.trim();
+    if (email !== undefined) {
+      const emailTrimmed = email.toLowerCase().trim();
+      const existing = await sheetsService.findOne(
+        "Users",
+        (u) => u.email?.toLowerCase() === emailTrimmed && u.userId !== id
+      );
+      if (existing) {
+        return errorResponse(res, "This email/login ID is already taken by another account", 409);
+      }
+      updates.email = emailTrimmed;
+    }
+    if (councilId !== undefined) updates.councilId = councilId;
+    if (position !== undefined) updates.position = position.trim();
+    if (status !== undefined) updates.status = status.toUpperCase();
+    if (password && password.trim().length > 0) {
+      if (password.trim().length < 4) {
+        return errorResponse(res, "Password must be at least 4 characters long", 400);
+      }
+      updates.passwordHash = await bcrypt.hash(password.trim(), 10);
+    }
+
+    const updated = await sheetsService.update("Users", "userId", id, updates);
+    await sheetsService.logAudit(req.user.userId, "MEMBER_UPDATED", "USER", id, {
+      ...updates,
+      passwordHash: updates.passwordHash ? "[UPDATED]" : undefined,
+    });
+
+    const { passwordHash: _, ...safeUser } = updated;
+    return successResponse(res, safeUser, "Member updated successfully");
+  } catch (err) {
+    return errorResponse(res, "Failed to update member", 500);
+  }
+}
+
+async function updateUserStatus(req, res) {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!["active", "inactive"].includes(status)) {
-      return errorResponse(res, "Status must be 'active' or 'inactive'", 400);
+    if (!status || !["ACTIVE", "INACTIVE"].includes(status.toUpperCase())) {
+      return errorResponse(res, "Invalid status. Must be ACTIVE or INACTIVE", 400);
     }
 
     const user = await sheetsService.getById("Users", "userId", id);
@@ -129,22 +207,26 @@ async function updateUserStatus(req, res, next) {
       return errorResponse(res, "User not found", 404);
     }
 
-    if (user.role === "super_admin" && req.user.role !== "super_admin") {
-      return errorResponse(res, "Cannot modify Super Admin status", 403);
-    }
+    const updated = await sheetsService.update("Users", "userId", id, {
+      status: status.toUpperCase(),
+    });
 
-    const updated = await sheetsService.update("Users", "userId", id, { status });
-    const { passwordHash, ...safeUser } = updated;
-    return successResponse(res, safeUser, `User status updated to ${status}`);
+    await sheetsService.logAudit(req.user.userId, "STATUS_CHANGED", "USER", id, {
+      oldStatus: user.status,
+      newStatus: status.toUpperCase(),
+    });
+
+    const { passwordHash: _, ...safeUser } = updated;
+    return successResponse(res, safeUser, `Member account ${status.toUpperCase().toLowerCase()}d`);
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to update status", 500);
   }
 }
 
 module.exports = {
-  createUser,
-  getUsers,
+  getAllUsers,
   getUserById,
+  createUser,
   updateUser,
   updateUserStatus,
 };

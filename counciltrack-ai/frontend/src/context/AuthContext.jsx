@@ -15,6 +15,13 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem("counciltrack_token"));
   const [loading, setLoading] = useState(true);
 
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("counciltrack_token");
+    localStorage.removeItem("counciltrack_user");
+  };
+
   useEffect(() => {
     async function verifySession() {
       if (token) {
@@ -41,19 +48,18 @@ export function AuthProvider({ children }) {
     return receivedUser;
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("counciltrack_token");
-    localStorage.removeItem("counciltrack_user");
-  };
+  const userRole = (user?.role || "").toUpperCase();
+  const isAdmin = userRole === "ADMIN";
+  const isCouncil = userRole === "COUNCIL";
 
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
-        role: user?.role || "guest",
+        role: userRole || "GUEST",
+        isAdmin,
+        isCouncil,
         isAuthenticated: Boolean(user && token),
         loading,
         login,

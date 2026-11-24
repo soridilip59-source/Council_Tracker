@@ -13,3 +13,155 @@
   border-color: #16a34a;
   box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.12);
 }
+
+/* ==========================================================================
+   Continuous Marquee Animation
+   ========================================================================== */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+
+/* ==========================================================================
+   Animated Text Underlines
+   ========================================================================== */
+.hover-underline-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.hover-underline-link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: linear-gradient(90deg, #6366f1, #10b981);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 9999px;
+}
+
+.hover-underline-link:hover::after {
+  width: 100%;
+}
+
+.heading-accent-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.heading-accent-underline::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 3px;
+  margin-top: 6px;
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+  border-radius: 2px;
+  transition: width 0.35s ease;
+}
+
+.heading-accent-underline:hover::after {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Card Hover Elevation & Glow Effects
+   ========================================================================== */
+.card-hover-elevate {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease;
+}
+
+.card-hover-elevate:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 32px -10px rgba(99, 102, 241, 0.14), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+  border-color: rgba(99, 102, 241, 0.45);
+}
+
+.card-hover-emerald {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease;
+}
+
+.card-hover-emerald:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 32px -10px rgba(16, 185, 129, 0.15), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.card-hover-amber {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease;
+}
+
+.card-hover-amber:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 32px -10px rgba(245, 158, 11, 0.16), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+/* ==========================================================================
+   Shimmer & Glow Animations
+   ========================================================================== */
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2.8s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================================
+   Custom Sleek Scrollbar
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

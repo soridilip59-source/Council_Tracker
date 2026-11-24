@@ -1,4 +1,5 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 const express = require("express");
 const cors = require("cors");
 const { errorHandler } = require("./middleware/errorMiddleware");
@@ -8,43 +9,46 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const councilRoutes = require("./routes/councilRoutes");
 const goalRoutes = require("./routes/goalRoutes");
-const progressRoutes = require("./routes/progressRoutes");
 const reflectionRoutes = require("./routes/reflectionRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
-const meetingRoutes = require("./routes/meetingRoutes");
-const reportRoutes = require("./routes/reportRoutes");
+const leaveRoutes = require("./routes/leaveRoutes");
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow local development and common deployments
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-// Healthcheck
+// Public healthcheck
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
-    service: "CouncilTrack AI API",
-    version: "1.0.0",
+    service: "CouncilTrack AI API v2.0",
+    organization: "NavGurukul Dantewada",
     timestamp: new Date().toISOString(),
   });
 });
 
-// Base API v1 Routing
+// Mount REST API v1
 const apiRouter = express.Router();
 
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/users", userRoutes);
 apiRouter.use("/councils", councilRoutes);
 apiRouter.use("/goals", goalRoutes);
-apiRouter.use("/progress", progressRoutes);
 apiRouter.use("/reflections", reflectionRoutes);
+apiRouter.use("/analytics", analyticsRoutes);
 apiRouter.use("/feedback", feedbackRoutes);
-apiRouter.use("/meetings", meetingRoutes);
-apiRouter.use("/reports", reportRoutes);
+apiRouter.use("/leaves", leaveRoutes);
 
 app.use("/api/v1", apiRouter);
 

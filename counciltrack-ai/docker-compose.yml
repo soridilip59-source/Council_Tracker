@@ -1,6 +1,8 @@
 services:
+  # 1. PostgreSQL Database Service
   postgres:
     image: postgres:16-alpine
+    container_name: counciltrack-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: counciltrack
@@ -9,8 +11,56 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # Persistent database storage: data is never lost even if container is destroyed
       - counciltrack-postgres:/var/lib/postgresql/data
-      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+      # Auto-initialization schema and seed data
+      - ./backend/scripts/setup_postgres.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U counciltrack -d counciltrack"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Node.js Backend API Service (with Live Hot-Reloading)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: counciltrack-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DATABASE_URL=postgresql://counciltrack:counciltrack@postgres:5432/counciltrack
+      - CORS_ORIGIN=http://localhost:5173
+      - JWT_SECRET=change-this-local-jwt-secret-7f8c2b1a9e4d6a0c
+      - TZ=Asia/Kolkata
+    volumes:
+      # LIVE BIND MOUNT: Any code changes made locally are reflected immediately without redeploying
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 3. React Frontend Service (with Live Vite HMR)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: counciltrack-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:4000/api/v1
+    volumes:
+      # LIVE BIND MOUNT: Any UI or CSS change is reflected live in your browser instantly without redeploying
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
 
 volumes:
   counciltrack-postgres:

@@ -1,89 +1,92 @@
 const sheetsService = require("../services/sheetsService");
 const { generateId } = require("../utils/generateId");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-async function createCouncil(req, res, next) {
-  try {
-    const { councilName, description } = req.body;
-    if (!councilName?.trim()) {
-      return errorResponse(res, "Council name is required", 400);
-    }
-
-    const existing = await sheetsService.findOne("Councils", (c) => c.councilName.toLowerCase() === councilName.trim().toLowerCase());
-    if (existing) {
-      return errorResponse(res, "A council with this name already exists", 400);
-    }
-
-    const newCouncil = {
-      councilId: generateId("cnl"),
-      councilName: councilName.trim(),
-      description: description?.trim() || "",
-      memberIds: JSON.stringify([]),
-      status: "active",
-      createdAt: new Date().toISOString(),
-    };
-
-    await sheetsService.insert("Councils", newCouncil);
-    return successResponse(res, { ...newCouncil, members: [] }, "Council created successfully", 201);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getCouncils(req, res, next) {
+async function getAllCouncils(req, res) {
   try {
     const councils = await sheetsService.getAll("Councils");
     const users = await sheetsService.getAll("Users");
 
-    const enriched = councils.map((council) => {
-      let memberIds = [];
-      try {
-        memberIds = JSON.parse(council.memberIds || "[]");
-      } catch (_) {}
-
-      const members = users
-        .filter((u) => memberIds.includes(u.userId) || u.councilId === council.councilId)
-        .map(({ userId, name, email, role, status }) => ({ userId, name, email, role, status }));
+    const result = councils.map((c) => {
+      const assignedMembers = users.filter((u) => u.councilId === c.councilId);
+      const activeMembers = assignedMembers.filter((u) => (u.status || "").toUpperCase() === "ACTIVE");
 
       return {
-        ...council,
-        members,
+        ...c,
+        memberCount: assignedMembers.length,
+        activeMemberCount: activeMembers.length,
       };
     });
 
-    return successResponse(res, enriched, "Councils retrieved successfully");
+    return successResponse(res, result, "Councils retrieved successfully");
   } catch (err) {
-    next(err);
+    console.error("getAllCouncils error:", err);
+    return errorResponse(res, "Failed to retrieve councils", 500);
   }
 }
 
-async function getCouncilById(req, res, next) {
+async function getCouncilById(req, res) {
   try {
-    const council = await sheetsService.getById("Councils", "councilId", req.params.id);
+    const { id } = req.params;
+    const council = await sheetsService.getById("Councils", "councilId", id);
+
     if (!council) {
       return errorResponse(res, "Council not found", 404);
     }
 
-    const users = await sheetsService.getAll("Users");
-    let memberIds = [];
-    try {
-      memberIds = JSON.parse(council.memberIds || "[]");
-    } catch (_) {}
+    const users = await sheetsService.find("Users", (u) => u.councilId === id);
+    const safeMembers = users.map(({ passwordHash, ...safeUser }) => safeUser);
 
-    const members = users
-      .filter((u) => memberIds.includes(u.userId) || u.councilId === council.councilId)
-      .map(({ userId, name, email, role, status }) => ({ userId, name, email, role, status }));
-
-    return successResponse(res, { ...council, members }, "Council details retrieved");
+    return successResponse(
+      res,
+      {
+        ...council,
+        members: safeMembers,
+      },
+      "Council details retrieved"
+    );
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve council details", 500);
   }
 }
 
-async function updateCouncil(req, res, next) {
+async function createCouncil(req, res) {
+  try {
+    const { councilName, description = "", status = "ACTIVE" } = req.body;
+
+    const existing = await sheetsService.findOne(
+      "Councils",
+      (c) => c.councilName?.toLowerCase() === councilName.toLowerCase().trim()
+    );
+    if (existing) {
+      return errorResponse(res, "A council with this name already exists", 409);
+    }
+
+    const now = new Date().toISOString();
+    const newCouncil = {
+      councilId: generateId("CNL"),
+      councilName: councilName.trim(),
+      description: description.trim(),
+      status: status.toUpperCase(),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await sheetsService.insert("Councils", newCouncil);
+    await sheetsService.logAudit(req.user.userId, "COUNCIL_CREATED", "COUNCIL", newCouncil.councilId, {
+      councilName: newCouncil.councilName,
+    });
+
+    return successResponse(res, newCouncil, "Council created successfully", 201);
+  } catch (err) {
+    return errorResponse(res, "Failed to create council", 500);
+  }
+}
+
+async function updateCouncil(req, res) {
   try {
     const { id } = req.params;
-    const { councilName, description, status, memberIds } = req.body;
+    const { councilName, description, status } = req.body;
 
     const council = await sheetsService.getById("Councils", "councilId", id);
     if (!council) {
@@ -91,21 +94,22 @@ async function updateCouncil(req, res, next) {
     }
 
     const updates = {};
-    if (councilName) updates.councilName = councilName.trim();
+    if (councilName !== undefined) updates.councilName = councilName.trim();
     if (description !== undefined) updates.description = description.trim();
-    if (status) updates.status = status;
-    if (memberIds) updates.memberIds = typeof memberIds === "string" ? memberIds : JSON.stringify(memberIds);
+    if (status !== undefined) updates.status = status.toUpperCase();
 
     const updated = await sheetsService.update("Councils", "councilId", id, updates);
+    await sheetsService.logAudit(req.user.userId, "COUNCIL_UPDATED", "COUNCIL", id, updates);
+
     return successResponse(res, updated, "Council updated successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to update council", 500);
   }
 }
 
 module.exports = {
-  createCouncil,
-  getCouncils,
+  getAllCouncils,
   getCouncilById,
+  createCouncil,
   updateCouncil,
 };

@@ -1,6 +1,6 @@
 const { verifyToken } = require("../utils/generateToken");
 const sheetsService = require("../services/sheetsService");
-const { errorResponse } = require("../utils/responseHandler");
+const { errorResponse } = require("../utils/response");
 
 async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -11,13 +11,16 @@ async function authenticate(req, res, next) {
   const token = authHeader.split(" ")[1];
   try {
     const decoded = verifyToken(token);
-    // Verify user exists and is active
-    const user = await sheetsService.getById("Users", "userId", decoded.userId || decoded.id);
+    const userId = decoded.userId || decoded.id;
+    const user = await sheetsService.getById("Users", "userId", userId);
+    
     if (!user) {
       return errorResponse(res, "User account no longer exists", 401);
     }
-    if (user.status !== "active") {
-      return errorResponse(res, "Account is deactivated. Contact an administrator.", 403);
+    
+    const status = (user.status || "").toUpperCase();
+    if (status !== "ACTIVE") {
+      return errorResponse(res, "Account is inactive or deactivated. Contact administrator.", 403);
     }
 
     req.user = {
@@ -25,8 +28,9 @@ async function authenticate(req, res, next) {
       id: user.userId,
       name: user.name,
       email: user.email,
-      role: user.role,
-      councilId: user.councilId,
+      role: (user.role || "").toUpperCase(),
+      councilId: user.councilId || "",
+      position: user.position || "",
     };
     next();
   } catch (err) {

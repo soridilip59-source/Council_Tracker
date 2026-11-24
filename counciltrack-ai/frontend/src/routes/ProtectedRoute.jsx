@@ -1,16 +1,33 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+export default function ProtectedRoute({ allowedRoles = [] }) {
+  const { user, isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-green-600 border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
       </div>
     );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    // If route was an admin route, send to /admin/login, otherwise /council/login
+    if (allowedRoles.includes("ADMIN")) {
+      return <Navigate to="/admin/login" replace />;
+    }
+    return <Navigate to="/council/login" replace />;
+  }
+
+  const userRole = (user?.role || "").toUpperCase();
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
+    // Role mismatch: redirect to their respective dashboard
+    if (userRole === "ADMIN") {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+    return <Navigate to="/council/dashboard" replace />;
+  }
+
+  return <Outlet />;
 }

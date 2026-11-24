@@ -7,8 +7,8 @@ let isConfigured = false;
 
 const sheetId = process.env.GOOGLE_SHEET_ID || "";
 const credPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH
-  ? path.resolve(process.cwd(), process.env.GOOGLE_SERVICE_ACCOUNT_PATH)
-  : path.resolve(process.cwd(), "credentials/service_account.json");
+  ? path.resolve(__dirname, "../..", process.env.GOOGLE_SERVICE_ACCOUNT_PATH)
+  : path.resolve(__dirname, "../../credentials/service_account.json");
 
 try {
   let auth = null;

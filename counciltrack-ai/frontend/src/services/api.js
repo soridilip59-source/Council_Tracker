@@ -21,7 +21,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors without forcing redirects
+// Response interceptor to handle unauthorized errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -43,7 +43,7 @@ export const userApi = {
   getAll: (params) => api.get("/users", { params }),
   getById: (id) => api.get(`/users/${id}`),
   create: (data) => api.post("/users", data),
-  update: (id, data) => api.put(`/users/${id}`, data),
+  update: (id, data) => api.patch(`/users/${id}`, data),
   updateStatus: (id, status) => api.patch(`/users/${id}/status`, { status }),
 };
 
@@ -51,47 +51,51 @@ export const councilApi = {
   getAll: () => api.get("/councils"),
   getById: (id) => api.get(`/councils/${id}`),
   create: (data) => api.post("/councils", data),
-  update: (id, data) => api.put(`/councils/${id}`, data),
+  update: (id, data) => api.patch(`/councils/${id}`, data),
 };
 
 export const goalApi = {
+  create: (data) => api.post("/goals", data),
+  getMy: (params) => api.get("/goals/my", { params }),
   getAll: (params) => api.get("/goals", { params }),
   getById: (id) => api.get(`/goals/${id}`),
-  create: (data) => api.post("/goals", data),
-  update: (id, data) => api.put(`/goals/${id}`, data),
-  delete: (id) => api.delete(`/goals/${id}`),
-};
-
-export const progressApi = {
-  add: (data) => api.post("/progress", data),
-  getHistory: (goalId) => api.get(`/progress/${goalId}`),
-  update: (id, data) => api.put(`/progress/${id}`, data),
+  update: (id, data) => api.patch(`/goals/${id}`, data),
+  updateStatus: (id, statusData) => api.patch(`/goals/${id}/status`, statusData),
+  getSuggestions: () => api.get("/goals/suggestions"),
 };
 
 export const reflectionApi = {
   submit: (data) => api.post("/reflections", data),
+  getMy: (params) => api.get("/reflections/my", { params }),
   getAll: (params) => api.get("/reflections", { params }),
   getById: (id) => api.get(`/reflections/${id}`),
 };
 
+export const analyticsApi = {
+  getDashboard: () => api.get("/analytics/dashboard"),
+  getWeekly: (params) => api.get("/analytics/weekly", { params }),
+  getMonthly: (params) => api.get("/analytics/monthly", { params }),
+  getCouncils: (params) => api.get("/analytics/councils", { params }),
+  getMember: (id) => api.get(`/analytics/members/${id}`),
+  getSmartAlerts: () => api.get("/analytics/smart-alerts"),
+};
+
 export const feedbackApi = {
-  submit: (data) => api.post("/feedback", data),
+  // Public submission (no token needed)
+  submitPublic: (data) => api.post("/feedback", data),
+  // Admin view all
   getAll: (params) => api.get("/feedback", { params }),
-  getById: (id) => api.get(`/feedback/${id}`),
+  // Council view assigned council only
+  getMyCouncil: () => api.get("/feedback/my-council"),
+  // Admin updates
+  updateStatus: (id, status) => api.patch(`/feedback/${id}/status`, { status }),
+  updateNotes: (id, adminNotes) => api.patch(`/feedback/${id}/notes`, { adminNotes }),
 };
 
-export const meetingApi = {
-  getAll: () => api.get("/meetings"),
-  schedule: (data) => api.post("/meetings", data),
-  update: (id, data) => api.put(`/meetings/${id}`, data),
-  cancel: (id) => api.delete(`/meetings/${id}`),
-};
-
-export const reportApi = {
-  generate: (data) => api.post("/reports/generate", data),
-  getAll: (params) => api.get("/reports", { params }),
-  getById: (id) => api.get(`/reports/${id}`),
-  approve: (id) => api.patch(`/reports/${id}/approve`),
+export const leaveApi = {
+  getActive: () => api.get("/leaves/active"),
+  getAll: () => api.get("/leaves"),
+  create: (data) => api.post("/leaves", data),
 };
 
 export default api;

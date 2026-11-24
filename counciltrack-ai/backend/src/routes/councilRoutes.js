@@ -1,15 +1,22 @@
 const express = require("express");
-const { createCouncil, getCouncils, getCouncilById, updateCouncil } = require("../controllers/councilController");
+const {
+  getAllCouncils,
+  getCouncilById,
+  createCouncil,
+  updateCouncil,
+} = require("../controllers/councilController");
 const { authenticate } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
+const { validate } = require("../middleware/validateMiddleware");
+const { createCouncilSchema, updateCouncilSchema } = require("../validators");
 
 const router = express.Router();
 
 router.use(authenticate);
 
-router.post("/", authorize("super_admin", "admin"), createCouncil);
-router.get("/", getCouncils);
+router.get("/", getAllCouncils);
+router.post("/", authorize("ADMIN"), validate(createCouncilSchema), createCouncil);
 router.get("/:id", getCouncilById);
-router.put("/:id", authorize("super_admin", "admin"), updateCouncil);
+router.patch("/:id", authorize("ADMIN"), validate(updateCouncilSchema), updateCouncil);
 
 module.exports = router;

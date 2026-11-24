@@ -1,15 +1,29 @@
 const express = require("express");
-const { submitReflection, getReflections, getReflectionById } = require("../controllers/reflectionController");
+const {
+  submitReflection,
+  getMyReflections,
+  getAllReflections,
+  getReflectionById,
+} = require("../controllers/reflectionController");
 const { authenticate } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
+const { validate } = require("../middleware/validateMiddleware");
+const { submitReflectionSchema } = require("../validators");
 
 const router = express.Router();
 
 router.use(authenticate);
 
-// Students are strictly excluded
-router.post("/", authorize("super_admin", "admin", "council_member"), submitReflection);
-router.get("/", authorize("super_admin", "admin", "council_member"), getReflections);
-router.get("/:id", authorize("super_admin", "admin", "council_member"), getReflectionById);
+// Council member submits evening reflection
+router.post("/", authorize("COUNCIL"), validate(submitReflectionSchema), submitReflection);
+
+// Council member views own reflections
+router.get("/my", authorize("COUNCIL"), getMyReflections);
+
+// Admin views all reflections
+router.get("/", authorize("ADMIN"), getAllReflections);
+
+// View reflection details
+router.get("/:id", getReflectionById);
 
 module.exports = router;

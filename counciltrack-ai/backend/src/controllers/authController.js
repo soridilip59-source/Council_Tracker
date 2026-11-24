@@ -1,100 +1,117 @@
 const bcrypt = require("bcryptjs");
 const sheetsService = require("../services/sheetsService");
 const { generateToken } = require("../utils/generateToken");
-const { generateId } = require("../utils/generateId");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-async function login(req, res, next) {
+async function login(req, res) {
   try {
     const { email, password } = req.body;
-    if (!email?.trim() || !password) {
-      return errorResponse(res, "Email and password are required", 400);
-    }
+    const identifier = (email || "").toLowerCase().trim();
 
-    let lookup = email.trim().toLowerCase();
-    // Allow typing just "admin", "superadmin", "rahul", "student"
-    if (!lookup.includes("@")) {
-      lookup = `${lookup}@counciltrack.org`;
-    }
+    // Support logging in via email, user ID, or role alias ('admin', 'council', 'english', 'academic')
+    const user = await sheetsService.findOne("Users", (u) => {
+      const uEmail = (u.email || "").toLowerCase().trim();
+      const uId = (u.userId || "").toLowerCase().trim();
+      const uRole = (u.role || "").toLowerCase().trim();
+      const uPosition = (u.position || "").toLowerCase();
 
-    let user = await sheetsService.findOne(
-      "Users",
-      (u) =>
-        u.email.toLowerCase() === lookup ||
-        u.name.toLowerCase() === email.trim().toLowerCase() ||
-        u.userId.toLowerCase() === email.trim().toLowerCase()
-    );
+      if (uEmail === identifier || uId === identifier) return true;
+      if (identifier === "admin" && uRole === "admin") return true;
+      if (identifier === "admin@navgurukul.org" && uRole === "admin") return true;
+      if (identifier === "council" && uRole === "council") return true;
+      if (identifier === "council@navgurukul.org" && uRole === "council") return true;
 
-    // If user does not exist in dev store, auto-provision account so login never fails
+      // English Facilitator alias
+      if ((identifier === "english" || identifier === "englishfacilitator@navgurukul.org" || identifier.includes("english")) && 
+          (uPosition.includes("culture") || uPosition.includes("english") || uEmail.includes("rahul"))) {
+        return true;
+      }
+
+      // Academic Facilitator alias
+      if ((identifier === "academic" || identifier === "academicfacilitator@navgurukul.org" || identifier.includes("academic")) && 
+          (uPosition.includes("academic") || uEmail.includes("neha"))) {
+        return true;
+      }
+
+      return false;
+    });
+
     if (!user) {
-      const passwordHash = await bcrypt.hash(password, 10);
-      const displayName = email.includes("@")
-        ? email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-        : email.trim();
-
-      user = {
-        userId: generateId("usr"),
-        name: displayName,
-        email: lookup,
-        passwordHash,
-        role: lookup.includes("superadmin") ? "super_admin" : lookup.includes("admin") ? "admin" : "student",
-        councilId: "",
-        status: "active",
-        createdAt: new Date().toISOString(),
-      };
-      await sheetsService.insert("Users", user);
+      return errorResponse(res, "Invalid ID/Email or password", 401);
     }
 
-    if (user.status !== "active") {
-      return errorResponse(res, "Account is deactivated. Contact an administrator.", 403);
+    if ((user.status || "").toUpperCase() !== "ACTIVE") {
+      return errorResponse(res, "This account is inactive. Please contact an administrator.", 403);
     }
 
-    // Verify password with case flexibility & dev fallback
-    let isMatch = await bcrypt.compare(password, user.passwordHash);
+    // Verify password with bcrypt
+    let isMatch = false;
+    if (user.passwordHash) {
+      isMatch = await bcrypt.compare(password, user.passwordHash);
+    }
+    
+    // Explicit specific passwords support for Admin and Council roles
+    const userRole = (user.role || "").toUpperCase();
     if (!isMatch) {
-      const cleanPass = password.toLowerCase();
-      if (
-        cleanPass === "admin@123" ||
-        cleanPass === "admin" ||
-        cleanPass === "admin123" ||
-        cleanPass === "password" ||
-        cleanPass === "12345678"
-      ) {
-        isMatch = true;
+      if (userRole === "ADMIN") {
+        // Specific Admin password as requested by user
+        if (password === "admin@navgurukul.org" || password === "Admin@123" || password === "admin123") {
+          isMatch = true;
+        }
+      } else if (userRole === "COUNCIL") {
+        if (
+          password === "Council@123" ||
+          password === "council123" ||
+          password === "Admin@123" ||
+          password === "english@123" ||
+          password === "academic@123" ||
+          password === "Council@navgurukul"
+        ) {
+          isMatch = true;
+        }
       }
     }
 
     if (!isMatch) {
-      return errorResponse(res, "Invalid email or password", 401);
+      return errorResponse(res, "Invalid ID/Email or password", 401);
     }
 
+    const role = (user.role || "").toUpperCase();
     const token = generateToken({
       userId: user.userId,
-      role: user.role,
-      name: user.name,
-      email: user.email,
+      role,
+      councilId: user.councilId || "",
     });
 
-    const userProfile = {
-      userId: user.userId,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      councilId: user.councilId,
-      status: user.status,
-    };
+    let council = null;
+    if (user.councilId) {
+      council = await sheetsService.getById("Councils", "councilId", user.councilId);
+    }
 
-    return successResponse(res, { token, user: userProfile }, "Login successful");
+    return successResponse(res, {
+      token,
+      user: {
+        userId: user.userId,
+        name: user.name,
+        email: user.email,
+        role,
+        councilId: user.councilId || "",
+        councilName: council?.councilName || "",
+        position: user.position || "",
+        status: user.status,
+      },
+    }, "Login successful");
   } catch (err) {
-    next(err);
+    console.error("Login error:", err);
+    return errorResponse(res, "Internal server error during login", 500);
   }
 }
 
 async function logout(req, res) {
-  return successResponse(res, null, "Logout successful");
+  return successResponse(res, null, "Logged out successfully");
 }
 
-async function getMe(req, res, next) {
+async function getMe(req, res) {
   try {
     const user = await sheetsService.getById("Users", "userId", req.user.userId);
     if (!user) {
@@ -106,20 +123,18 @@ async function getMe(req, res, next) {
       council = await sheetsService.getById("Councils", "councilId", user.councilId);
     }
 
-    const userProfile = {
+    return successResponse(res, {
       userId: user.userId,
       name: user.name,
       email: user.email,
-      role: user.role,
-      councilId: user.councilId,
+      role: (user.role || "").toUpperCase(),
+      councilId: user.councilId || "",
+      councilName: council?.councilName || "",
+      position: user.position || "",
       status: user.status,
-      createdAt: user.createdAt,
-      council: council ? { councilId: council.councilId, councilName: council.councilName } : null,
-    };
-
-    return successResponse(res, userProfile, "Current user profile");
+    }, "Profile retrieved");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve profile", 500);
   }
 }
 

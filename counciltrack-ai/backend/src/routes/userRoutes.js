@@ -1,16 +1,24 @@
 const express = require("express");
-const { createUser, getUsers, getUserById, updateUser, updateUserStatus } = require("../controllers/userController");
+const {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  updateUserStatus,
+} = require("../controllers/userController");
 const { authenticate } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
+const { validate } = require("../middleware/validateMiddleware");
+const { createUserSchema, updateUserSchema } = require("../validators");
 
 const router = express.Router();
 
 router.use(authenticate);
 
-router.post("/", authorize("super_admin", "admin"), createUser);
-router.get("/", authorize("super_admin", "admin"), getUsers);
+router.get("/", authorize("ADMIN"), getAllUsers);
+router.post("/", authorize("ADMIN"), validate(createUserSchema), createUser);
 router.get("/:id", getUserById);
-router.put("/:id", authorize("super_admin", "admin"), updateUser);
-router.patch("/:id/status", authorize("super_admin", "admin"), updateUserStatus);
+router.patch("/:id", authorize("ADMIN"), validate(updateUserSchema), updateUser);
+router.patch("/:id/status", authorize("ADMIN"), updateUserStatus);
 
 module.exports = router;

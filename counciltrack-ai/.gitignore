@@ -13,7 +13,14 @@ dist-ssr
 *.local
 .env
 .env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 server/.env
+credentials/
+backend/credentials/
+*.pem
+*.key
 
 # Editor directories and files
 .vscode/*

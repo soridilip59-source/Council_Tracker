@@ -1,103 +1,184 @@
 const sheetsService = require("../services/sheetsService");
 const { generateId } = require("../utils/generateId");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-const CATEGORIES = ["Communication", "Support", "Engagement", "Problem Resolution", "Overall Experience"];
-
-async function submitFeedback(req, res, next) {
+async function submitFeedback(req, res) {
   try {
-    const { councilId, month, category, rating, comments, suggestions } = req.body;
+    const { studentName = "", councilId, feedbackType, message, contact = "" } = req.body;
 
-    if (!councilId || !rating || !category) {
-      return errorResponse(res, "councilId, category, and rating (1-5) are required", 400);
+    // Verify council exists
+    const council = await sheetsService.getById("Councils", "councilId", councilId);
+    if (!council) {
+      return errorResponse(res, "Invalid council selected", 400);
     }
 
-    if (!CATEGORIES.includes(category)) {
-      return errorResponse(res, `category must be one of: ${CATEGORIES.join(", ")}`, 400);
-    }
+    // Normalize feedbackType
+    let normType = "GENERAL";
+    const typeUpper = (feedbackType || "").toUpperCase();
+    if (typeUpper.includes("COMPLAINT")) normType = "COMPLAINT";
+    else if (typeUpper.includes("SUGGEST")) normType = "SUGGESTION";
+    else normType = "GENERAL";
 
-    const numRating = Number(rating);
-    if (isNaN(numRating) || numRating < 1 || numRating > 5) {
-      return errorResponse(res, "Rating must be between 1 and 5", 400);
-    }
-
-    const currentMonth = month || new Date().toISOString().slice(0, 7); // "YYYY-MM"
+    const now = new Date().toISOString();
     const newFeedback = {
-      feedbackId: generateId("fdb"),
-      studentId: req.user.userId,
+      feedbackId: generateId("FDB"),
+      studentName: (studentName || "").trim(),
       councilId,
-      month: currentMonth,
-      category,
-      rating: numRating,
-      comments: comments?.trim() || "",
-      suggestions: suggestions?.trim() || "",
-      submittedAt: new Date().toISOString(),
+      feedbackType: normType,
+      message: message.trim(),
+      contact: (contact || "").trim(),
+      status: "NEW",
+      adminNotes: "",
+      submittedAt: now,
+      updatedAt: now,
     };
 
     await sheetsService.insert("Student_Feedback", newFeedback);
-    return successResponse(res, newFeedback, "Feedback submitted successfully. Thank you!", 201);
+
+    // Return clean user-facing success without leaking internal record IDs unnecessarily
+    return successResponse(
+      res,
+      {
+        submittedAt: newFeedback.submittedAt,
+        councilName: council.councilName,
+      },
+      "Thank you! Your feedback has been submitted successfully.",
+      201
+    );
   } catch (err) {
-    next(err);
+    console.error("submitFeedback error:", err);
+    return errorResponse(res, "Failed to submit feedback", 500);
   }
 }
 
-async function getFeedback(req, res, next) {
+async function getAllFeedback(req, res) {
   try {
-    let feedbackList = await sheetsService.getAll("Student_Feedback");
-    const { councilId, month, category } = req.query;
+    const { councilId, feedbackType, status, search } = req.query;
+    let feedback = await sheetsService.getAll("Student_Feedback");
+    const councils = await sheetsService.getAll("Councils");
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
 
-    // Role-based visibility
-    if (req.user.role === "student") {
-      // Students see feedback they themselves submitted
-      feedbackList = feedbackList.filter((f) => f.studentId === req.user.userId);
-    } else if (req.user.role === "council_member") {
-      // Council members see feedback for their own council
-      feedbackList = feedbackList.filter((f) => f.councilId === req.user.councilId);
+    if (councilId) {
+      feedback = feedback.filter((f) => f.councilId === councilId);
+    }
+    if (feedbackType) {
+      feedback = feedback.filter((f) => (f.feedbackType || "").toUpperCase() === feedbackType.toUpperCase());
+    }
+    if (status) {
+      feedback = feedback.filter((f) => (f.status || "").toUpperCase() === status.toUpperCase());
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      feedback = feedback.filter(
+        (f) =>
+          f.message?.toLowerCase().includes(q) ||
+          f.studentName?.toLowerCase().includes(q) ||
+          f.contact?.toLowerCase().includes(q)
+      );
     }
 
-    if (councilId) feedbackList = feedbackList.filter((f) => f.councilId === councilId);
-    if (month) feedbackList = feedbackList.filter((f) => f.month === month);
-    if (category) feedbackList = feedbackList.filter((f) => f.category === category);
+    const enriched = feedback.map((f) => ({
+      ...f,
+      councilName: councilMap.get(f.councilId) || "Unknown",
+    }));
 
-    // Enrich with council names
-    const councils = await sheetsService.getAll("Councils");
-    const enriched = feedbackList.map((f) => {
-      const council = councils.find((c) => c.councilId === f.councilId);
-      return {
-        ...f,
-        councilName: council?.councilName || "Council",
-      };
-    });
+    enriched.sort((a, b) => (b.submittedAt || "").localeCompare(a.submittedAt || ""));
 
     return successResponse(res, enriched, "Feedback retrieved successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve feedback", 500);
   }
 }
 
-async function getFeedbackById(req, res, next) {
+async function getMyCouncilFeedback(req, res) {
   try {
-    const feedback = await sheetsService.getById("Student_Feedback", "feedbackId", req.params.id);
-    if (!feedback) {
-      return errorResponse(res, "Feedback not found", 404);
+    const councilId = req.user.councilId;
+    if (!councilId) {
+      return errorResponse(res, "No council assigned to your account", 400);
     }
 
-    if (req.user.role === "student" && feedback.studentId !== req.user.userId) {
-      return errorResponse(res, "Forbidden", 403);
-    }
-    if (req.user.role === "council_member" && feedback.councilId !== req.user.councilId) {
-      return errorResponse(res, "Forbidden", 403);
-    }
+    let feedback = await sheetsService.find("Student_Feedback", (f) => f.councilId === councilId);
+    const council = await sheetsService.getById("Councils", "councilId", councilId);
 
-    const council = await sheetsService.getById("Councils", "councilId", feedback.councilId);
-    return successResponse(res, { ...feedback, councilName: council?.councilName || "Council" }, "Feedback details retrieved");
+    // CRITICAL SECURITY RULE: Strip private adminNotes for Council members!
+    const sanitized = feedback.map((f) => ({
+      feedbackId: f.feedbackId,
+      studentName: f.studentName || "Anonymous Student",
+      councilId: f.councilId,
+      councilName: council?.councilName || "Assigned Council",
+      feedbackType: f.feedbackType,
+      message: f.message,
+      status: f.status,
+      submittedAt: f.submittedAt,
+      // adminNotes explicitly omitted
+    }));
+
+    sanitized.sort((a, b) => (b.submittedAt || "").localeCompare(a.submittedAt || ""));
+
+    return successResponse(res, sanitized, "Council feedback retrieved");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve council feedback", 500);
+  }
+}
+
+async function updateFeedbackStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const normStatus = (status || "").toUpperCase();
+    if (!["NEW", "UNDER_REVIEW", "RESOLVED"].includes(normStatus)) {
+      return errorResponse(res, "Invalid status. Must be NEW, UNDER_REVIEW, or RESOLVED", 400);
+    }
+
+    const feedback = await sheetsService.getById("Student_Feedback", "feedbackId", id);
+    if (!feedback) {
+      return errorResponse(res, "Feedback record not found", 404);
+    }
+
+    const updated = await sheetsService.update("Student_Feedback", "feedbackId", id, {
+      status: normStatus,
+    });
+
+    await sheetsService.logAudit(req.user.userId, "FEEDBACK_STATUS_UPDATED", "FEEDBACK", id, {
+      oldStatus: feedback.status,
+      newStatus: normStatus,
+    });
+
+    return successResponse(res, updated, `Feedback status updated to ${normStatus}`);
+  } catch (err) {
+    return errorResponse(res, "Failed to update feedback status", 500);
+  }
+}
+
+async function updateFeedbackNotes(req, res) {
+  try {
+    const { id } = req.params;
+    const { adminNotes } = req.body;
+
+    const feedback = await sheetsService.getById("Student_Feedback", "feedbackId", id);
+    if (!feedback) {
+      return errorResponse(res, "Feedback record not found", 404);
+    }
+
+    const updated = await sheetsService.update("Student_Feedback", "feedbackId", id, {
+      adminNotes: (adminNotes || "").trim(),
+    });
+
+    await sheetsService.logAudit(req.user.userId, "FEEDBACK_NOTE_UPDATED", "FEEDBACK", id, {
+      noteLength: (adminNotes || "").length,
+    });
+
+    return successResponse(res, updated, "Admin notes updated successfully");
+  } catch (err) {
+    return errorResponse(res, "Failed to update admin notes", 500);
   }
 }
 
 module.exports = {
   submitFeedback,
-  getFeedback,
-  getFeedbackById,
+  getAllFeedback,
+  getMyCouncilFeedback,
+  updateFeedbackStatus,
+  updateFeedbackNotes,
 };

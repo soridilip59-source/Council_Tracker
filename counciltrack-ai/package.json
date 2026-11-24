@@ -1,0 +1,14 @@
+{
+  "name": "counciltrack",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev:backend",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "npm --prefix backend start",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "test": "node backend/scripts/verify_v2.js",
+    "lint": "npm --prefix frontend run lint"
+  }
+}

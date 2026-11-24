@@ -51,7 +51,7 @@ export default function Navbar() {
             <Link
               key={path}
               to={path}
-              className="text-sm font-medium text-gray-700 hover:text-green-700 transition"
+              className="text-sm font-medium text-gray-700 hover:text-green-700 transition hover-underline-link"
             >
               {name}
             </Link>

@@ -1,10 +1,11 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
+
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
 const { setSocketIO } = require("./utils/socketEmitter");
-const { initDailyReminderJob } = require("./jobs/dailyReminderJob");
-const { initMeetingReminderJob } = require("./jobs/meetingReminderJob");
-const { initMonthlyReportJob } = require("./jobs/monthlyReportJob");
+const { testConnection } = require("./config/db");
 
 const PORT = Number(process.env.PORT || 4000);
 const server = http.createServer(app);
@@ -12,7 +13,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    origin: (origin, callback) => callback(null, true),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
@@ -35,17 +36,22 @@ io.on("connection", (socket) => {
   });
 });
 
-// Initialize Scheduled Background Jobs
-initDailyReminderJob();
-initMeetingReminderJob();
-initMonthlyReportJob();
-
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`===================================================`);
-  console.log(`  CouncilTrack AI Backend Server Running!`);
+  console.log(`  CouncilTrack AI Backend Server Running! (v2.0)`);
   console.log(`  Port: http://localhost:${PORT}`);
   console.log(`  API Base URL: http://localhost:${PORT}/api/v1`);
-  console.log(`  Socket.IO: Active and accepting connections`);
+  console.log(`  Public Healthcheck: http://localhost:${PORT}/api/health`);
   console.log(`  Timezone: ${process.env.TZ || "Asia/Kolkata"}`);
   console.log(`===================================================`);
+  await testConnection();
+});
+
+server.once("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`Port ${PORT} is already in use. Stop the other process or set PORT in backend/.env.`);
+  } else {
+    console.error("Backend server failed to start:", error);
+  }
+  process.exitCode = 1;
 });

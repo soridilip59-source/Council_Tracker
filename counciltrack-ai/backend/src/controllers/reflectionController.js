@@ -1,104 +1,199 @@
 const sheetsService = require("../services/sheetsService");
+const aiService = require("../services/aiService");
 const { generateId } = require("../utils/generateId");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-async function submitReflection(req, res, next) {
+async function submitReflection(req, res) {
   try {
-    const { periodType, periodStart, periodEnd, achievements, challenges, learnings, nextSteps } = req.body;
+    const {
+      reflectionDate,
+      achievements,
+      challenges,
+      learnings,
+      improvements,
+      goalStatuses = [],
+    } = req.body;
 
-    if (!periodType || !achievements?.trim()) {
-      return errorResponse(res, "periodType (daily/weekly) and achievements are required", 400);
+    const userId = req.user.userId;
+
+    // Check if reflection already exists for this date and user
+    const existing = await sheetsService.findOne(
+      "Reflections",
+      (r) => r.userId === userId && r.reflectionDate === reflectionDate
+    );
+
+    const now = new Date().toISOString();
+
+    // Batch update goal statuses and reasons if provided
+    let incompleteSummary = [];
+    if (Array.isArray(goalStatuses) && goalStatuses.length > 0) {
+      for (const item of goalStatuses) {
+        if (!item.goalId) continue;
+        const goal = await sheetsService.getById("Goals", "goalId", item.goalId);
+        if (goal && goal.userId === userId) {
+          const newStatus = (item.status || "PENDING").toUpperCase();
+          const reason = item.incompleteReason || "";
+
+          if (newStatus === "INCOMPLETE" && reason) {
+            incompleteSummary.push(`${goal.title}: ${reason}`);
+          }
+
+          if (goal.status !== newStatus || goal.incompleteReason !== reason) {
+            const oldStatus = goal.status;
+            await sheetsService.update("Goals", "goalId", item.goalId, {
+              status: newStatus,
+              incompleteReason: reason,
+            });
+
+            await sheetsService.logGoalHistory(
+              item.goalId,
+              userId,
+              oldStatus,
+              newStatus,
+              `Reflection submission update (${reason ? `Reason: ${reason}` : "Status confirmed"})`
+            );
+          }
+        }
+      }
     }
 
-    if (!["daily", "weekly"].includes(periodType)) {
-      return errorResponse(res, "periodType must be 'daily' or 'weekly'", 400);
+    let reflectionRecord;
+    if (existing) {
+      // Update existing reflection and preserve history
+      reflectionRecord = await sheetsService.update("Reflections", "reflectionId", existing.reflectionId, {
+        achievements: achievements.trim(),
+        incompleteGoals: incompleteSummary.join("; ") || existing.incompleteGoals || "",
+        challenges: challenges.trim(),
+        learnings: learnings.trim(),
+        improvements: improvements.trim(),
+        updatedAt: now,
+      });
+
+      await sheetsService.logAudit(userId, "REFLECTION_UPDATED", "REFLECTION", existing.reflectionId, {
+        date: reflectionDate,
+      });
+    } else {
+      reflectionRecord = {
+        reflectionId: generateId("REF"),
+        userId,
+        reflectionDate,
+        achievements: achievements.trim(),
+        incompleteGoals: incompleteSummary.join("; ") || "None",
+        challenges: challenges.trim(),
+        learnings: learnings.trim(),
+        improvements: improvements.trim(),
+        submittedAt: now,
+        updatedAt: now,
+      };
+
+      await sheetsService.insert("Reflections", reflectionRecord);
+      await sheetsService.logAudit(userId, "REFLECTION_SUBMITTED", "REFLECTION", reflectionRecord.reflectionId, {
+        date: reflectionDate,
+      });
     }
 
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const newReflection = {
-      reflectionId: generateId("ref"),
-      userId: req.user.userId,
-      periodType,
-      periodStart: periodStart || todayStr,
-      periodEnd: periodEnd || todayStr,
-      achievements: achievements.trim(),
-      challenges: challenges?.trim() || "",
-      learnings: learnings?.trim() || "",
-      nextSteps: nextSteps?.trim() || "",
-      submittedAt: new Date().toISOString(),
-    };
+    // Generate heuristic AI analysis of this reflection
+    const aiAnalysis = aiService.analyzeReflection({
+      achievements,
+      challenges,
+      learnings,
+      improvements,
+      goalStatuses,
+    });
 
-    await sheetsService.insert("Reflections", newReflection);
-    return successResponse(res, newReflection, "Reflection submitted successfully", 201);
+    return successResponse(res, { ...reflectionRecord, aiAnalysis }, "Evening reflection submitted successfully", 201);
   } catch (err) {
-    next(err);
+    console.error("submitReflection error:", err);
+    return errorResponse(res, "Failed to submit reflection", 500);
   }
 }
 
-async function getReflections(req, res, next) {
+async function getMyReflections(req, res) {
   try {
-    // Strictly forbidden for students
-    if (req.user.role === "student") {
-      return errorResponse(res, "Forbidden: Students cannot access reflections", 403);
-    }
+    const userId = req.user.userId;
+    const reflections = await sheetsService.find("Reflections", (r) => r.userId === userId);
+    reflections.sort((a, b) => (b.reflectionDate || "").localeCompare(a.reflectionDate || ""));
 
+    return successResponse(res, reflections, "Reflections retrieved successfully");
+  } catch (err) {
+    return errorResponse(res, "Failed to retrieve reflections", 500);
+  }
+}
+
+async function getAllReflections(req, res) {
+  try {
+    const { councilId, userId, reflectionDate } = req.query;
     let reflections = await sheetsService.getAll("Reflections");
-    const { userId, periodType } = req.query;
+    const users = await sheetsService.getAll("Users");
+    const councils = await sheetsService.getAll("Councils");
 
-    // Council Members can only access their own reflections
-    if (req.user.role === "council_member") {
-      reflections = reflections.filter((r) => r.userId === req.user.userId);
-    } else if (userId) {
+    const userMap = new Map(users.map((u) => [u.userId, u]));
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
+
+    if (userId) {
       reflections = reflections.filter((r) => r.userId === userId);
     }
-
-    if (periodType) {
-      reflections = reflections.filter((r) => r.periodType === periodType);
+    if (reflectionDate) {
+      reflections = reflections.filter((r) => r.reflectionDate === reflectionDate);
     }
 
-    // Sort by latest submission
-    reflections.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-
-    const users = await sheetsService.getAll("Users");
-    const enriched = reflections.map((r) => {
-      const u = users.find((user) => user.userId === r.userId);
+    let enriched = reflections.map((r) => {
+      const u = userMap.get(r.userId);
       return {
         ...r,
-        authorName: u?.name || "Council Member",
+        memberName: u?.name || "Unknown",
+        councilId: u?.councilId || "",
+        councilName: councilMap.get(u?.councilId) || "Unknown",
+        position: u?.position || "",
       };
     });
 
+    if (councilId) {
+      enriched = enriched.filter((r) => r.councilId === councilId);
+    }
+
+    enriched.sort((a, b) => (b.reflectionDate || "").localeCompare(a.reflectionDate || ""));
+
     return successResponse(res, enriched, "Reflections retrieved successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve reflections", 500);
   }
 }
 
-async function getReflectionById(req, res, next) {
+async function getReflectionById(req, res) {
   try {
-    if (req.user.role === "student") {
-      return errorResponse(res, "Forbidden: Students cannot access reflections", 403);
-    }
+    const { id } = req.params;
+    const reflection = await sheetsService.getById("Reflections", "reflectionId", id);
 
-    const reflection = await sheetsService.getById("Reflections", "reflectionId", req.params.id);
     if (!reflection) {
       return errorResponse(res, "Reflection not found", 404);
     }
 
-    // Role check: Council member can only view their own
-    if (req.user.role === "council_member" && reflection.userId !== req.user.userId) {
-      return errorResponse(res, "Forbidden: You can only view your own reflections", 403);
+    if (req.user.role !== "ADMIN" && reflection.userId !== req.user.userId) {
+      return errorResponse(res, "Access denied", 403);
     }
 
     const user = await sheetsService.getById("Users", "userId", reflection.userId);
-    return successResponse(res, { ...reflection, authorName: user?.name || "Council Member" }, "Reflection retrieved");
+    const council = user?.councilId ? await sheetsService.getById("Councils", "councilId", user.councilId) : null;
+
+    return successResponse(
+      res,
+      {
+        ...reflection,
+        memberName: user?.name || "Unknown",
+        councilName: council?.councilName || "Unknown",
+        position: user?.position || "",
+      },
+      "Reflection retrieved"
+    );
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve reflection", 500);
   }
 }
 
 module.exports = {
   submitReflection,
-  getReflections,
+  getMyReflections,
+  getAllReflections,
   getReflectionById,
 };

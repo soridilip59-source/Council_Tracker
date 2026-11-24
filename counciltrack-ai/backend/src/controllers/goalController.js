@@ -1,198 +1,385 @@
 const sheetsService = require("../services/sheetsService");
-const discordService = require("../services/discordService");
+const aiService = require("../services/aiService");
 const { generateId } = require("../utils/generateId");
-const { emitSocketEvent } = require("../utils/socketEmitter");
-const { successResponse, errorResponse } = require("../utils/responseHandler");
+const { successResponse, errorResponse } = require("../utils/response");
 
-async function createGoal(req, res, next) {
+async function createGoal(req, res) {
   try {
-    const { goalType, title, description, priority, startDate, dueDate, councilId } = req.body;
-    if (!title?.trim() || !goalType || !dueDate) {
-      return errorResponse(res, "Title, goalType (daily/weekly), and dueDate are required", 400);
+    const {
+      title,
+      description,
+      expectedOutcome = "",
+      priority = "MEDIUM",
+      goalDate,
+      assignedTo,
+      assignedToName,
+      isOnLeave,
+      leaveStartDate,
+      leaveEndDate,
+      leaveDays,
+      leaveReason,
+    } = req.body;
+
+    const actorId = req.user.userId;
+    const actorRole = req.user.role;
+    let councilId = req.user.councilId;
+    let targetUserId = actorId;
+    let finalAssignedToName = (assignedToName || "").trim();
+
+    // If an existing registered council member ID was selected
+    if (assignedTo && assignedTo !== actorId) {
+      const assignee = await sheetsService.getById("Users", "userId", assignedTo);
+      if (!assignee) {
+        return errorResponse(res, "Assigned council member not found", 404);
+      }
+      if (actorRole === "COUNCIL" && assignee.councilId !== councilId) {
+        return errorResponse(res, "You can only assign goals to members within your council", 403);
+      }
+      targetUserId = assignee.userId;
+      councilId = assignee.councilId;
+      if (!finalAssignedToName) {
+        finalAssignedToName = assignee.name;
+      }
+    } else if (!finalAssignedToName) {
+      finalAssignedToName = req.user.name;
     }
 
-    if (!["daily", "weekly"].includes(goalType)) {
-      return errorResponse(res, "goalType must be 'daily' or 'weekly'", 400);
+    if (!councilId) {
+      return errorResponse(res, "Target member is not assigned to any council. Please contact Admin.", 400);
     }
 
-    const assignedCouncilId = councilId || req.user.councilId || "";
+    const now = new Date().toISOString();
     const newGoal = {
-      goalId: generateId("gol"),
-      userId: req.user.userId,
-      councilId: assignedCouncilId,
-      goalType,
+      goalId: generateId("GL"),
+      userId: targetUserId,
+      councilId,
       title: title.trim(),
-      description: description?.trim() || "",
-      priority: priority || "Medium",
-      startDate: startDate || new Date().toISOString().slice(0, 10),
-      dueDate,
-      status: "Not Started",
-      createdAt: new Date().toISOString(),
+      description: description.trim(),
+      expectedOutcome: expectedOutcome.trim(),
+      priority: priority.toUpperCase(),
+      goalDate,
+      status: "PENDING",
+      incompleteReason: "",
+      assignedTo: targetUserId,
+      assignedToName: finalAssignedToName,
+      assignedBy: actorId,
+      assignedByName: req.user.name,
+      isOnLeave: Boolean(isOnLeave) ? "TRUE" : "FALSE",
+      leaveStartDate: leaveStartDate || "",
+      leaveEndDate: leaveEndDate || "",
+      leaveDays: leaveDays ? String(leaveDays) : "",
+      leaveReason: leaveReason ? leaveReason.trim() : "",
+      createdAt: now,
+      updatedAt: now,
     };
 
     await sheetsService.insert("Goals", newGoal);
 
-    // Initial progress record (0%)
-    const initProgress = {
-      progressId: generateId("prg"),
-      goalId: newGoal.goalId,
-      userId: req.user.userId,
-      percentage: 0,
-      status: "Not Started",
-      updateNote: "Goal initialized",
-      updatedAt: new Date().toISOString(),
+    // If council member is on leave, also record in Council_Leaves table
+    if (Boolean(isOnLeave)) {
+      const newLeave = {
+        leaveId: generateId("LEV"),
+        userId: actorId,
+        memberName: req.user.name,
+        councilId,
+        startDate: leaveStartDate || goalDate,
+        endDate: leaveEndDate || goalDate,
+        totalDays: leaveDays ? String(leaveDays) : "1",
+        reason: leaveReason ? leaveReason.trim() : "Council Leave",
+        handoverStudentName: finalAssignedToName || req.user.name,
+        status: "ACTIVE",
+        createdAt: now,
+      };
+      await sheetsService.insert("Council_Leaves", newLeave);
+    }
+
+    const users = await sheetsService.getAll("Users");
+    const userMap = new Map(users.map((u) => [u.userId, u.name]));
+    const councils = await sheetsService.getAll("Councils");
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
+
+    const enriched = {
+      ...newGoal,
+      memberName: userMap.get(targetUserId) || req.user.name,
+      assignedToName: finalAssignedToName,
+      assignedByName: req.user.name,
+      councilName: councilMap.get(councilId) || "Unknown",
     };
-    await sheetsService.insert("Progress", initProgress);
 
-    // Discord notification & Socket.io event
-    const council = assignedCouncilId ? await sheetsService.getById("Councils", "councilId", assignedCouncilId) : null;
-    discordService.notifyGoalCreated(newGoal, req.user, council).catch((err) => console.error(err));
-    emitSocketEvent("goal:created", { goal: newGoal, user: req.user, council });
-
-    return successResponse(res, { ...newGoal, progress: [initProgress], currentPercentage: 0 }, "Goal created successfully", 201);
+    return successResponse(res, enriched, "Daily goal created successfully", 201);
   } catch (err) {
-    next(err);
+    console.error("createGoal error:", err);
+    return errorResponse(res, "Failed to create goal", 500);
   }
 }
 
-async function getGoals(req, res, next) {
+async function getMyGoals(req, res) {
   try {
-    const { councilId, goalType, status, userId } = req.query;
-    let allGoals = await sheetsService.getAll("Goals");
+    const userId = req.user.userId;
+    const { goalDate, status, startDate, endDate, scope } = req.query;
 
-    // Role-based visibility
-    if (req.user.role === "council_member") {
-      // Council members can see goals for their council or their own
-      if (req.user.councilId) {
-        allGoals = allGoals.filter((g) => g.councilId === req.user.councilId || g.userId === req.user.userId);
-      } else {
-        allGoals = allGoals.filter((g) => g.userId === req.user.userId);
-      }
+    let goals = await sheetsService.find("Goals", (g) => {
+      const isAssignedToMe = g.userId === userId || g.assignedTo === userId;
+      const isAssignedByMe = g.assignedBy === userId;
+      if (scope === "assigned_by_me") return isAssignedByMe;
+      if (scope === "assigned_to_me") return isAssignedToMe;
+      return isAssignedToMe || isAssignedByMe;
+    });
+
+    if (goalDate) {
+      goals = goals.filter((g) => g.goalDate === goalDate);
+    }
+    if (status) {
+      goals = goals.filter((g) => (g.status || "").toUpperCase() === status.toUpperCase());
+    }
+    if (startDate && endDate) {
+      goals = goals.filter((g) => g.goalDate >= startDate && g.goalDate <= endDate);
     }
 
-    // Apply query filters
-    if (councilId) allGoals = allGoals.filter((g) => g.councilId === councilId);
-    if (goalType) allGoals = allGoals.filter((g) => g.goalType === goalType);
-    if (status) allGoals = allGoals.filter((g) => g.status === status);
-    if (userId) allGoals = allGoals.filter((g) => g.userId === userId);
-
-    const allProgress = await sheetsService.getAll("Progress");
-    const councils = await sheetsService.getAll("Councils");
     const users = await sheetsService.getAll("Users");
+    const councils = await sheetsService.getAll("Councils");
+    const userMap = new Map(users.map((u) => [u.userId, u.name]));
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
 
-    const enrichedGoals = allGoals.map((goal) => {
-      const goalProgress = allProgress
-        .filter((p) => p.goalId === goal.goalId)
-        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-      const latestPercentage = goalProgress[0] ? Number(goalProgress[0].percentage) : (goal.status === "Completed" ? 100 : 0);
-      const council = councils.find((c) => c.councilId === goal.councilId);
-      const owner = users.find((u) => u.userId === goal.userId);
+    const enrichedGoals = goals.map((g) => {
+      const assignedToId = g.assignedTo || g.userId;
+      const assignedById = g.assignedBy || g.userId;
+      const assignedToName = g.assignedToName || userMap.get(assignedToId) || userMap.get(g.userId) || "Unknown";
+      const assignedByName = g.assignedByName || userMap.get(assignedById) || (assignedById === userId ? req.user.name : "Self");
+      const isStudent = Boolean(g.assignedToName && g.assignedToName !== userMap.get(assignedToId) && g.assignedToName !== req.user.name);
 
       return {
-        ...goal,
-        percentage: latestPercentage,
-        councilName: council?.councilName || "General",
-        ownerName: owner?.name || "Member",
-        progressCount: goalProgress.length,
+        ...g,
+        assignedTo: assignedToId,
+        assignedBy: assignedById,
+        assignedToName,
+        assignedByName,
+        memberName: userMap.get(g.userId) || "Unknown",
+        councilName: councilMap.get(g.councilId) || "Unknown",
+        isAssignedByMe: assignedById === userId && (assignedToId !== userId || isStudent),
+        isAssignedToMe: assignedToId === userId && !isStudent,
+        isStudentDelegate: isStudent,
+        isOnLeave: g.isOnLeave === "TRUE" || g.isOnLeave === true,
       };
     });
 
+    // Sort descending by date, then creation
+    enrichedGoals.sort((a, b) => (b.goalDate || "").localeCompare(a.goalDate || ""));
+
     return successResponse(res, enrichedGoals, "Goals retrieved successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve goals", 500);
   }
 }
 
-async function getGoalById(req, res, next) {
+async function getAllGoals(req, res) {
   try {
-    const goal = await sheetsService.getById("Goals", "goalId", req.params.id);
+    const { councilId, userId, goalDate, status, startDate, endDate, assignedBy, assignedTo } = req.query;
+    let goals = await sheetsService.getAll("Goals");
+    const users = await sheetsService.getAll("Users");
+    const councils = await sheetsService.getAll("Councils");
+
+    const userMap = new Map(users.map((u) => [u.userId, u.name]));
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
+
+    if (councilId) {
+      goals = goals.filter((g) => g.councilId === councilId);
+    }
+    if (userId) {
+      goals = goals.filter((g) => g.userId === userId || g.assignedTo === userId);
+    }
+    if (assignedBy) {
+      goals = goals.filter((g) => g.assignedBy === assignedBy);
+    }
+    if (assignedTo) {
+      goals = goals.filter((g) => (g.assignedTo || g.userId) === assignedTo);
+    }
+    if (goalDate) {
+      goals = goals.filter((g) => g.goalDate === goalDate);
+    }
+    if (status) {
+      goals = goals.filter((g) => (g.status || "").toUpperCase() === status.toUpperCase());
+    }
+    if (startDate && endDate) {
+      goals = goals.filter((g) => g.goalDate >= startDate && g.goalDate <= endDate);
+    }
+
+    const enrichedGoals = goals.map((g) => {
+      const assignedToId = g.assignedTo || g.userId;
+      const assignedById = g.assignedBy || g.userId;
+      const assignedToName = g.assignedToName || userMap.get(assignedToId) || userMap.get(g.userId) || "Unknown";
+      const assignedByName = g.assignedByName || userMap.get(assignedById) || userMap.get(g.userId) || "Self";
+      const isStudent = Boolean(g.assignedToName && g.assignedToName !== userMap.get(assignedToId));
+
+      return {
+        ...g,
+        assignedTo: assignedToId,
+        assignedBy: assignedById,
+        assignedToName,
+        assignedByName,
+        memberName: userMap.get(g.userId) || "Unknown",
+        councilName: councilMap.get(g.councilId) || "Unknown",
+        isStudentDelegate: isStudent,
+        isOnLeave: g.isOnLeave === "TRUE" || g.isOnLeave === true,
+      };
+    });
+
+    enrichedGoals.sort((a, b) => (b.goalDate || "").localeCompare(a.goalDate || ""));
+
+    return successResponse(res, enrichedGoals, "Goals retrieved successfully");
+  } catch (err) {
+    return errorResponse(res, "Failed to retrieve goals", 500);
+  }
+}
+
+async function getGoalById(req, res) {
+  try {
+    const { id } = req.params;
+    const goal = await sheetsService.getById("Goals", "goalId", id);
+
     if (!goal) {
       return errorResponse(res, "Goal not found", 404);
     }
 
-    const allProgress = await sheetsService.getAll("Progress");
-    const goalProgress = allProgress
-      .filter((p) => p.goalId === goal.goalId)
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    // Permission check
+    const isOwner = goal.userId === req.user.userId || goal.assignedTo === req.user.userId;
+    const isAssigner = goal.assignedBy === req.user.userId;
+    if (req.user.role !== "ADMIN" && !isOwner && !isAssigner) {
+      return errorResponse(res, "Access denied", 403);
+    }
 
-    const council = await sheetsService.getById("Councils", "councilId", goal.councilId);
-    const owner = await sheetsService.getById("Users", "userId", goal.userId);
+    const history = await sheetsService.find("Goal_History", (h) => h.goalId === id);
+    const users = await sheetsService.getAll("Users");
+    const councils = await sheetsService.getAll("Councils");
 
-    const latestPercentage = goalProgress[0] ? Number(goalProgress[0].percentage) : (goal.status === "Completed" ? 100 : 0);
+    const userMap = new Map(users.map((u) => [u.userId, u.name]));
+    const councilMap = new Map(councils.map((c) => [c.councilId, c.councilName]));
+    const assignedToId = goal.assignedTo || goal.userId;
+    const assignedById = goal.assignedBy || goal.userId;
 
-    return successResponse(res, {
-      ...goal,
-      percentage: latestPercentage,
-      progressHistory: goalProgress,
-      councilName: council?.councilName || "General",
-      ownerName: owner?.name || "Member",
-    }, "Goal details retrieved");
+    return successResponse(
+      res,
+      {
+        ...goal,
+        assignedTo: assignedToId,
+        assignedBy: assignedById,
+        assignedToName: goal.assignedToName || userMap.get(assignedToId) || userMap.get(goal.userId) || "Unknown",
+        assignedByName: goal.assignedByName || userMap.get(assignedById) || userMap.get(goal.userId) || "Self",
+        memberName: userMap.get(goal.userId) || "Unknown",
+        councilName: councilMap.get(goal.councilId) || "Unknown",
+        isOnLeave: goal.isOnLeave === "TRUE" || goal.isOnLeave === true,
+        history,
+      },
+      "Goal retrieved"
+    );
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to retrieve goal", 500);
   }
 }
 
-async function updateGoal(req, res, next) {
+async function updateGoal(req, res) {
   try {
     const { id } = req.params;
-    const { title, description, priority, dueDate, status, startDate } = req.body;
+    const goal = await sheetsService.getById("Goals", "goalId", id);
 
-    const existingGoal = await sheetsService.getById("Goals", "goalId", id);
-    if (!existingGoal) {
+    if (!goal) {
       return errorResponse(res, "Goal not found", 404);
     }
 
-    // Authorization check: Only owner or admin can update
-    if (req.user.role === "council_member" && existingGoal.userId !== req.user.userId) {
-      return errorResponse(res, "You can only update your own goals", 403);
+    // Only owner, assigner, or admin can edit
+    const isOwner = goal.userId === req.user.userId || goal.assignedTo === req.user.userId;
+    const isAssigner = goal.assignedBy === req.user.userId;
+    if (!isOwner && !isAssigner && req.user.role !== "ADMIN") {
+      return errorResponse(res, "You can only update your own or assigned goals", 403);
     }
 
+    const { title, description, expectedOutcome, priority, goalDate, assignedTo } = req.body;
     const updates = {};
-    if (title) updates.title = title.trim();
+    if (title !== undefined) updates.title = title.trim();
     if (description !== undefined) updates.description = description.trim();
-    if (priority) updates.priority = priority;
-    if (dueDate) updates.dueDate = dueDate;
-    if (startDate) updates.startDate = startDate;
-    if (status) updates.status = status;
+    if (expectedOutcome !== undefined) updates.expectedOutcome = expectedOutcome.trim();
+    if (priority !== undefined) updates.priority = priority.toUpperCase();
+    if (goalDate !== undefined) updates.goalDate = goalDate;
+    if (assignedTo !== undefined) {
+      updates.assignedTo = assignedTo;
+      updates.userId = assignedTo;
+    }
 
     const updated = await sheetsService.update("Goals", "goalId", id, updates);
 
-    // If marked Completed, notify Discord & Socket
-    if (status === "Completed" && existingGoal.status !== "Completed") {
-      const council = await sheetsService.getById("Councils", "councilId", updated.councilId);
-      discordService.notifyGoalCompleted(updated, req.user, council).catch((err) => console.error(err));
-      emitSocketEvent("goal:completed", { goal: updated, user: req.user, council });
-    }
-
     return successResponse(res, updated, "Goal updated successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to update goal", 500);
   }
 }
 
-async function deleteGoal(req, res, next) {
+async function updateGoalStatus(req, res) {
   try {
     const { id } = req.params;
-    const existingGoal = await sheetsService.getById("Goals", "goalId", id);
-    if (!existingGoal) {
+    const goal = await sheetsService.getById("Goals", "goalId", id);
+
+    if (!goal) {
       return errorResponse(res, "Goal not found", 404);
     }
 
-    if (req.user.role === "council_member" && existingGoal.userId !== req.user.userId) {
-      return errorResponse(res, "You can only cancel your own goals", 403);
+    // Only owner, assigner, or admin can update status
+    const isOwner = goal.userId === req.user.userId || goal.assignedTo === req.user.userId;
+    const isAssigner = goal.assignedBy === req.user.userId;
+    if (req.user.role !== "ADMIN" && !isOwner && !isAssigner) {
+      return errorResponse(res, "Access denied", 403);
     }
 
-    await sheetsService.delete("Goals", "goalId", id);
-    return successResponse(res, null, "Goal deleted successfully");
+    const { status, incompleteReason = "" } = req.body;
+    const normStatus = status.toUpperCase();
+
+    if (!["PENDING", "COMPLETED", "INCOMPLETE"].includes(normStatus)) {
+      return errorResponse(res, "Invalid status. Must be PENDING, COMPLETED, or INCOMPLETE", 400);
+    }
+
+    if (normStatus === "INCOMPLETE" && !incompleteReason && !goal.incompleteReason) {
+      return errorResponse(res, "A reason is required when marking a goal incomplete", 400);
+    }
+
+    const oldStatus = goal.status;
+    const updates = {
+      status: normStatus,
+      incompleteReason: normStatus === "INCOMPLETE" ? incompleteReason || goal.incompleteReason : "",
+    };
+
+    const updated = await sheetsService.update("Goals", "goalId", id, updates);
+
+    // Record in Goal_History
+    await sheetsService.logGoalHistory(
+      id,
+      req.user.userId,
+      oldStatus,
+      normStatus,
+      `Status changed by ${req.user.name} (${req.user.role})`
+    );
+
+    return successResponse(res, updated, "Goal status updated successfully");
   } catch (err) {
-    next(err);
+    return errorResponse(res, "Failed to update goal status", 500);
+  }
+}
+
+async function suggestGoals(req, res) {
+  try {
+    const userId = req.user.userId;
+    const suggestions = await aiService.suggestGoals(userId);
+    return successResponse(res, suggestions, "AI goal suggestions generated");
+  } catch (err) {
+    console.error("suggestGoals error:", err);
+    return errorResponse(res, "Failed to generate suggestions", 500);
   }
 }
 
 module.exports = {
   createGoal,
-  getGoals,
+  getMyGoals,
+  getAllGoals,
   getGoalById,
   updateGoal,
-  deleteGoal,
+  updateGoalStatus,
+  suggestGoals,
 };
