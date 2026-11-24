@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Shield, Lock, User, ArrowRight, AlertCircle, Sparkles, ArrowLeft } from "lucide-react";
+import { Shield, Lock, User, ArrowRight, AlertCircle, ArrowLeft } from "lucide-react";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -29,11 +29,6 @@ export default function AdminLogin() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillDemoAdmin = () => {
-    setEmail("admin@navgurukul.org");
-    setPassword("admin@navgurukul.org");
   };
 
   return (
@@ -131,18 +126,6 @@ export default function AdminLogin() {
                 <ArrowRight size={16} />
               </button>
             </form>
-
-            {/* Quick Demo Pre-fill Button */}
-            <div className="mt-5 pt-4 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={fillDemoAdmin}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-indigo-600 transition"
-              >
-                <Sparkles size={14} className="text-indigo-500" />
-                <span>Auto-fill Admin (admin@navgurukul.org)</span>
-              </button>
-            </div>
 
             <div className="mt-5 text-center text-xs text-slate-500">
               <span>Council Member? </span>

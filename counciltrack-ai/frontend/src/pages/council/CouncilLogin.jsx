@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Target, Lock, User, ArrowRight, AlertCircle, Sparkles, ArrowLeft } from "lucide-react";
+import { Target, Lock, User, ArrowRight, AlertCircle, ArrowLeft } from "lucide-react";
 
 export default function CouncilLogin() {
   const [email, setEmail] = useState("");
@@ -29,11 +29,6 @@ export default function CouncilLogin() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillMember = (demoId, demoPass = "Council@123") => {
-    setEmail(demoId);
-    setPassword(demoPass);
   };
 
   return (
@@ -131,31 +126,6 @@ export default function CouncilLogin() {
                 <ArrowRight size={16} />
               </button>
             </form>
-
-            {/* Quick Demo Pre-fill Buttons */}
-            <div className="mt-5 pt-4 border-t border-slate-100 space-y-2">
-              <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">
-                Quick Auto-fill Options
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => fillMember("englishfacilitator@navgurukul.org", "Council@123")}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 text-left truncate transition"
-                >
-                  <span className="font-semibold block truncate">English Facilitator</span>
-                  <span className="text-[10px] text-slate-500 block truncate">english / Council@123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillMember("academicfacilitator@navgurukul.org", "Council@123")}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 text-left truncate transition"
-                >
-                  <span className="font-semibold block truncate">Academic Facilitator</span>
-                  <span className="text-[10px] text-slate-500 block truncate">academic / Council@123</span>
-                </button>
-              </div>
-            </div>
 
             <div className="mt-5 text-center text-xs text-slate-500">
               <span>Admin account? </span>

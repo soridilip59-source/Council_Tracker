@@ -117,19 +117,49 @@ CREATE TABLE IF NOT EXISTS settings (
 -- Seed Councils
 INSERT INTO councils (council_id, council_name, description, status)
 VALUES
-  ('CNL_001', 'English Council', 'English language facilitation and peer learning', 'ACTIVE'),
-  ('CNL_002', 'Academic Council', 'Curriculum progression, doubt-clearing, and study routines', 'ACTIVE'),
-  ('CNL_003', 'Culture Council', 'Campus culture, community events, and house spirit', 'ACTIVE'),
-  ('CNL_004', 'Discipline Council', 'Campus code of conduct, morning assembly, and campus safety', 'ACTIVE'),
-  ('CNL_005', 'Kitchen Council', 'Mess management, hygiene, meal planning, and nutrition', 'ACTIVE')
+  ('CNL_001', 'Discipline Council', 'Discipline Coordinator (Disco) - Campus conduct, attendance, and code of discipline', 'ACTIVE'),
+  ('CNL_002', 'Workout Council', 'Workout Coordinator - Morning fitness, sports, yoga, and physical wellbeing', 'ACTIVE'),
+  ('CNL_003', 'Academic Council (SOP)', 'Academic Coordinator (SOP) - School of Programming curriculum, study halls, and learning progress', 'ACTIVE'),
+  ('CNL_004', 'Academic Council (SOB)', 'Academic Coordinator (SOB) - School of Business learning modules, projects, and mentoring', 'ACTIVE'),
+  ('CNL_005', 'Academic Council (SOF)', 'Academic Coordinator (SOF) - School of Finance coursework, financial literacy, and evaluations', 'ACTIVE'),
+  ('CNL_006', 'English Council', 'English Coordinator - Communication skills, public speaking, daily vocabulary, and reading circles', 'ACTIVE'),
+  ('CNL_007', 'IT Council', 'IT Coordinator - Lab hardware, network infrastructure, workstations, and tech support', 'ACTIVE'),
+  ('CNL_008', 'Health Council', 'Health Coordinator - First aid, medical emergencies, hygiene inspections, and wellness care', 'ACTIVE'),
+  ('CNL_009', 'Hackathon Council', 'Hackathon Coordinator - Coding competitions, open source build weekends, and hackathons', 'ACTIVE'),
+  ('CNL_010', 'Placement Council', 'Placement Coordinator - Resume reviews, mock interviews, recruiter visits, and job pipelines', 'ACTIVE'),
+  ('CNL_011', 'Outreach Council', 'Outreach Coordinator - Community partnerships, school visits, alumni relations, and social impact', 'ACTIVE'),
+  ('CNL_012', 'Operations Council', 'Operations Coordinator (Ops) - Campus logistics, mess management, inventory, and facility maintenance', 'ACTIVE'),
+  ('CNL_013', 'Culture Council', 'Culture Coordinator - Cultural festivals, morning assemblies, celebration nights, and team building', 'ACTIVE'),
+  ('CNL_014', 'Induction Council', 'Induction Coordinator - Welcoming new cohorts, orientation sessions, campus tours, and onboarding', 'ACTIVE')
 ON CONFLICT (council_id) DO NOTHING;
 
--- Seed Admin User (Password: admin@navgurukul.org hashed)
--- and Default Council accounts (Password: Council@123 hashed)
+-- Seed Admin User and Council accounts (Default Password: Admin@123)
 INSERT INTO users (user_id, name, email, password_hash, role, council_id, position, status)
 VALUES
-  ('USR_ADMIN', 'Administrator', 'admin@navgurukul.org', '$2a$10$w826a7N06lQyX93Q19fI5.pU9gqD5aP6e2j6T8O9k6.o1O2P3q4eS', 'ADMIN', NULL, 'Campus Administrator', 'ACTIVE'),
-  ('USR_ENG', 'English Facilitator', 'englishfacilitator@navgurukul.org', '$2a$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_001', 'English Facilitator', 'ACTIVE'),
-  ('USR_ACAD', 'Academic Facilitator', 'academicfacilitator@navgurukul.org', '$2a$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_002', 'Academic Facilitator', 'ACTIVE'),
-  ('USR_002', 'Rahul Sharma', 'rahul@counciltrack.org', '$2a$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_001', 'Culture Coordinator', 'ACTIVE')
+  ('USR_001', 'Admin User', 'admin@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'ADMIN', NULL, 'Administrator', 'ACTIVE'),
+  ('USR_002', 'Akanksha', 'akanksha@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_001', 'Discipline Coordinator (Disco)', 'ACTIVE'),
+  ('USR_003', 'Mohan', 'mohan@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_001', 'Discipline Coordinator (Disco)', 'ACTIVE'),
+  ('USR_004', 'Lalita', 'lalita@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_002', 'Workout Coordinator', 'ACTIVE'),
+  ('USR_005', 'Radheshyam', 'radheshyam@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_002', 'Workout Coordinator', 'ACTIVE'),
+  ('USR_006', 'Gungun', 'gungun@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_003', 'Academic Coordinator (SOP)', 'ACTIVE'),
+  ('USR_007', 'Dinesh', 'dinesh@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_004', 'Academic Coordinator (SOB)', 'ACTIVE'),
+  ('USR_008', 'Anjali', 'anjali@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_004', 'Academic Coordinator (SOB)', 'ACTIVE'),
+  ('USR_009', 'Mukesh', 'mukesh@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_005', 'Academic Coordinator (SOF)', 'ACTIVE'),
+  ('USR_010', 'Nikita', 'nikita@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_005', 'Academic Coordinator (SOF)', 'ACTIVE'),
+  ('USR_011', 'Dilip', 'dilip@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_006', 'English Coordinator', 'ACTIVE'),
+  ('USR_012', 'Deepa', 'deepa@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_006', 'English Coordinator', 'ACTIVE'),
+  ('USR_013', 'Khushi', 'khushi.it@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_007', 'IT Coordinator', 'ACTIVE'),
+  ('USR_014', 'Subhash', 'subhash@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_007', 'IT Coordinator', 'ACTIVE'),
+  ('USR_015', 'Khushi', 'khushi.health@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_008', 'Health Coordinator', 'ACTIVE'),
+  ('USR_016', 'Sahdev', 'sahdev@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_008', 'Health Coordinator', 'ACTIVE'),
+  ('USR_017', 'Vikky Podiyam', 'vikky@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_009', 'Hackathon Coordinator', 'ACTIVE'),
+  ('USR_018', 'Himanshu', 'himanshu@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_010', 'Placement Coordinator', 'ACTIVE'),
+  ('USR_019', 'Aakashi', 'aakashi@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_011', 'Outreach Coordinator', 'ACTIVE'),
+  ('USR_020', 'Sanjana', 'sanjana@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_012', 'Operations Coordinator (Ops Coordinator)', 'ACTIVE'),
+  ('USR_021', 'Ramlal', 'ramlal@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_012', 'Operations Coordinator (Ops Coordinator)', 'ACTIVE'),
+  ('USR_022', 'Kranti Kashyap', 'kranti@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_013', 'Culture Coordinator', 'ACTIVE'),
+  ('USR_023', 'Vidya', 'vidya@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_013', 'Culture Coordinator', 'ACTIVE'),
+  ('USR_024', 'Himani', 'himani@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_013', 'Culture Coordinator', 'ACTIVE'),
+  ('USR_025', 'Sona', 'sona@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_014', 'Induction Coordinator', 'ACTIVE'),
+  ('USR_026', 'Kajal', 'kajal@counciltrack.org', '$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.', 'COUNCIL', 'CNL_014', 'Induction Coordinator', 'ACTIVE')
 ON CONFLICT (user_id) DO NOTHING;

@@ -38,9 +38,20 @@ export default function FeedbackForm() {
       } catch (err) {
         // Fallback default councils if API unavailable
         setCouncils([
-          { councilId: "CNL_001", councilName: "Culture Council" },
-          { councilId: "CNL_002", councilName: "Academic Council" },
-          { councilId: "CNL_003", councilName: "Planning Council" },
+          { councilId: "CNL_001", councilName: "Discipline Council" },
+          { councilId: "CNL_002", councilName: "Workout Council" },
+          { councilId: "CNL_003", councilName: "Academic Council (SOP)" },
+          { councilId: "CNL_004", councilName: "Academic Council (SOB)" },
+          { councilId: "CNL_005", councilName: "Academic Council (SOF)" },
+          { councilId: "CNL_006", councilName: "English Council" },
+          { councilId: "CNL_007", councilName: "IT Council" },
+          { councilId: "CNL_008", councilName: "Health Council" },
+          { councilId: "CNL_009", councilName: "Hackathon Council" },
+          { councilId: "CNL_010", councilName: "Placement Council" },
+          { councilId: "CNL_011", councilName: "Outreach Council" },
+          { councilId: "CNL_012", councilName: "Operations Council" },
+          { councilId: "CNL_013", councilName: "Culture Council" },
+          { councilId: "CNL_014", councilName: "Induction Council" },
         ]);
         setCouncilId("CNL_001");
       } finally {
