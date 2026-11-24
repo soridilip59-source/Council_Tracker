@@ -8,13 +8,13 @@ const channels = {
   get completions() {
     return {
       name: "#goal-completions",
-      url: process.env.DISCORD_WEBHOOK_COMPLETIONS || process.env.DISCORD_WEBHOOK_URL || "",
+      url: process.env.DISCORD_WEBHOOK_COMPLETIONS || process.env.DISCORD_WEBHOOK_GOALS || process.env.DISCORD_WEBHOOK_URL || "",
     };
   },
   get reflections() {
     return {
       name: "#weekly-reflections",
-      url: process.env.DISCORD_WEBHOOK_REFLECTIONS || process.env.DISCORD_WEBHOOK_URL || "",
+      url: process.env.DISCORD_WEBHOOK_REFLECTIONS || process.env.DISCORD_WEBHOOK_GOALS || process.env.DISCORD_WEBHOOK_URL || "",
     };
   },
   get announcements() {
