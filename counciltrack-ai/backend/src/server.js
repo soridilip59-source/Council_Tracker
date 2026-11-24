@@ -1,5 +1,8 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
+// Load .env from multiple possible locations (local dev: backend/.env or root; Docker/Railway: env vars injected directly)
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") }) ||
+  require("dotenv").config({ path: path.resolve(__dirname, "../../.env") }) ||
+  require("dotenv").config();
 
 const http = require("http");
 const { Server } = require("socket.io");
