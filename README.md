@@ -1,43 +1,53 @@
-# CouncilTrack AI 🎯🤖
+# CouncilTrack AI 🎯🤖 (Version 2.0)
 
-> **Council Goal Management, Progress Tracking & Performance Analysis Platform**  
-> *Full-Stack Web Application (Node.js Express + Socket.IO + React Vite Tailwind + Google Sheets API / Hybrid Local Store + Discord Webhooks + AI Engine)*
+> **Centralized Council Management & Daily Progress Tracking Platform**  
+> **Organization:** NavGurukul Dantewada  
+> **Document Reference:** PRD Version 2.0 & TRD Version 1.0 (22 November 2026)  
+> *Full-Stack Web Application (Node.js Express + React 19 Vite Tailwind + Google Sheets API / Hybrid Local Store + Recharts)*
 
 ---
 
-## 🌟 Key Features
+## 🌟 Product Overview & Core Architecture
 
-1. **Role-Based Governance (4 Strict Roles)**:
-   - 👑 **Super Admin**: Complete platform control, user directory management, council creation, Discord/AI config, AI evaluation approval.
-   - 🛡️ **Admin**: Council supervision, progress monitoring, meeting scheduling, student feedback review, report approval.
-   - 🎯 **Council Member**: Daily & weekly goal setting, progress check-ins (0-100%), evening daily reflections, weekly learning journals, performance review.
-   - 🎓 **Student**: Public goal transparency, council leadership directory, monthly feedback submission with 5-star ratings & suggestions.
+CouncilTrack AI v2.0 centralizes council member administration, daily goals, evening reflections, automated weekly/monthly progress analytics, and public student feedback for NavGurukul Dantewada.
 
-2. **Dual-Mode Database Architecture (Google Sheets + Persistent Local Store)**:
-   - Centralized in `backend/src/services/sheetsService.js`.
-   - Adheres to the exact 9-worksheet schema specified in TRD Section 12: `Users`, `Councils`, `Goals`, `Progress`, `Reflections`, `Student_Feedback`, `Meetings`, `AI_Reports`, `Notifications`.
-   - Automatically synchronizes with Google Sheets API when `GOOGLE_SHEET_ID` and Service Account credentials are provided.
-   - Runs out-of-the-box in local persistence mode if credentials have not yet been added.
+### 👥 Target Users & Roles
+1. 🛡️ **Admin (`ADMIN`)**:
+   - Manages councils and assigns multiple members with custom designations.
+   - Activates and deactivates accounts.
+   - Monitors all daily goals, completion statuses, and status audit histories.
+   - Reviews evening reflections and automated weekly/monthly analytics.
+   - Manages student feedback & complaints, updates complaint resolution status, and maintains private confidential administrative notes.
+2. 🎯 **Council Member (`COUNCIL`)**:
+   - Accesses personal council dashboard.
+   - Creates and prioritizes daily goals (Version 2.0 strictly supports daily goals).
+   - Submits mandatory evening reflections with goal status review (completed ✓ / incomplete ✕ with required reason).
+   - Tracks personal weekly and monthly progress calculated automatically from daily records.
+   - Views student feedback and complaints submitted specifically for their assigned council (private admin notes are concealed).
+3. 🎓 **Students (Public — No Login Required)**:
+   - Accesses one common public feedback link at `/feedback`.
+   - Submits general feedback, suggestions, or complaints for any council.
+   - Option to remain anonymous or provide contact details.
+   - Zero login or registration friction.
 
-3. **Evidence-Grounded AI Performance Analysis**:
-   - Transparent 5-parameter mathematical model:
-     - **Goal Achievement**: 35%
-     - **Consistency**: 20%
-     - **Reflection Quality**: 15%
-     - **Student Feedback**: 20%
-     - **Improvement & Initiative**: 10%
-   - Missing data protection: Explicitly identifies missing evidence rather than penalizing scores to zero.
-   - Multi-provider AI support (Google Gemini 1.5, OpenAI, or integrated Rule-Based Heuristic engine).
-   - Administrative review & approval workflow before report publication.
+---
 
-4. **Discord Webhook Automation**:
-   - Channel routing: `#council-goals`, `#goal-completions`, `#weekly-reflections`, `#announcements`, `#meetings`, `#council-performance`.
-   - Retry queue, deduplication, and notification logging.
-   - Zero confidential data leakage (passwords, private reflections, and unapproved reports are never published).
+## 📊 Google Sheets Database Blueprint (8 Worksheets)
 
-5. **Real-Time Updates & Scheduling**:
-   - Socket.IO live events: `goal:created`, `goal:completed`, `progress:updated`, `meeting:scheduled`, `report:approved`.
-   - Automated cron jobs in `Asia/Kolkata` timezone: 8:00 AM daily goal prompt, 8:00 PM reflection prompt, meeting reminders, monthly report batch.
+The platform features a **Dual-Mode Database Architecture** (`backend/src/services/sheetsService.js`):
+- Connects directly to Google Sheets API when `GOOGLE_SHEET_ID` and Service Account credentials are configured.
+- Runs with persistent local JSON storage (`data/counciltrack_store.json`) for zero-friction local development and testing.
+
+| Worksheet | Key Headers |
+| :--- | :--- |
+| **`Users`** | `userId`, `name`, `email`, `passwordHash`, `role`, `councilId`, `position`, `status`, `createdAt`, `updatedAt` |
+| **`Councils`** | `councilId`, `councilName`, `description`, `status`, `createdAt`, `updatedAt` |
+| **`Goals`** | `goalId`, `userId`, `councilId`, `title`, `description`, `expectedOutcome`, `priority`, `goalDate`, `status`, `incompleteReason`, `createdAt`, `updatedAt` |
+| **`Reflections`** | `reflectionId`, `userId`, `reflectionDate`, `achievements`, `incompleteGoals`, `challenges`, `learnings`, `improvements`, `submittedAt`, `updatedAt` |
+| **`Student_Feedback`** | `feedbackId`, `studentName`, `councilId`, `feedbackType`, `message`, `contact`, `status`, `adminNotes`, `submittedAt`, `updatedAt` |
+| **`Goal_History`** | `historyId`, `goalId`, `userId`, `oldStatus`, `newStatus`, `action`, `changedAt` |
+| **`Audit_Logs`** | `logId`, `actorId`, `action`, `entityType`, `entityId`, `details`, `createdAt` |
+| **`Settings`** | `settingKey`, `settingValue`, `description`, `updatedAt` |
 
 ---
 
@@ -49,11 +59,11 @@ cd counciltrack-ai/backend
 npm run dev
 ```
 - API Base URL: `http://localhost:4000/api/v1`
-- Socket.IO URL: `http://localhost:4000`
+- Public Healthcheck: `http://localhost:4000/api/health`
 
 ### 2. Start the Frontend React Client
 ```bash
-cd counciltrack-ai
+cd counciltrack-ai/frontend
 npm run dev
 ```
 - Web Application: `http://localhost:5173`
@@ -64,70 +74,79 @@ npm run dev
 
 All test accounts come pre-configured with the default password: `Admin@123`
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Super Admin** | `superadmin@counciltrack.org` | `Admin@123` |
-| **Academic Admin** | `admin@counciltrack.org` | `Admin@123` |
-| **Council Member (Discipline)** | `rahul@counciltrack.org` | `Admin@123` |
-| **Council Member (English)** | `priya@counciltrack.org` | `Admin@123` |
-| **Student** | `student@counciltrack.org` | `Admin@123` |
+| Role | Name | Email | Password | Assigned Council & Position |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin** | Admin User | `admin@counciltrack.org` | `Admin@123` | Platform Administrator |
+| **Council Member** | Akanksha | `akanksha@counciltrack.org` | `Admin@123` | Discipline Council (Discipline Coordinator - Disco) |
+| **Council Member** | Mohan | `mohan@counciltrack.org` | `Admin@123` | Discipline Council (Discipline Coordinator - Disco) |
+| **Council Member** | Lalita | `lalita@counciltrack.org` | `Admin@123` | Workout Council (Workout Coordinator) |
+| **Council Member** | Radheshyam | `radheshyam@counciltrack.org` | `Admin@123` | Workout Council (Workout Coordinator) |
+| **Council Member** | Gungun | `gungun@counciltrack.org` | `Admin@123` | Academic Council - SOP (Academic Coordinator - SOP) |
+| **Council Member** | Dinesh | `dinesh@counciltrack.org` | `Admin@123` | Academic Council - SOB (Academic Coordinator - SOB) |
+| **Council Member** | Anjali | `anjali@counciltrack.org` | `Admin@123` | Academic Council - SOB (Academic Coordinator - SOB) |
+| **Council Member** | Mukesh | `mukesh@counciltrack.org` | `Admin@123` | Academic Council - SOF (Academic Coordinator - SOF) |
+| **Council Member** | Nikita | `nikita@counciltrack.org` | `Admin@123` | Academic Council - SOF (Academic Coordinator - SOF) |
+| **Council Member** | Dilip | `dilip@counciltrack.org` | `Admin@123` | English Council (English Coordinator) |
+| **Council Member** | Deepa | `deepa@counciltrack.org` | `Admin@123` | English Council (English Coordinator) |
+| **Council Member** | Khushi | `khushi.it@counciltrack.org` | `Admin@123` | IT Council (IT Coordinator) |
+| **Council Member** | Subhash | `subhash@counciltrack.org` | `Admin@123` | IT Council (IT Coordinator) |
+| **Council Member** | Khushi | `khushi.health@counciltrack.org` | `Admin@123` | Health Council (Health Coordinator) |
+| **Council Member** | Sahdev | `sahdev@counciltrack.org` | `Admin@123` | Health Council (Health Coordinator) |
+| **Council Member** | Vikky Podiyam | `vikky@counciltrack.org` | `Admin@123` | Hackathon Council (Hackathon Coordinator) |
+| **Council Member** | Himanshu | `himanshu@counciltrack.org` | `Admin@123` | Placement Council (Placement Coordinator) |
+| **Council Member** | Aakashi | `aakashi@counciltrack.org` | `Admin@123` | Outreach Council (Outreach Coordinator) |
+| **Council Member** | Sanjana | `sanjana@counciltrack.org` | `Admin@123` | Operations Council (Operations Coordinator - Ops) |
+| **Council Member** | Ramlal | `ramlal@counciltrack.org` | `Admin@123` | Operations Council (Operations Coordinator - Ops) |
+| **Council Member** | Kranti Kashyap | `kranti@counciltrack.org` | `Admin@123` | Culture Council (Culture Coordinator) |
+| **Council Member** | Vidya | `vidya@counciltrack.org` | `Admin@123` | Culture Council (Culture Coordinator) |
+| **Council Member** | Himani | `himani@counciltrack.org` | `Admin@123` | Culture Council (Culture Coordinator) |
+| **Council Member** | Sona | `sona@counciltrack.org` | `Admin@123` | Induction Council (Induction Coordinator) |
+| **Council Member** | Kajal | `kajal@counciltrack.org` | `Admin@123` | Induction Council (Induction Coordinator) |
 
-*(Note: The Login page also features quick 1-click test buttons for each role).*
+*(Note: Council members can create daily morning goals, submit mandatory evening reflections, track their weekly progress, and view student feedback for their assigned councils).*
 
 ---
 
-## 📁 Repository Directory Structure
+## 🧭 Application Routes
 
+### Public Pages
+- `/` — Landing Page with direct portals to Admin, Council, and Student Feedback.
+- `/feedback` — Common Public Student Feedback Form (No authentication required).
+- `/admin/login` — Dedicated Admin Login portal.
+- `/council/login` — Dedicated Council Member Login portal.
+
+### Admin Portal (`/admin/*`)
+- `/admin/dashboard` — Section One: Total Council Dashboard & Members summary.
+- `/admin/members` — Member Management: Add/edit members, assign to councils & positions.
+- `/admin/councils` — Council Management: Create/edit councils and view assigned members.
+- `/admin/goals` — Section Two: Council Goals Dashboard with council-wise goal cards & audit history.
+- `/admin/overview` — Section Three: Automated weekly & monthly progress analytics with Recharts.
+- `/admin/feedback` — Section Four: Student Feedback & Complaint Management with private admin notes.
+
+### Council Member Portal (`/council/*`)
+- `/council/dashboard` — Personal dashboard overview, today's goals checklist, and daily completion rate.
+- `/council/goals` — My Daily Goals: Create daily goals with priorities and outcomes.
+- `/council/reflection` — Evening Reflection: Mark completed/incomplete goals with mandatory reasons and answer reflection questions.
+- `/council/weekly-progress` — Weekly progress calculations (Monday-to-Sunday) and daily breakdown charts.
+- `/council/monthly-progress` — Monthly progress calculations and weekly consistency blocks.
+- `/council/feedback` — Student feedback and complaints submitted for the assigned council (confidential admin notes concealed).
+
+---
+
+## 🧪 Verification & Automated Testing
+
+To run the full end-to-end verification suite:
+```bash
+cd counciltrack-ai/backend
+node scripts/verify_v2.js
 ```
-Council_tracker/
-│
-├── package.json                   # Root workspace scripts
-├── README.md                      # Platform documentation
-│
-└── counciltrack-ai/
-    ├── package.json               # Frontend dependencies & Vite scripts
-    ├── vite.config.js             # Vite + Tailwind CSS config
-    │
-    ├── backend/                   # TRD Section 10 Modular Backend
-    │   ├── src/
-    │   │   ├── config/            # googleSheets.js, discord.js, ai.js
-    │   │   ├── controllers/       # 9 Controllers (auth, user, council, goal, etc.)
-    │   │   ├── middleware/        # authMiddleware, roleMiddleware, errorMiddleware, validation
-    │   │   ├── routes/            # 9 Express Routers mounted at /api/v1
-    │   │   ├── services/          # sheetsService, discordService, aiService, performanceService
-    │   │   ├── jobs/              # dailyReminderJob, meetingReminderJob, monthlyReportJob (Asia/Kolkata)
-    │   │   ├── utils/             # generateToken, generateId, responseHandler, socketEmitter
-    │   │   ├── app.js             # Express app setup
-    │   │   └── server.js          # HTTP Server + Socket.IO initialization
-    │   ├── credentials/           # Service account key directory
-    │   ├── .env                   # Environment secrets
-    │   └── package.json
-    │
-    └── src/                       # TRD Section 11 Frontend React App
-        ├── components/
-        │   ├── common/
-        │   ├── layout/
-        │   ├── dashboard/
-        │   └── Navbar.jsx         # Live Socket.io notifications & identity badge
-        ├── context/
-        │   ├── AuthContext.jsx    # Session management & demo fast-switching
-        │   ├── CouncilContext.jsx # Live councils state
-        │   └── SocketContext.jsx  # Real-time WebSocket connection
-        ├── pages/
-        │   ├── Home.jsx           # Landing page
-        │   ├── Login.jsx          # Secure login with 1-click test buttons
-        │   ├── Dashboard.jsx      # Dynamic role-based router
-        │   ├── SuperAdminDashboard.jsx # Platform metrics & user directory
-        │   ├── AdminDashboard.jsx      # Council progress & meeting scheduling
-        │   ├── CouncilDashboard.jsx    # Personal goals & reflection submission
-        │   ├── StudentDashboard.jsx    # Public goal visibility & feedback form
-        │   ├── Goals.jsx          # Comprehensive goal tracking & progress modal
-        │   ├── Reflections.jsx    # Private reflections journal
-        │   ├── Feedback.jsx       # Student feedback repository
-        │   ├── Meetings.jsx       # Scheduled meetings & Discord notifications
-        │   └── Reports.jsx        # AI Performance Analysis & score radar
-        ├── routes/
-        │   └── ProtectedRoute.jsx # Authentication guard
-        └── services/
-            └── api.js             # Centralized Axios client
-```
+
+Covers:
+- Admin and Council authentication and role enforcement.
+- Admin dashboard calculations.
+- Council and Member creation.
+- Daily goal creation, status transitions, and audit logging.
+- Evening reflection atomic goal status synchronization.
+- Public feedback submission without auth.
+- Admin feedback resolution and private notes confidentiality.
+- PRD Section 4.3 completion percentage formula: `(Completed / (Completed + Incomplete)) * 100`.

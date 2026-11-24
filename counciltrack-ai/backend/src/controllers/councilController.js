@@ -107,9 +107,24 @@ async function updateCouncil(req, res) {
   }
 }
 
+async function syncCouncils(req, res) {
+  try {
+    const pulled = await sheetsService.fetchFromGoogleSheets("Councils");
+    return successResponse(
+      res,
+      { count: pulled.length, councils: pulled },
+      "Councils synced from Google Sheets successfully"
+    );
+  } catch (err) {
+    console.error("syncCouncils error:", err);
+    return errorResponse(res, "Failed to sync councils with Google Sheets", 500);
+  }
+}
+
 module.exports = {
   getAllCouncils,
   getCouncilById,
   createCouncil,
   updateCouncil,
+  syncCouncils,
 };

@@ -1,5 +1,6 @@
 const sheetsService = require("../services/sheetsService");
 const aiService = require("../services/aiService");
+const discordService = require("../services/discordService");
 const { generateId } = require("../utils/generateId");
 const { successResponse, errorResponse } = require("../utils/response");
 
@@ -100,6 +101,16 @@ async function submitReflection(req, res) {
       improvements,
       goalStatuses,
     });
+
+    // Notify Discord reflections channel asynchronously
+    sheetsService.getAll("Councils").then((councils) => {
+      const c = councils.find((item) => item.councilId === req.user.councilId);
+      const councilName = c ? c.councilName : "General Council";
+      const summary = `**Member:** ${req.user.name} (${councilName})\n**Achievements:** ${achievements.slice(0, 200)}\n**Challenges:** ${challenges.slice(0, 150)}`;
+      discordService
+        .notifyWeeklyReflectionSummary(summary, councilName)
+        .catch((err) => console.warn("[Discord] Failed to send reflection notification:", err.message));
+    }).catch(() => {});
 
     return successResponse(res, { ...reflectionRecord, aiAnalysis }, "Evening reflection submitted successfully", 201);
   } catch (err) {

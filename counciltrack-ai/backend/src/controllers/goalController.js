@@ -1,5 +1,6 @@
 const sheetsService = require("../services/sheetsService");
 const aiService = require("../services/aiService");
+const discordService = require("../services/discordService");
 const { generateId } = require("../utils/generateId");
 const { successResponse, errorResponse } = require("../utils/response");
 
@@ -105,6 +106,11 @@ async function createGoal(req, res) {
       assignedByName: req.user.name,
       councilName: councilMap.get(councilId) || "Unknown",
     };
+
+    // Asynchronously notify Discord (safe fallback)
+    discordService
+      .notifyGoalCreated(newGoal, { name: finalAssignedToName }, { councilName: enriched.councilName })
+      .catch((err) => console.warn("[Discord] Failed to send goal creation notification:", err.message));
 
     return successResponse(res, enriched, "Daily goal created successfully", 201);
   } catch (err) {
@@ -356,6 +362,16 @@ async function updateGoalStatus(req, res) {
       normStatus,
       `Status changed by ${req.user.name} (${req.user.role})`
     );
+
+    // If marked as COMPLETED, notify Discord completions channel
+    if (normStatus === "COMPLETED" && oldStatus !== "COMPLETED") {
+      sheetsService.getAll("Councils").then((councils) => {
+        const c = councils.find((item) => item.councilId === goal.councilId);
+        discordService
+          .notifyGoalCompleted(updated, req.user, c || { councilName: "General Council" })
+          .catch((err) => console.warn("[Discord] Failed to send completion notification:", err.message));
+      }).catch(() => {});
+    }
 
     return successResponse(res, updated, "Goal status updated successfully");
   } catch (err) {

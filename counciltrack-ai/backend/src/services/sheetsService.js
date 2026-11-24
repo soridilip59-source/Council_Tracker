@@ -536,7 +536,17 @@ class SheetsService {
 
   // --- Query & Mutation Methods ---
 
-  async getAll(sheetName) {
+  async getAll(sheetName, forceRefresh = false) {
+    if (!this.lastFetchTime) this.lastFetchTime = {};
+    const now = Date.now();
+    const lastFetch = this.lastFetchTime[sheetName] || 0;
+
+    // Auto-refresh from Google Sheets if configured and cache is older than 15 seconds
+    if (isConfigured() && (forceRefresh || now - lastFetch > 15000)) {
+      this.lastFetchTime[sheetName] = now;
+      await this.fetchFromGoogleSheets(sheetName);
+    }
+
     if (!this.localData[sheetName]) {
       this.localData[sheetName] = [];
     }

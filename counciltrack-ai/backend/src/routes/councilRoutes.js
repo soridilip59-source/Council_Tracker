@@ -4,6 +4,7 @@ const {
   getCouncilById,
   createCouncil,
   updateCouncil,
+  syncCouncils,
 } = require("../controllers/councilController");
 const { authenticate } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
@@ -11,6 +12,9 @@ const { validate } = require("../middleware/validateMiddleware");
 const { createCouncilSchema, updateCouncilSchema } = require("../validators");
 
 const router = express.Router();
+
+// Allow public or authenticated sync
+router.post("/sync", syncCouncils);
 
 router.use(authenticate);
 

@@ -51,7 +51,7 @@ async function runTests() {
     // 3. Council Member Login
     const councilLogin = await request("/api/v1/auth/login", {
       method: "POST",
-      body: { email: "akanksha@counciltrack.org", password: "Admin@123" },
+      body: { email: "rahul@counciltrack.org", password: "Admin@123" },
     });
     console.assert(councilLogin.status === 200, "Council login failed");
     console.assert(councilLogin.data.data.user.role === "COUNCIL", "Role must be COUNCIL");

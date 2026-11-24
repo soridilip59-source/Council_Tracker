@@ -9,14 +9,23 @@ const { Server } = require("socket.io");
 const app = require("./app");
 const { setSocketIO } = require("./utils/socketEmitter");
 const { testConnection } = require("./config/db");
+const { isOriginAllowed } = require("./config/cors");
+const { isConfigured: isSheetsConfigured } = require("./config/googleSheets");
+const sheetsService = require("./services/sheetsService");
 
 const PORT = Number(process.env.PORT || 4000);
 const server = http.createServer(app);
 
-// Initialize Socket.IO
+// Initialize Socket.IO with dynamic CORS checking
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => callback(null, true),
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
@@ -48,6 +57,16 @@ server.listen(PORT, async () => {
   console.log(`  Timezone: ${process.env.TZ || "Asia/Kolkata"}`);
   console.log(`===================================================`);
   await testConnection();
+
+  if (isSheetsConfigured()) {
+    console.log("[Google Sheets] Initializing data sync from Google Sheets...");
+    try {
+      await sheetsService.syncAllFromGoogleSheets();
+      console.log("[Google Sheets] Initial sync completed.");
+    } catch (syncErr) {
+      console.warn("[Google Sheets] Initial sync warning:", syncErr.message);
+    }
+  }
 });
 
 server.once("error", (error) => {

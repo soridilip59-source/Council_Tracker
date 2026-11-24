@@ -13,18 +13,13 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
 
+const { corsOptions } = require("./config/cors");
+const { isConfigured: isSheetsConfigured, getSheetId } = require("./config/googleSheets");
+const { isDiscordConfigured, channels } = require("./config/discord");
+
 const app = express();
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow local development and common deployments
-      callback(null, true);
-    },
-    credentials: true,
-  })
-);
-
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Public healthcheck
@@ -33,6 +28,16 @@ app.get("/api/health", (_req, res) => {
     status: "ok",
     service: "CouncilTrack AI API v2.0",
     organization: "NavGurukul Dantewada",
+    googleSheets: {
+      connected: isSheetsConfigured(),
+      sheetId: getSheetId() ? `${getSheetId().slice(0, 8)}...` : null,
+    },
+    discord: {
+      configured: isDiscordConfigured(),
+    },
+    cors: {
+      configuredOrigins: process.env.CORS_ORIGIN || "all allowed",
+    },
     timestamp: new Date().toISOString(),
   });
 });

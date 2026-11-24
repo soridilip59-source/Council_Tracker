@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "npm --prefix counciltrack-ai run dev",
     "dev:backend": "npm --prefix counciltrack-ai/backend run dev",
-    "dev:frontend": "npm --prefix counciltrack-ai run dev",
+    "dev:frontend": "npm --prefix counciltrack-ai run dev:frontend",
     "build": "npm --prefix counciltrack-ai run build",
+    "test": "node counciltrack-ai/backend/scripts/verify_v2.js",
+    "lint": "npm --prefix counciltrack-ai/frontend run lint",
     "start:backend": "npm --prefix counciltrack-ai/backend run start"
   },
   "keywords": ["counciltrack", "ai", "governance", "goals", "discord"],
