@@ -206,6 +206,68 @@ class DiscordService {
     await this.logNotification("performance_approved", channel.name, `Report ${report.reportId}`, res.success ? "Sent" : "Pending");
     return res;
   }
+
+  // Broadcast all goals from Weekly_Tracker sheet to Discord channel
+  async broadcastGoalsSummary(customWebhookUrl) {
+    const webhookUrl = customWebhookUrl || channels.goals.url;
+    if (!webhookUrl) {
+      return { success: false, reason: "No Discord webhook URL configured" };
+    }
+
+    const rows = await sheetsService.fetchFromGoogleSheets("Weekly_Tracker");
+    if (!rows || rows.length === 0) {
+      return { success: false, reason: "No data found in Weekly_Tracker worksheet" };
+    }
+
+    const colors = [0x22c55e, 0x3b82f6, 0xa855f7, 0xf59e0b, 0xec4899, 0x14b8a6, 0x6366f1];
+    const embeds = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const name = r.Name || r["Name"] || "Coordinator";
+      const post = r["Council Post"] || "Council Coordinator";
+      const weekly = r["Weekly Goal"] || "No weekly goal entered";
+      const tuesday = r["Goal (tuesday)"] || "";
+
+      const fields = [
+        { name: "🎯 Weekly Goal", value: (weekly || "Not set").slice(0, 1024), inline: false },
+      ];
+      if (tuesday) {
+        fields.push({ name: "📌 Today's Goal (Tuesday)", value: tuesday.slice(0, 1024), inline: false });
+      }
+
+      embeds.push({
+        title: `🏛️ ${post}`,
+        description: `**Coordinators:** ${name}`,
+        color: colors[i % colors.length],
+        fields,
+        footer: { text: "CouncilTrack AI • NavGurukul Dantewada" },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Discord allows max 10 embeds per message; split into 2 batches
+    const batch1 = embeds.slice(0, 7);
+    const batch2 = embeds.slice(7);
+
+    const res1 = await sendWebhook(webhookUrl, {
+      username: "CouncilTrack AI",
+      content: "📢 **NavGurukul Dantewada — Weekly & Daily Council Goals Published!**\nHere are the goals for all Councils this week:",
+      embeds: batch1,
+    });
+
+    let res2 = { success: true };
+    if (batch2.length > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      res2 = await sendWebhook(webhookUrl, {
+        username: "CouncilTrack AI",
+        embeds: batch2,
+      });
+    }
+
+    await this.logNotification("broadcast_goals", channels.goals.name, `Broadcasted ${rows.length} councils to Discord`, res1.success && res2.success ? "Sent" : "Pending");
+    return { success: res1.success && res2.success, count: rows.length };
+  }
 }
 
 module.exports = new DiscordService();

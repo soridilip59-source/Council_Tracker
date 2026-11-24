@@ -390,6 +390,20 @@ async function suggestGoals(req, res) {
   }
 }
 
+async function broadcastGoalsToDiscord(req, res) {
+  try {
+    const { webhookUrl } = req.body || {};
+    const result = await discordService.broadcastGoalsSummary(webhookUrl);
+    if (!result.success) {
+      return errorResponse(res, result.reason || "Failed to broadcast goals to Discord", 400);
+    }
+    return successResponse(res, result, "Weekly goals broadcasted to Discord successfully!");
+  } catch (err) {
+    console.error("broadcastGoalsToDiscord error:", err);
+    return errorResponse(res, "Failed to broadcast goals to Discord", 500);
+  }
+}
+
 module.exports = {
   createGoal,
   getMyGoals,
@@ -398,4 +412,5 @@ module.exports = {
   updateGoal,
   updateGoalStatus,
   suggestGoals,
+  broadcastGoalsToDiscord,
 };

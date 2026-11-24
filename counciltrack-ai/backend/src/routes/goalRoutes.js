@@ -7,6 +7,7 @@ const {
   updateGoal,
   updateGoalStatus,
   suggestGoals,
+  broadcastGoalsToDiscord,
 } = require("../controllers/goalController");
 const { authenticate } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
@@ -14,6 +15,9 @@ const { validate } = require("../middleware/validateMiddleware");
 const { createGoalSchema, updateGoalStatusSchema } = require("../validators");
 
 const router = express.Router();
+
+// Broadcast all goals to Discord (can be triggered by Admin or authenticated users)
+router.post("/broadcast-discord", broadcastGoalsToDiscord);
 
 router.use(authenticate);
 
