@@ -14,6 +14,7 @@ import {
   X,
   CheckCircle2,
   Building2,
+  Crown,
 } from "lucide-react";
 
 export default function AdminLayout() {
@@ -37,6 +38,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { label: "Dashboard Overview", path: "/admin/dashboard", icon: LayoutDashboard },
+    { label: "DISCO Command Center", path: "/admin/disco", icon: Crown },
     { label: "Total Council Members", path: "/admin/members", icon: Users },
     { label: "Council Management", path: "/admin/councils", icon: Building2 },
     { label: "Council Goals", path: "/admin/goals", icon: Target },
