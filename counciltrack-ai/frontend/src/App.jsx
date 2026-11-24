@@ -19,6 +19,7 @@ import AdminCouncils from "./pages/admin/Councils";
 import AdminGoals from "./pages/admin/CouncilGoals";
 import AdminOverview from "./pages/admin/Overview";
 import AdminFeedback from "./pages/admin/Feedback";
+import DiscoCommandCenter from "./pages/admin/DiscoCommandCenter";
 
 // Council Member Portal Pages
 import CouncilDashboard from "./pages/council/Dashboard";
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="disco" element={<DiscoCommandCenter />} />
               <Route path="members" element={<AdminMembers />} />
               <Route path="councils" element={<AdminCouncils />} />
               <Route path="goals" element={<AdminGoals />} />
