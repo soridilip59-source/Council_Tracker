@@ -150,7 +150,7 @@ async function createUser(req, res) {
 async function updateUser(req, res) {
   try {
     const { id } = req.params;
-    const { name, email, councilId, position, status, password } = req.body;
+    const { name, email, role, councilId, position, status, password } = req.body;
 
     const user = await sheetsService.getById("Users", "userId", id);
     if (!user) {
@@ -159,6 +159,7 @@ async function updateUser(req, res) {
 
     const updates = {};
     if (name !== undefined) updates.name = name.trim();
+    if (role !== undefined) updates.role = role.toUpperCase();
     if (email !== undefined) {
       const emailTrimmed = email.toLowerCase().trim();
       const existing = await sheetsService.findOne(
@@ -190,6 +191,77 @@ async function updateUser(req, res) {
     return successResponse(res, safeUser, "Member updated successfully");
   } catch (err) {
     return errorResponse(res, "Failed to update member", 500);
+  }
+}
+
+async function promoteUserToDisco(req, res) {
+  try {
+    const { id } = req.params;
+    const { position = "Discipline Coordinator (DISCO)", councilId = "CNL_001" } = req.body || {};
+
+    const user = await sheetsService.getById("Users", "userId", id);
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    const previousRole = user.role;
+    const previousCouncilId = user.councilId;
+    const previousPosition = user.position;
+
+    const updates = {
+      role: "DISCO",
+      position: position.trim(),
+      councilId: councilId || "CNL_001",
+    };
+
+    const updated = await sheetsService.update("Users", "userId", id, updates);
+    await sheetsService.logAudit(req.user.userId, "MEMBER_PROMOTED_TO_DISCO", "USER", id, {
+      previousRole,
+      previousCouncilId,
+      previousPosition,
+      newRole: "DISCO",
+      newCouncilId: updates.councilId,
+      newPosition: updates.position,
+    });
+
+    const { passwordHash: _, ...safeUser } = updated;
+    return successResponse(res, safeUser, `${safeUser.name} successfully promoted to DISCO Coordinator`);
+  } catch (err) {
+    console.error("promoteUserToDisco error:", err);
+    return errorResponse(res, "Failed to promote user to DISCO", 500);
+  }
+}
+
+async function demoteUserToCouncil(req, res) {
+  try {
+    const { id } = req.params;
+    const { councilId, position } = req.body || {};
+
+    const user = await sheetsService.getById("Users", "userId", id);
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    const previousRole = user.role;
+    const updates = {
+      role: "COUNCIL",
+      councilId: councilId || "",
+      position: (position || "Council Coordinator").trim(),
+    };
+
+    const updated = await sheetsService.update("Users", "userId", id, updates);
+    await sheetsService.logAudit(req.user.userId, "MEMBER_DEMOTED_TO_COUNCIL", "USER", id, {
+      previousRole,
+      newRole: "COUNCIL",
+      newCouncilId: updates.councilId,
+      newPosition: updates.position,
+    });
+
+    const { passwordHash: _, ...safeUser } = updated;
+    return successResponse(res, safeUser, `${safeUser.name} reassigned as Council Coordinator`);
+  } catch (err) {
+    console.error("demoteUserToCouncil error:", err);
+    return errorResponse(res, "Failed to reassign user to council", 500);
   }
 }
 
@@ -228,5 +300,7 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  promoteUserToDisco,
+  demoteUserToCouncil,
   updateUserStatus,
 };

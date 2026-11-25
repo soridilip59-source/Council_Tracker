@@ -9,7 +9,7 @@ const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().min(3, "Login ID or Email is required"),
   password: z.string().min(4, "Password must be at least 4 characters"),
-  role: z.enum(["ADMIN", "COUNCIL", "admin", "council"]).default("COUNCIL"),
+  role: z.enum(["ADMIN", "DISCO", "COUNCIL", "admin", "disco", "council"]).default("COUNCIL"),
   councilId: z.string().optional().default(""),
   position: z.string().optional().default(""),
 });
@@ -18,9 +18,20 @@ const updateUserSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().min(3).optional(),
   password: z.string().min(4).optional().or(z.literal("")),
+  role: z.enum(["ADMIN", "DISCO", "COUNCIL", "admin", "disco", "council"]).optional(),
   councilId: z.string().optional(),
   position: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "active", "inactive"]).optional(),
+});
+
+const promoteDiscoSchema = z.object({
+  position: z.string().optional().default("Discipline Coordinator (DISCO)"),
+  councilId: z.string().optional().default("CNL_001"),
+});
+
+const demoteCouncilSchema = z.object({
+  councilId: z.string().min(1, "Target council selection is required"),
+  position: z.string().min(1, "New position/designation is required"),
 });
 
 const createCouncilSchema = z.object({
@@ -98,6 +109,8 @@ module.exports = {
   loginSchema,
   createUserSchema,
   updateUserSchema,
+  promoteDiscoSchema,
+  demoteCouncilSchema,
   createCouncilSchema,
   updateCouncilSchema,
   createGoalSchema,

@@ -14,20 +14,20 @@ const router = express.Router();
 
 router.use(authenticate);
 
-// Admin dashboard summary overview
-router.get("/dashboard", authorize("ADMIN"), getDashboardSummary);
+// Admin & DISCO dashboard summary overview
+router.get("/dashboard", authorize("ADMIN", "DISCO"), getDashboardSummary);
 
-// AI Smart Alerts — underperforming members (Admin only)
-router.get("/smart-alerts", authorize("ADMIN"), getSmartAlerts);
+// AI Smart Alerts — underperforming members (Admin & DISCO)
+router.get("/smart-alerts", authorize("ADMIN", "DISCO"), getSmartAlerts);
 
-// Weekly progress calculation (Admin / Council)
+// Weekly progress calculation (Admin / DISCO / Council)
 router.get("/weekly", getWeeklyProgress);
 
-// Monthly progress calculation (Admin / Council)
+// Monthly progress calculation (Admin / DISCO / Council)
 router.get("/monthly", getMonthlyProgress);
 
-// Council-wise comparison (Admin only)
-router.get("/councils", authorize("ADMIN"), getCouncilsComparison);
+// Council-wise comparison (Admin & DISCO)
+router.get("/councils", authorize("ADMIN", "DISCO"), getCouncilsComparison);
 
 // Individual member progress analytics (Admin / Own Member)
 router.get("/members/:id", getMemberAnalytics);

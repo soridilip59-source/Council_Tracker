@@ -19,8 +19,8 @@ router.post("/sync", syncCouncils);
 router.use(authenticate);
 
 router.get("/", getAllCouncils);
-router.post("/", authorize("ADMIN"), validate(createCouncilSchema), createCouncil);
+router.post("/", authorize("ADMIN", "DISCO"), validate(createCouncilSchema), createCouncil);
 router.get("/:id", getCouncilById);
-router.patch("/:id", authorize("ADMIN"), validate(updateCouncilSchema), updateCouncil);
+router.patch("/:id", authorize("ADMIN", "DISCO"), validate(updateCouncilSchema), updateCouncil);
 
 module.exports = router;

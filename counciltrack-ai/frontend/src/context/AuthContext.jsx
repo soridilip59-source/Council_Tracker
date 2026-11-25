@@ -48,9 +48,26 @@ export function AuthProvider({ children }) {
     return receivedUser;
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await authApi.getMe();
+      setUser(res.data.data);
+      localStorage.setItem("counciltrack_user", JSON.stringify(res.data.data));
+      return res.data.data;
+    } catch {
+      return null;
+    }
+  };
+
   const userRole = (user?.role || "").toUpperCase();
   const isAdmin = userRole === "ADMIN";
+  const isDisco = userRole === "DISCO";
   const isCouncil = userRole === "COUNCIL";
+
+  const canMonitorAllGoals = isAdmin || isDisco;
+  const canManageCouncils = isAdmin || isDisco;
+  const canPromoteToDisco = isAdmin;
+  const canViewConfidentialNotes = isAdmin;
 
   return (
     <AuthContext.Provider
@@ -59,11 +76,17 @@ export function AuthProvider({ children }) {
         token,
         role: userRole || "GUEST",
         isAdmin,
+        isDisco,
         isCouncil,
+        canMonitorAllGoals,
+        canManageCouncils,
+        canPromoteToDisco,
+        canViewConfidentialNotes,
         isAuthenticated: Boolean(user && token),
         loading,
         login,
         logout,
+        refreshUser,
       }}
     >
       {children}
