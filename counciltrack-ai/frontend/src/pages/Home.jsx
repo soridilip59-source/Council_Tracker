@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Shield, Target, MessageSquareHeart, CheckCircle, ArrowRight, Building2, BarChart2, Sparkles } from "lucide-react";
 import MarqueeBanner from "../components/ui/MarqueeBanner";
 import ScrollReveal from "../components/ui/ScrollReveal";
-import CouncilDirectoryTable from "../components/common/CouncilDirectoryTable";
 
 export default function Home() {
   return (
@@ -238,11 +237,6 @@ export default function Home() {
             </div>
           </ScrollReveal>
         </div>
-      </section>
-
-      {/* Campus Council & Coordinator Directory */}
-      <section className="max-w-7xl mx-auto px-6 py-10 w-full">
-        <CouncilDirectoryTable title="NavGurukul Dantewada • 14 Campus Councils & 25 Coordinators Directory" />
       </section>
 
       {/* Footer */}

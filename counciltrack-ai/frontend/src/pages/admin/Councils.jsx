@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { councilApi, userApi } from "../../services/api";
-import CouncilDirectoryTable from "../../components/common/CouncilDirectoryTable";
 import {
   Building2,
   Plus,
@@ -14,12 +13,18 @@ import {
   AlertCircle,
   Target,
   ArrowRight,
+  Search,
+  KeyRound,
+  Copy,
+  Check,
 } from "lucide-react";
 
 export default function Councils() {
   const [councils, setCouncils] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [copiedId, setCopiedId] = useState(null);
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -153,6 +158,25 @@ export default function Councils() {
     }
   };
 
+  const handleCopyLogin = (id, text) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
+  const filteredCouncils = councils.filter((c) => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return true;
+    const memberNames = (c.members || []).map((m) => `${m.name} ${m.position || ""}`).join(" ").toLowerCase();
+    return (
+      (c.councilName || "").toLowerCase().includes(q) ||
+      (c.loginEmail || "").toLowerCase().includes(q) ||
+      (c.slug || "").toLowerCase().includes(q) ||
+      memberNames.includes(q)
+    );
+  });
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -160,36 +184,54 @@ export default function Councils() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Council Management</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Create and maintain campus councils, oversee assigned members, and monitor activity.
+            Manage all {councils.length} campus councils, shared login credentials, and assigned coordinators (max 3 per council).
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition"
-        >
-          <Plus size={16} />
-          <span>Add New Council</span>
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search council, coordinator, or login..."
+              className="pl-8 pr-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none w-full sm:w-64"
+            />
+          </div>
+          <button
+            onClick={openAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs hover:shadow-md transition-all active:scale-95"
+          >
+            <Plus size={16} />
+            <span>Add New Council</span>
+          </button>
+        </div>
       </div>
 
       {/* Councils Grid */}
       {loading ? (
         <div className="p-12 text-center text-xs text-slate-500">Loading councils...</div>
+      ) : filteredCouncils.length === 0 ? (
+        <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 text-xs text-slate-500">
+          No councils match "{searchQuery}".
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {councils.map((c) => {
+          {filteredCouncils.map((c) => {
             const assigned = members.filter((m) => m.councilId === c.councilId);
-            const activeCount = assigned.filter((m) => (m.status || "").toUpperCase() === "ACTIVE").length;
+            const coordinators = c.members && c.members.length > 0 ? c.members : assigned;
+            const sharedLogin = c.loginEmail || assigned[0]?.email || `${c.slug || "council"}@counciltrack.org`;
+            const sharedHandle = c.slug || sharedLogin.split("@")[0];
             const isActive = (c.status || "").toUpperCase() === "ACTIVE";
 
             return (
               <div
                 key={c.councilId}
-                className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between hover:shadow-sm transition group"
+                className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                    <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
                       <Building2 size={22} />
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -205,7 +247,7 @@ export default function Councils() {
                       <button
                         onClick={() => openEdit(c)}
                         className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
-                        title="Edit Council"
+                        title="Edit Council & Coordinators"
                       >
                         <Edit2 size={14} />
                       </button>
@@ -219,65 +261,81 @@ export default function Councils() {
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition">
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
                     {c.councilName}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                     {c.description || "No description provided."}
                   </p>
 
-                  {/* Assigned Members Summary */}
+                  {/* Shared Login Credential Box */}
+                  <div className="mt-3 p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
+                        <KeyRound size={11} />
+                        <span>Shared Login ID</span>
+                        <span className="px-1.5 py-0.2 rounded bg-white text-indigo-600 border border-indigo-200 lowercase">
+                          @{sharedHandle}
+                        </span>
+                      </div>
+                      <p className="text-xs font-mono font-semibold text-slate-800 truncate mt-0.5">
+                        {sharedLogin}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLogin(c.councilId, sharedLogin)}
+                      className="shrink-0 p-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition"
+                      title="Copy Shared Login Email"
+                    >
+                      {copiedId === c.councilId ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                    </button>
+                  </div>
+
+                  {/* Assigned Coordinators Summary */}
                   <div className="mt-4 pt-3 border-t border-slate-100">
                     <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
                       <span className="font-semibold flex items-center gap-1.5">
                         <Users size={14} className="text-indigo-500" />
-                        <span>Assigned Members</span>
+                        <span>Assigned Coordinators</span>
                       </span>
-                      <span className="font-bold text-slate-900">
-                        {activeCount} active / {assigned.length} total
+                      <span className="font-bold text-slate-900 text-[11px] bg-slate-100 px-2 py-0.5 rounded-full">
+                        {coordinators.length} / 3 max
                       </span>
                     </div>
 
                     <div className="space-y-1.5">
-                      {assigned.slice(0, 3).map((m) => (
+                      {coordinators.slice(0, 3).map((m, idx) => (
                         <div
-                          key={m.userId}
-                          className="flex items-center justify-between text-[11px] bg-slate-50 px-2.5 py-1.5 rounded-lg"
+                          key={m.userId || `${c.councilId}-m-${idx}`}
+                          className="flex items-center justify-between text-[11px] bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg"
                         >
-                          <span className="font-medium text-slate-800 truncate mr-2">{m.name}</span>
-                          <span className="text-indigo-600 text-[10px] font-semibold truncate">
-                            {m.position || "Member"}
+                          <span className="font-semibold text-slate-800 truncate mr-2">{m.name}</span>
+                          <span className="text-indigo-600 text-[10px] font-semibold truncate shrink-0 max-w-[140px]">
+                            {m.position || "Coordinator"}
                           </span>
                         </div>
                       ))}
-                      {assigned.length > 3 && (
-                        <button
-                          onClick={() => setViewingCouncilMembers({ council: c, members: assigned })}
-                          className="text-[11px] font-semibold text-indigo-600 hover:underline block pt-0.5"
-                        >
-                          + {assigned.length - 3} more members
-                        </button>
-                      )}
-                      {assigned.length === 0 && (
-                        <p className="text-[11px] text-slate-400 italic">No members assigned yet.</p>
+                      {coordinators.length === 0 && (
+                        <p className="text-[11px] text-slate-400 italic">No coordinators assigned yet.</p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                   <button
-                    onClick={() => setViewingCouncilMembers({ council: c, members: assigned })}
+                    onClick={() => setViewingCouncilMembers({ council: c, members: coordinators })}
                     className="text-xs font-semibold text-slate-600 hover:text-slate-900"
                   >
-                    View Members ({assigned.length})
+                    View Details ({coordinators.length})
                   </button>
                   <Link
                     to={`/admin/goals?councilId=${c.councilId}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
                   >
                     <span>Council Goals</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -285,9 +343,6 @@ export default function Councils() {
           })}
         </div>
       )}
-
-      {/* Official Directory Table */}
-      <CouncilDirectoryTable title="Official 14 Councils & 25 Coordinators Roster" />
 
       {/* Add / Edit Council Modal */}
       {showAddModal && (
@@ -516,25 +571,25 @@ export default function Councils() {
             </p>
 
             <div className="mt-4 space-y-2 max-h-72 overflow-y-auto pr-1">
-              {viewingCouncilMembers.members.map((m) => (
+              {viewingCouncilMembers.members.map((m, idx) => (
                 <div
-                  key={m.userId}
+                  key={m.userId || `modal-member-${idx}`}
                   className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
                 >
                   <div>
                     <p className="font-semibold text-slate-800">{m.name}</p>
-                    <p className="text-[11px] text-slate-500">{m.email}</p>
+                    <p className="text-[11px] text-slate-500">{m.email || viewingCouncilMembers.council.loginEmail}</p>
                   </div>
                   <div className="text-right">
-                    <span className="font-semibold text-indigo-600 block">{m.position || "Member"}</span>
+                    <span className="font-semibold text-indigo-600 block">{m.position || "Coordinator"}</span>
                     <span
                       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-1 ${
-                        (m.status || "").toUpperCase() === "ACTIVE"
+                        (m.status || "ACTIVE").toUpperCase() === "ACTIVE"
                           ? "bg-emerald-100 text-emerald-800"
                           : "bg-rose-100 text-rose-800"
                       }`}
                     >
-                      {m.status}
+                      {m.status || "ACTIVE"}
                     </span>
                   </div>
                 </div>
