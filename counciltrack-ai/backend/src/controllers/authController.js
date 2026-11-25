@@ -12,18 +12,18 @@ async function login(req, res) {
       return errorResponse(res, "ID or Email is required", 400);
     }
 
+    const allUsers = await sheetsService.getAll("Users");
     const allCouncils = await sheetsService.getAll("Councils");
     let matchedMemberName = "";
 
-    // Find user by email, userId, slug, councilId, or member name/email alias
-    const user = await sheetsService.findOne("Users", (u) => {
+    // 1. Exact match on direct user fields (email, userId, slug, councilId, or admin alias)
+    let user = allUsers.find((u) => {
       const uEmail = (u.email || "").toLowerCase().trim();
       const uId = (u.userId || "").toLowerCase().trim();
       const uSlug = (u.slug || "").toLowerCase().trim();
       const uRole = (u.role || "").toLowerCase().trim();
       const uCouncilId = (u.councilId || "").toLowerCase().trim();
 
-      // Direct matches
       if (uEmail === identifier || uId === identifier) return true;
       if (uSlug && uSlug === identifier) return true;
       if (uCouncilId && uCouncilId === identifier) return true;
@@ -31,32 +31,83 @@ async function login(req, res) {
       // Admin aliases
       if (uRole === "admin" && (identifier === "admin" || identifier === "admin@navgurukul.org")) return true;
 
-      // Generic council alias (defaults to first council or discipline)
+      // Generic council alias
       if (identifier === "council" || identifier === "council@navgurukul.org") {
-        if (uRole === "council" && (uSlug === "english" || uCouncilId === "cnl_001")) return true;
+        if (uRole === "council" && (uSlug === "discipline" || uCouncilId === "cnl_001")) return true;
       }
-
-      // Check if identifier matches any coordinator name or email inside the council's members
-      const councilData = allCouncils.find((c) => c.councilId === u.councilId);
-      const members = u.members || councilData?.members || [];
-      const matched = members.find((m) => {
-        const mName = (m.name || "").toLowerCase().trim();
-        const mEmail = (m.email || "").toLowerCase().trim();
-        return mName === identifier || mEmail === identifier || identifier.includes(mName) || mName.includes(identifier);
-      });
-
-      if (matched) {
-        matchedMemberName = matched.name;
-        return true;
-      }
-
-      // Partial slug match (e.g. 'english' in 'english council' or 'culture')
-      if (uRole === "council" && (u.name || "").toLowerCase().includes(identifier)) {
-        return true;
-      }
-
       return false;
     });
+
+    // 2. Exact match on coordinator email inside members
+    if (!user) {
+      for (const u of allUsers) {
+        const councilData = allCouncils.find((c) => c.councilId === u.councilId);
+        const members = u.members || councilData?.members || [];
+        const matched = members.find((m) => (m.email || "").toLowerCase().trim() === identifier);
+        if (matched) {
+          user = u;
+          matchedMemberName = matched.name;
+          break;
+        }
+      }
+    }
+
+    // 3. Exact match on email prefix handle (e.g. 'khushi.it', 'khushi.health', 'dilip', 'mohan', 'akanksha')
+    if (!user) {
+      for (const u of allUsers) {
+        const councilData = allCouncils.find((c) => c.councilId === u.councilId);
+        const members = u.members || councilData?.members || [];
+        const matched = members.find((m) => {
+          const mEmail = (m.email || "").toLowerCase().trim();
+          return mEmail.split("@")[0] === identifier;
+        });
+        if (matched) {
+          user = u;
+          matchedMemberName = matched.name;
+          break;
+        }
+      }
+    }
+
+    // 4. Exact match on member full name
+    if (!user) {
+      for (const u of allUsers) {
+        const councilData = allCouncils.find((c) => c.councilId === u.councilId);
+        const members = u.members || councilData?.members || [];
+        const matched = members.find((m) => (m.name || "").toLowerCase().trim() === identifier);
+        if (matched) {
+          user = u;
+          matchedMemberName = matched.name;
+          break;
+        }
+      }
+    }
+
+    // 5. First-word / first-name match on coordinator name (only when identifier does not contain '@')
+    if (!user && !identifier.includes("@")) {
+      for (const u of allUsers) {
+        const councilData = allCouncils.find((c) => c.councilId === u.councilId);
+        const members = u.members || councilData?.members || [];
+        const matched = members.find((m) => {
+          const mName = (m.name || "").toLowerCase().trim();
+          const firstName = mName.split(" ")[0];
+          return firstName === identifier || mName.startsWith(identifier);
+        });
+        if (matched) {
+          user = u;
+          matchedMemberName = matched.name;
+          break;
+        }
+      }
+    }
+
+    // 6. Partial council name match (e.g. 'discipline', 'workout', 'english')
+    if (!user) {
+      user = allUsers.find((u) => {
+        if ((u.role || "").toLowerCase() !== "council") return false;
+        return (u.name || "").toLowerCase().includes(identifier);
+      });
+    }
 
     if (!user) {
       return errorResponse(res, "Invalid ID/Email or password", 401);

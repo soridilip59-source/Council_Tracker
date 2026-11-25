@@ -15,7 +15,7 @@ async function seedClean() {
       loginEmail: "discipline@counciltrack.org",
       description: "Campus conduct, attendance, and code of discipline",
       members: [
-        { memberId: "MEM_001", name: "Akanksha Dewangan", email: "akanksha@counciltrack.org", position: "Discipline Coordinator (Disco)" },
+        { memberId: "MEM_001", name: "Akanksha", email: "akanksha@counciltrack.org", position: "Discipline Coordinator (Disco)" },
         { memberId: "MEM_002", name: "Mohan", email: "mohan@counciltrack.org", position: "Discipline Coordinator (Disco)" }
       ],
       status: "ACTIVE",
@@ -233,6 +233,27 @@ async function seedClean() {
       status: "ACTIVE",
       createdAt: now,
       updatedAt: now
+    });
+  });
+
+  // Individual coordinator accounts
+  let userCounter = 2;
+  councils.forEach((c) => {
+    (c.members || []).forEach((m) => {
+      users.push({
+        userId: `USR_${String(userCounter++).padStart(3, "0")}`,
+        name: m.name,
+        email: m.email,
+        slug: c.slug,
+        passwordHash: DEFAULT_HASH,
+        role: "COUNCIL",
+        councilId: c.councilId,
+        position: m.position,
+        members: c.members,
+        status: "ACTIVE",
+        createdAt: now,
+        updatedAt: now
+      });
     });
   });
 
