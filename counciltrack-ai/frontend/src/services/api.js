@@ -45,8 +45,6 @@ export const userApi = {
   create: (data) => api.post("/users", data),
   update: (id, data) => api.patch(`/users/${id}`, data),
   updateStatus: (id, status) => api.patch(`/users/${id}/status`, { status }),
-  promoteToDisco: (id, data) => api.patch(`/users/${id}/promote-disco`, data),
-  demoteToCouncil: (id, data) => api.patch(`/users/${id}/demote-council`, data),
 };
 
 export const councilApi = {

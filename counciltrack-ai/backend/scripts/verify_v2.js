@@ -48,45 +48,15 @@ async function runTests() {
     adminToken = adminLogin.data.data.token;
     console.log("✓ Admin Login passed (Role: ADMIN)");
 
-    // 3. DISCO Coordinator Login
-    const discoLogin = await request("/api/v1/auth/login", {
-      method: "POST",
-      body: { email: "akanksha@counciltrack.org", password: "Admin@123" },
-    });
-    console.assert(discoLogin.status === 200, "DISCO login failed");
-    console.assert(discoLogin.data.data.user.role === "DISCO", "Role must be DISCO");
-    const discoToken = discoLogin.data.data.token;
-    console.log("✓ DISCO Coordinator Login passed (Role: DISCO)");
-
-    // 4. Council Member Login
+    // 3. Council Member Login
     const councilLogin = await request("/api/v1/auth/login", {
       method: "POST",
-      body: { email: "lalita@counciltrack.org", password: "Admin@123" },
+      body: { email: "akanksha@counciltrack.org", password: "Admin@123" },
     });
     console.assert(councilLogin.status === 200, "Council login failed");
     console.assert(councilLogin.data.data.user.role === "COUNCIL", "Role must be COUNCIL");
     councilToken = councilLogin.data.data.token;
     console.log("✓ Council Member Login passed (Role: COUNCIL)");
-
-    // 5. Role Governance: Admin Promotes Council Member to DISCO
-    const promoteRes = await request("/api/v1/users/USR_011/promote-disco", {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${adminToken}` },
-      body: { position: "Discipline Coordinator (DISCO)" },
-    });
-    console.assert(promoteRes.status === 200, "Promote to DISCO failed");
-    console.assert(promoteRes.data.data.role === "DISCO", "Promoted role must be DISCO");
-    console.log("✓ Admin Promotes Council Member to DISCO passed (USR_011 -> DISCO)");
-
-    // 6. Role Governance: Admin Reassigns Member back to Council
-    const demoteRes = await request("/api/v1/users/USR_011/demote-council", {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${adminToken}` },
-      body: { councilId: "CNL_006", position: "English Coordinator" },
-    });
-    console.assert(demoteRes.status === 200, "Demote to Council failed");
-    console.assert(demoteRes.data.data.role === "COUNCIL", "Reassigned role must be COUNCIL");
-    console.log("✓ Admin Reassigns DISCO back to Council Coordinator passed (USR_011 -> COUNCIL)");
 
     // 4. Admin Dashboard Summary
     const summary = await request("/api/v1/analytics/dashboard", {

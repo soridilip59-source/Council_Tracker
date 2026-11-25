@@ -13,11 +13,9 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
   }
 
   if (!isAuthenticated) {
-    if (allowedRoles.includes("ADMIN") && !allowedRoles.includes("DISCO")) {
+    // If route was an admin route, send to /admin/login, otherwise /council/login
+    if (allowedRoles.includes("ADMIN")) {
       return <Navigate to="/admin/login" replace />;
-    }
-    if (allowedRoles.includes("DISCO")) {
-      return <Navigate to="/disco/login" replace />;
     }
     return <Navigate to="/council/login" replace />;
   }
@@ -27,9 +25,6 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
     // Role mismatch: redirect to their respective dashboard
     if (userRole === "ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
-    }
-    if (userRole === "DISCO") {
-      return <Navigate to="/disco/dashboard" replace />;
     }
     return <Navigate to="/council/dashboard" replace />;
   }
