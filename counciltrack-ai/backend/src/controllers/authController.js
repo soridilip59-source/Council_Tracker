@@ -3,6 +3,8 @@ const sheetsService = require("../services/sheetsService");
 const { generateToken } = require("../utils/generateToken");
 const { successResponse, errorResponse } = require("../utils/response");
 
+const SALT_ROUNDS = Math.min(Math.max(parseInt(process.env.BCRYPT_SALT_ROUNDS || "12", 10) || 12, 4), 15);
+
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -270,7 +272,7 @@ async function updateProfile(req, res) {
       if (password.trim().length < 4) {
         return errorResponse(res, "Password must be at least 4 characters long", 400);
       }
-      updates.passwordHash = await bcrypt.hash(password.trim(), 10);
+      updates.passwordHash = await bcrypt.hash(password.trim(), SALT_ROUNDS);
     }
 
     const updated = await sheetsService.update("Users", "userId", userId, updates);
@@ -310,7 +312,7 @@ async function changePassword(req, res) {
       }
     }
 
-    const newHash = await bcrypt.hash(newPassword.trim(), 10);
+    const newHash = await bcrypt.hash(newPassword.trim(), SALT_ROUNDS);
     await sheetsService.update("Users", "userId", userId, { passwordHash: newHash });
 
     await sheetsService.logAudit(userId, "PASSWORD_CHANGED", "USER", userId, {

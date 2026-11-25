@@ -72,11 +72,11 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside
         className={`${
-          mobileMenuOpen ? "block" : "hidden"
-        } md:block w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col z-40 md:sticky md:top-0 md:h-screen`}
+          mobileMenuOpen ? "flex" : "hidden"
+        } md:flex w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex-col z-40 md:sticky md:top-0 md:h-screen max-h-screen`}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-slate-800 hidden md:flex items-center gap-3">
+        <div className="p-4 border-b border-slate-800 hidden md:flex items-center gap-3 shrink-0">
           <img
             src="/navgurukul-logo.png"
             alt="NavGurukul Logo"
@@ -89,7 +89,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Admin Badge */}
-        <div className="px-5 py-3 bg-slate-800/60 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-3 bg-slate-800/60 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <Shield size={15} className="text-indigo-400" />
             <span className="text-xs font-semibold text-slate-200">Admin Portal</span>
@@ -99,8 +99,8 @@ export default function AdminLayout() {
           </span>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {/* Scrollable Navigation Tabs */}
+        <nav className="flex-1 min-h-0 p-3 space-y-1 overflow-y-auto scrollbar-thin">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -123,7 +123,7 @@ export default function AdminLayout() {
         </nav>
 
         {/* Public Feedback Link Action */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900/80">
+        <div className="p-4 border-t border-slate-800 bg-slate-900/80 shrink-0">
           <button
             onClick={copyFeedbackLink}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-indigo-300 font-medium border border-slate-700 transition"
@@ -134,7 +134,7 @@ export default function AdminLayout() {
         </div>
 
         {/* User Profile & Logout */}
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/40">
+        <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/60 shrink-0">
           <div className="min-w-0 pr-2">
             <p className="text-xs font-semibold text-slate-200 truncate">{user?.name || "Administrator"}</p>
             <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
@@ -142,9 +142,10 @@ export default function AdminLayout() {
           <button
             onClick={handleLogout}
             title="Log out"
-            className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-300 hover:text-white bg-rose-500/10 hover:bg-rose-600 transition shrink-0"
           >
-            <LogOut size={16} />
+            <LogOut size={14} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>

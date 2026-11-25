@@ -64,11 +64,11 @@ export default function CouncilLayout() {
       {/* Sidebar */}
       <aside
         className={`${
-          mobileMenuOpen ? "block" : "hidden"
-        } md:block w-full md:w-64 bg-indigo-950 text-indigo-200 flex-shrink-0 flex flex-col z-40 md:sticky md:top-0 md:h-screen`}
+          mobileMenuOpen ? "flex" : "hidden"
+        } md:flex w-full md:w-64 bg-indigo-950 text-indigo-200 flex-shrink-0 flex-col z-40 md:sticky md:top-0 md:h-screen max-h-screen`}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-indigo-900 hidden md:flex items-center gap-3">
+        <div className="p-4 border-b border-indigo-900 hidden md:flex items-center gap-3 shrink-0">
           <img
             src="/navgurukul-logo.png"
             alt="NavGurukul Logo"
@@ -81,7 +81,7 @@ export default function CouncilLayout() {
         </div>
 
         {/* Council Member Badge */}
-        <div className="px-5 py-3.5 bg-indigo-900/60 border-b border-indigo-900">
+        <div className="px-5 py-3.5 bg-indigo-900/60 border-b border-indigo-900 shrink-0">
           <div className="flex items-center gap-2 mb-1">
             <Building size={14} className="text-indigo-400" />
             <span className="text-xs font-semibold text-white truncate">
@@ -93,8 +93,8 @@ export default function CouncilLayout() {
           </p>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {/* Scrollable Navigation Tabs */}
+        <nav className="flex-1 min-h-0 p-3 space-y-1 overflow-y-auto scrollbar-thin">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -117,7 +117,7 @@ export default function CouncilLayout() {
         </nav>
 
         {/* User Profile & Logout */}
-        <div className="p-4 border-t border-indigo-900 flex items-center justify-between bg-indigo-950">
+        <div className="p-4 border-t border-indigo-900 flex items-center justify-between bg-indigo-950 shrink-0">
           <div className="min-w-0 pr-2">
             <p className="text-xs font-semibold text-white truncate">{user?.name || "Council Member"}</p>
             <p className="text-[11px] text-indigo-400 truncate">{user?.email}</p>
@@ -125,9 +125,10 @@ export default function CouncilLayout() {
           <button
             onClick={handleLogout}
             title="Log out"
-            className="p-2 rounded-lg text-indigo-300 hover:text-rose-400 hover:bg-indigo-900 transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-200 hover:text-white bg-rose-500/15 hover:bg-rose-600 transition shrink-0"
           >
-            <LogOut size={16} />
+            <LogOut size={14} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>

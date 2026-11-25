@@ -3,6 +3,8 @@ const sheetsService = require("../services/sheetsService");
 const { generateId } = require("../utils/generateId");
 const { successResponse, errorResponse } = require("../utils/response");
 
+const SALT_ROUNDS = Math.min(Math.max(parseInt(process.env.BCRYPT_SALT_ROUNDS || "12", 10) || 12, 4), 15);
+
 // Helper to get today's date in YYYY-MM-DD
 function getTodayDate() {
   const now = new Date();
@@ -117,7 +119,7 @@ async function createUser(req, res) {
       return errorResponse(res, "A user with this email already exists", 409);
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const now = new Date().toISOString();
     const newUser = {
       userId: generateId("USR"),
@@ -182,7 +184,7 @@ async function updateUser(req, res) {
       if (password.trim().length < 4) {
         return errorResponse(res, "Password must be at least 4 characters long", 400);
       }
-      updates.passwordHash = await bcrypt.hash(password.trim(), 10);
+      updates.passwordHash = await bcrypt.hash(password.trim(), SALT_ROUNDS);
     }
 
     const updated = await sheetsService.update("Users", "userId", id, updates);
