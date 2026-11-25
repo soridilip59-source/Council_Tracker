@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { councilApi, userApi } from "../../services/api";
+import CouncilDirectoryTable from "../../components/common/CouncilDirectoryTable";
 import {
   Building2,
   Plus,
@@ -218,6 +219,9 @@ export default function Councils() {
           })}
         </div>
       )}
+
+      {/* Official Directory Table */}
+      <CouncilDirectoryTable title="Official 14 Councils & 25 Coordinators Roster" />
 
       {/* Add / Edit Council Modal */}
       {showAddModal && (

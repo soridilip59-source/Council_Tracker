@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { goalApi, reflectionApi } from "../../services/api";
 import ScrollReveal from "../../components/ui/ScrollReveal";
+import CouncilDirectoryTable from "../../components/common/CouncilDirectoryTable";
 import {
   Target,
   CheckCircle2,
@@ -255,6 +256,11 @@ export default function CouncilDashboard() {
             {todayReflection ? "View / Edit Reflection" : "Open Reflection Form"}
           </Link>
         </div>
+      </ScrollReveal>
+
+      {/* Campus Council & Coordinator Directory */}
+      <ScrollReveal direction="up" delay={250}>
+        <CouncilDirectoryTable title="Campus Council Directory & Coordinator Contacts" />
       </ScrollReveal>
     </div>
   );

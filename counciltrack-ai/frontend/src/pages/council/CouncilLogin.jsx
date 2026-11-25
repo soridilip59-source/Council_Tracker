@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Target, Lock, User, ArrowRight, AlertCircle, ArrowLeft } from "lucide-react";
+import CouncilDirectoryTable from "../../components/common/CouncilDirectoryTable";
 
 export default function CouncilLogin() {
   const [email, setEmail] = useState("");
@@ -132,6 +133,18 @@ export default function CouncilLogin() {
               <span>Back to Main Page</span>
             </Link>
           </div>
+        </div>
+
+        {/* Full Directory Table with 1-click Auto-Fill */}
+        <div className="mt-12 max-w-6xl mx-auto w-full">
+          <CouncilDirectoryTable
+            onSelectEmail={(val) => {
+              setEmail(val);
+              setPassword("Admin@123");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            title="Official Council & Coordinator Directory (Click Email or Name to Auto-Fill Login)"
+          />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { analyticsApi, userApi, leaveApi } from "../../services/api";
 import { SmartAlertCard } from "../../components/ai/AiInsightCard";
 import ScrollReveal from "../../components/ui/ScrollReveal";
+import CouncilDirectoryTable from "../../components/common/CouncilDirectoryTable";
 import {
   Building2,
   Users,
@@ -332,6 +333,11 @@ export default function AdminDashboard() {
           </table>
         </div>
       </div>
+
+      {/* Council & Coordinator Official Directory Table */}
+      <ScrollReveal direction="up" delay={120}>
+        <CouncilDirectoryTable title="Official Council & Coordinator Directory (14 Councils • 25 Coordinators)" />
+      </ScrollReveal>
 
       {/* Quick Links & Shortcuts Banner */}
       <ScrollReveal direction="up" delay={150}>
