@@ -2,6 +2,7 @@
 const path = require("path");
 const { getSheetsClient, isConfigured, getSheetId } = require("../config/googleSheets");
 const { generateId } = require("../utils/generateId");
+const { syncSheetToPostgres } = require("./postgresSync");
 
 const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
@@ -253,6 +254,7 @@ class SheetsService {
     this.localData[sheetName].push(cleanRecord);
     this.persistLocal();
     this.syncToGoogleSheets(sheetName).catch((err) => console.error(err));
+    syncSheetToPostgres(sheetName, this.localData[sheetName]).catch((err) => console.error(err));
     return cleanRecord;
   }
 
@@ -268,6 +270,7 @@ class SheetsService {
     };
     this.persistLocal();
     this.syncToGoogleSheets(sheetName).catch((err) => console.error(err));
+    syncSheetToPostgres(sheetName, this.localData[sheetName]).catch((err) => console.error(err));
     return this.localData[sheetName][index];
   }
 
@@ -278,6 +281,7 @@ class SheetsService {
     if (this.localData[sheetName].length !== initialLen) {
       this.persistLocal();
       this.syncToGoogleSheets(sheetName).catch((err) => console.error(err));
+      syncSheetToPostgres(sheetName, this.localData[sheetName]).catch((err) => console.error(err));
       return true;
     }
     return false;
