@@ -16,6 +16,9 @@ import {
   AlertCircle,
   Building2,
   Lock,
+  Sparkles,
+  RotateCcw,
+  Check,
 } from "lucide-react";
 
 export default function Members() {
@@ -32,6 +35,16 @@ export default function Members() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [viewingMember, setViewingMember] = useState(null);
+
+  // Role Governance Modals
+  const [promotingMember, setPromotingMember] = useState(null);
+  const [promotePosition, setPromotePosition] = useState("Discipline Coordinator (DISCO)");
+  const [demotingMember, setDemotingMember] = useState(null);
+  const [demoteCouncilId, setDemoteCouncilId] = useState("");
+  const [demotePosition, setDemotePosition] = useState("");
+  const [roleActionLoading, setRoleActionLoading] = useState(false);
+  const [roleActionError, setRoleActionError] = useState("");
+  const [roleSuccessToast, setRoleSuccessToast] = useState("");
 
   // Form State
   const [formName, setFormName] = useState("");
@@ -105,6 +118,64 @@ export default function Members() {
       await loadData();
     } catch (err) {
       alert("Failed to update member status: " + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const openPromoteModal = (member) => {
+    setPromotingMember(member);
+    setPromotePosition("Discipline Coordinator (DISCO)");
+    setRoleActionError("");
+    setRoleSuccessToast("");
+  };
+
+  const handlePromoteToDisco = async (e) => {
+    e.preventDefault();
+    if (!promotingMember) return;
+    setRoleActionLoading(true);
+    setRoleActionError("");
+    try {
+      await userApi.promoteToDisco(promotingMember.userId, {
+        position: promotePosition || "Discipline Coordinator (DISCO)",
+        councilId: "CNL_001",
+      });
+      setRoleSuccessToast(`🎉 ${promotingMember.name} has been successfully promoted to DISCO Coordinator!`);
+      setTimeout(() => setRoleSuccessToast(""), 4000);
+      setPromotingMember(null);
+      await loadData();
+    } catch (err) {
+      setRoleActionError(err.response?.data?.message || "Failed to promote member to DISCO");
+    } finally {
+      setRoleActionLoading(false);
+    }
+  };
+
+  const openDemoteModal = (member) => {
+    setDemotingMember(member);
+    const nonDisciplineCouncil = councils.find((c) => c.councilId !== "CNL_001");
+    setDemoteCouncilId(nonDisciplineCouncil ? nonDisciplineCouncil.councilId : councils[0]?.councilId || "");
+    setDemotePosition("Council Coordinator");
+    setRoleActionError("");
+    setRoleSuccessToast("");
+  };
+
+  const handleDemoteToCouncil = async (e) => {
+    e.preventDefault();
+    if (!demotingMember) return;
+    setRoleActionLoading(true);
+    setRoleActionError("");
+    try {
+      await userApi.demoteToCouncil(demotingMember.userId, {
+        councilId: demoteCouncilId,
+        position: demotePosition || "Council Coordinator",
+      });
+      setRoleSuccessToast(`✓ ${demotingMember.name} has been reassigned as Council Coordinator.`);
+      setTimeout(() => setRoleSuccessToast(""), 4000);
+      setDemotingMember(null);
+      await loadData();
+    } catch (err) {
+      setRoleActionError(err.response?.data?.message || "Failed to reassign member to council");
+    } finally {
+      setRoleActionLoading(false);
     }
   };
 
@@ -187,6 +258,18 @@ export default function Members() {
           <span>Add New Member</span>
         </button>
       </div>
+
+      {roleSuccessToast && (
+        <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-semibold flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-purple-600 shrink-0" />
+            <span>{roleSuccessToast}</span>
+          </div>
+          <button onClick={() => setRoleSuccessToast("")} className="text-purple-400 hover:text-purple-700">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
@@ -282,7 +365,18 @@ export default function Members() {
                         {m.userId}
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="font-semibold text-slate-900">{m.name}</div>
+                        <div className="font-semibold text-slate-900 flex items-center gap-2">
+                          <span>{m.name}</span>
+                          {m.role === "DISCO" ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">
+                              <Shield size={10} /> DISCO
+                            </span>
+                          ) : m.role === "ADMIN" ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                              <Shield size={10} /> ADMIN
+                            </span>
+                          ) : null}
+                        </div>
                         <div className="text-xs text-slate-400">{m.email}</div>
                       </td>
                       <td className="px-5 py-3.5">
@@ -327,7 +421,27 @@ export default function Members() {
                           {stats.completionRate !== "N/A" ? `${stats.completionRate}%` : "N/A"}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-right space-x-2">
+                      <td className="px-5 py-3.5 text-right space-x-1.5 whitespace-nowrap">
+                        {m.role === "COUNCIL" && (
+                          <button
+                            onClick={() => openPromoteModal(m)}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition"
+                            title="Promote to DISCO Coordinator"
+                          >
+                            <Sparkles size={12} className="text-purple-600" />
+                            <span>Make DISCO</span>
+                          </button>
+                        )}
+                        {m.role === "DISCO" && (
+                          <button
+                            onClick={() => openDemoteModal(m)}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition"
+                            title="Reassign to Council Coordinator"
+                          >
+                            <RotateCcw size={12} className="text-amber-600" />
+                            <span>Reassign</span>
+                          </button>
+                        )}
                         <button
                           onClick={() => openViewModal(m)}
                           className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
@@ -617,6 +731,177 @@ export default function Members() {
                 <p className="text-xs text-slate-400 italic">No evening reflections recorded.</p>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Role Governance: Promote to DISCO Modal */}
+      {promotingMember && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-purple-200 w-full max-w-md p-6 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setPromotingMember(null)}
+              className="absolute right-4 top-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                <Sparkles size={22} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Promote to DISCO</h2>
+                <p className="text-xs text-purple-600 font-semibold">Chief Discipline Coordinator Assignment</p>
+              </div>
+            </div>
+
+            {roleActionError && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <AlertCircle size={16} className="shrink-0" />
+                <span>{roleActionError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handlePromoteToDisco} className="space-y-4">
+              <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-100 text-xs space-y-1">
+                <div className="font-semibold text-slate-800">{promotingMember.name}</div>
+                <div className="text-slate-500">{promotingMember.email} • Current: {promotingMember.councilName}</div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  New Designation / Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={promotePosition}
+                  onChange={(e) => setPromotePosition(e.target.value)}
+                  placeholder="e.g. Discipline Coordinator (DISCO)"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                />
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1.5">
+                <span className="font-bold text-slate-800 block">🛡️ Role Privileges Granted:</span>
+                <p>• Access to DISCO Command Center (<code className="text-purple-700">/disco/dashboard</code>).</p>
+                <p>• Cross-council goal monitoring & evening reflection review.</p>
+                <p>• Council roster member management & daily blocker triage.</p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setPromotingMember(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={roleActionLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs transition disabled:opacity-50"
+                >
+                  <Sparkles size={14} />
+                  <span>{roleActionLoading ? "Promoting..." : "Confirm & Promote to DISCO"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Role Governance: Reassign / Demote to Council Modal */}
+      {demotingMember && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-amber-200 w-full max-w-md p-6 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setDemotingMember(null)}
+              className="absolute right-4 top-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                <RotateCcw size={22} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Reassign to Council</h2>
+                <p className="text-xs text-amber-600 font-semibold">Transfer DISCO to Council Coordinator</p>
+              </div>
+            </div>
+
+            {roleActionError && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <AlertCircle size={16} className="shrink-0" />
+                <span>{roleActionError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleDemoteToCouncil} className="space-y-4">
+              <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-100 text-xs space-y-1">
+                <div className="font-semibold text-slate-800">{demotingMember.name}</div>
+                <div className="text-slate-500">{demotingMember.email} • Current Role: DISCO</div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Assign Target Council
+                </label>
+                <select
+                  required
+                  value={demoteCouncilId}
+                  onChange={(e) => setDemoteCouncilId(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-600"
+                >
+                  {councils
+                    .filter((c) => c.councilId !== "CNL_001")
+                    .map((c) => (
+                      <option key={c.councilId} value={c.councilId}>
+                        {c.councilName}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  New Council Designation
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={demotePosition}
+                  onChange={(e) => setDemotePosition(e.target.value)}
+                  placeholder="e.g. English Coordinator, IT Coordinator"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                />
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600">
+                <p>⚠️ This will return this member's role to <code className="text-slate-800 font-bold">COUNCIL</code>, assigning them to the selected body with standard coordinator permissions.</p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDemotingMember(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={roleActionLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs transition disabled:opacity-50"
+                >
+                  <RotateCcw size={14} />
+                  <span>{roleActionLoading ? "Reassigning..." : "Confirm Reassignment"}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

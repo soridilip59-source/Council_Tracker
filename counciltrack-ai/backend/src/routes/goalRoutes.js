@@ -21,17 +21,17 @@ router.post("/broadcast-discord", broadcastGoalsToDiscord);
 
 router.use(authenticate);
 
-// AI Goal Suggestions (Council only)
-router.get("/suggestions", authorize("COUNCIL"), suggestGoals);
+// AI Goal Suggestions (Council & DISCO)
+router.get("/suggestions", authorize("COUNCIL", "DISCO"), suggestGoals);
 
-// Create or assign daily goal (Council or Admin)
-router.post("/", authorize("COUNCIL", "ADMIN"), validate(createGoalSchema), createGoal);
+// Create or assign daily goal (Council, DISCO, or Admin)
+router.post("/", authorize("COUNCIL", "DISCO", "ADMIN"), validate(createGoalSchema), createGoal);
 
-// Council member views own goals
-router.get("/my", authorize("COUNCIL"), getMyGoals);
+// Council member & DISCO view own goals
+router.get("/my", authorize("COUNCIL", "DISCO"), getMyGoals);
 
-// Admin views all goals
-router.get("/", authorize("ADMIN"), getAllGoals);
+// Admin & DISCO view all goals (DISCO monitors all council goals)
+router.get("/", authorize("ADMIN", "DISCO"), getAllGoals);
 
 // Details of a specific goal
 router.get("/:id", getGoalById);

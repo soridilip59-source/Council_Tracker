@@ -17,7 +17,7 @@
       "name": "Akanksha",
       "email": "akanksha@counciltrack.org",
       "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
+      "role": "DISCO",
       "councilId": "CNL_001",
       "position": "Discipline Coordinator (Disco)",
       "status": "ACTIVE",
@@ -29,7 +29,7 @@
       "name": "Mohan",
       "email": "mohan@counciltrack.org",
       "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
+      "role": "DISCO",
       "councilId": "CNL_001",
       "position": "Discipline Coordinator (Disco)",
       "status": "ACTIVE",
@@ -130,7 +130,7 @@
       "position": "English Coordinator",
       "status": "ACTIVE",
       "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "updatedAt": "2026-11-25T01:52:14.071Z"
     },
     {
       "userId": "USR_012",
@@ -468,5 +468,6 @@
       "updatedAt": "2026-11-24T06:19:25.421Z"
     }
   ],
-  "Council_Leaves": []
+  "Council_Leaves": [],
+  "Notifications": []
 }

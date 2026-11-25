@@ -14,14 +14,14 @@ const router = express.Router();
 
 router.use(authenticate);
 
-// Council member submits evening reflection
-router.post("/", authorize("COUNCIL"), validate(submitReflectionSchema), submitReflection);
+// Council member & DISCO submit evening reflection
+router.post("/", authorize("COUNCIL", "DISCO"), validate(submitReflectionSchema), submitReflection);
 
-// Council member views own reflections
-router.get("/my", authorize("COUNCIL"), getMyReflections);
+// Council member & DISCO view own reflections
+router.get("/my", authorize("COUNCIL", "DISCO"), getMyReflections);
 
-// Admin views all reflections
-router.get("/", authorize("ADMIN"), getAllReflections);
+// Admin & DISCO view all reflections
+router.get("/", authorize("ADMIN", "DISCO"), getAllReflections);
 
 // View reflection details
 router.get("/:id", getReflectionById);
