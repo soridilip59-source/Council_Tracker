@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CouncilTrack AI — Interactive Visual Walkthrough & System Guide</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--slate-800);
+      line-height: 1.6;
+      padding-bottom: 80px;
+    }
+
+    /* TOP HERO HEADER */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      color: white;
+      padding: 48px 24px 36px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 280px;
+      height: 280px;
+      background: rgba(99, 102, 241, 0.2);
+      border-radius: 50%;
+      filter: blur(50px);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+      max-width: 780px;
+      margin: 0 auto 20px auto;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hinglish-tag {
+      background: linear-gradient(90deg, #ec4899, #f43f5e);
+      color: white;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    /* NAVIGATION TABS */
+    .nav-container {
+      position: sticky;
+      top: 0;
+      background: white;
+      border-bottom: 1px solid var(--slate-200);
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .tabs-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      overflow-x: auto;
+      padding: 0 16px;
+      scrollbar-width: none;
+    }
+    .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      padding: 16px 20px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--slate-600);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+      background: var(--slate-50);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 32px auto 0 auto;
+      padding: 0 20px;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARDS */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      color: var(--slate-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      color: var(--slate-800);
+      margin: 20px 0 10px 0;
+    }
+
+    /* BILINGUAL BOX (SAMJHEIN / EXPLANATION) */
+    .bilingual-box {
+      background: #fdf4ff;
+      border-left: 5px solid #d946ef;
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin: 16px 0;
+    }
+    .bilingual-box.blue {
+      background: #eff6ff;
+      border-left-color: #3b82f6;
+    }
+    .bilingual-box.green {
+      background: #f0fdf4;
+      border-left-color: #22c55e;
+    }
+    .bilingual-box.amber {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+    .bilingual-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    /* GRID LAYOUTS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin: 16px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .role-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .role-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px -8px rgba(0,0,0,0.1);
+    }
+    .role-card.admin-theme { border-top: 5px solid #4f46e5; }
+    .role-card.council-theme { border-top: 5px solid #10b981; }
+    .role-card.student-theme { border-top: 5px solid #f59e0b; }
+
+    /* UI MOCKUPS (VECTOR RENDERED SCREENSHOTS) */
+    .mockup-window {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.35);
+      border: 1px solid #334155;
+      margin: 20px 0;
+    }
+    .mockup-header {
+      background: #1e293b;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #334155;
+    }
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+
+    .mockup-address {
+      background: #0f172a;
+      padding: 4px 16px;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      font-family: monospace;
+      width: 55%;
+      text-align: center;
+    }
+
+    .mockup-body {
+      background: #f8fafc;
+      padding: 24px;
+      color: var(--slate-800);
+      min-height: 280px;
+    }
+
+    /* MOCKUP ELEMENTS */
+    .screen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .screen-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-pill {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    .stat-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+    .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+
+    .screen-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    /* INTERACTIVE SIMULATOR */
+    .sim-box {
+      background: white;
+      border: 2px dashed #6366f1;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+    .sim-steps {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .sim-step-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--slate-200);
+      background: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .sim-step-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* CREDENTIALS SEARCH & TABLE */
+    .search-bar {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 12px 14px;
+      border: 1px solid var(--slate-200);
+      text-align: left;
+    }
+    th {
+      background: #0f172a;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    .copy-btn {
+      background: #e2e8f0;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* CODE BOX */
+    .code-box {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      margin: 12px 0;
+      position: relative;
+    }
+    .code-box .badge-file {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: #334155;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    /* STEP LIST */
+    .step-list {
+      counter-reset: step-counter;
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+    .step-list li {
+      counter-increment: step-counter;
+      position: relative;
+      padding-left: 45px;
+      margin-bottom: 20px;
+    }
+    .step-list li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .action-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .action-btn:hover {
+      background: var(--primary-dark);
+    }
+    .action-btn.secondary {
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .action-btn.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      z-index: 1000;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <span class="hinglish-tag">Complete System Walkthrough & Interactive Guide</span>
+    <h1 style="margin-top: 10px;">CouncilTrack AI 🎯🤖</h1>
+    <p>
+      Centralized Student Governance, Daily Goal Tracking, Evening Reflection, and Public Voice Platform for <strong>NavGurukul Dantewada</strong>.
+    </p>
+    <div class="badge-row">
+      <span class="pill">🏛️ 14 Official Campus Councils</span>
+      <span class="pill">👥 25 Designated Coordinators</span>
+      <span class="pill">🛡️ Role-Based Access Control</span>
+      <span class="pill">⚡ Real-Time WebSockets</span>
+      <span class="pill">📊 Automated PRD Formulas</span>
+      <span class="pill">📢 Discord Webhooks Integrated</span>
+    </div>
+  </div>
+
+  <!-- STICKY NAVIGATION TABS -->
+  <div class="nav-container">
+    <div class="tabs-wrapper">
+      <button class="tab-btn active" onclick="switchTab('tab-overview')">📌 1. Project Overview & Samajh</button>
+      <button class="tab-btn" onclick="switchTab('tab-mockups')">🖼️ 2. Visual Screen Mockups</button>
+      <button class="tab-btn" onclick="switchTab('tab-simulator')">🎮 3. Interactive Daily Simulator</button>
+      <button class="tab-btn" onclick="switchTab('tab-admin-update')">🔑 4. Update Admin ID / Password</button>
+      <button class="tab-btn" onclick="switchTab('tab-credentials')">📋 5. 25 Coordinators Directory</button>
+      <button class="tab-btn" onclick="switchTab('tab-architecture')">⚙️ 6. Database & Architecture</button>
+      <button class="tab-btn" onclick="switchTab('tab-discord')">🔔 7. Discord Automation</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: OVERVIEW & SAMJH                     -->
+    <!-- ========================================== -->
+    <div id="tab-overview" class="tab-pane active">
+      <div class="card">
+        <h2>🎯 Yeh Project Kya Hai aur Kaise Kaam Karta Hai?</h2>
+        <div class="bilingual-box">
+          <div class="bilingual-title">💡 Aasan Hindi / Hinglish Mein Samajhein:</div>
+          <p>
+            <strong>CouncilTrack AI</strong> NavGurukul Dantewada campus ke liye banaya gaya ek digital management platform hai. Pehle campus councils (jaise Discipline, Workout, English, Culture, IT etc.) apne daily task aur student problems ko manually ya registers mein track karte the.
+          </p>
+          <p style="margin-top: 8px;">
+            Is platform se:
+            <br>1. <strong>Subah (Morning):</strong> Har Council Coordinator apne daily goals set karta hai.
+            <br>2. <strong>Shaam (Evening):</strong> Coordinator apni Evening Reflection bharta hai (Kaunsa goal complete hua, kaunsa incomplete raha aur kyu).
+            <br>3. <strong>Students:</strong> Bina kisi login ke direct website par aakar apni complaints ya feedback de sakte hain.
+            <br>4. <strong>Admin:</strong> Campus Team sabhi 14 councils ki live performance, weekly consistency aur complaints ek single dashboard par monitor kar sakti hai.
+          </p>
+        </div>
+
+        <div class="grid-3" style="margin-top: 24px;">
+          <div class="role-card admin-theme">
+            <span class="hinglish-tag" style="background:#4f46e5;">Role 1</span>
+            <h3 style="margin: 8px 0;">🛡️ Campus Admin</h3>
+            <p style="font-size: 0.9rem; color: var(--slate-600); margin-bottom: 12px;">
+              Campus Leadership & Facilitators jo sabhi councils ko manage karte hain.
+            </p>
+            <ul style="font-size: 0.85rem; color: var(--slate-700); padding-left: 18px; line-height: 1.5;">
+              <li>Members ko add/edit/deactivate karna.</li>
+              <li>Sabhi 14 councils ke daily goals check karna.</li>
+              <li>Goal status audit trail (Kisne status kab change kiya).</li>
+              <li>Private Admin Notes ke saath student complaints solve karna.</li>
+            </ul>
+          </div>
+
+          <div class="role-card council-theme">
+            <span class="hinglish-tag" style="background:#10b981;">Role 2</span>
+            <h3 style="margin: 8px 0;">🎯 Council Coordinator</h3>
+            <p style="font-size: 0.9rem; color: var(--slate-600); margin-bottom: 12px;">
+              25 Chune hue coordinators jo apne council domains ko lead karte hain.
+            </p>
+            <ul style="font-size: 0.85rem; color: var(--slate-700); padding-left: 18px; line-height: 1.5;">
+              <li>Subah daily goals set karna (Priority + Target Outcome).</li>
+              <li>Shaam ko mandatory Evening Reflection submit karna.</li>
+              <li>Incomplete goal par compulsory reason likhna.</li>
+              <li>Apne council ki weekly/monthly consistency track karna.</li>
+            </ul>
+          </div>
+
+          <div class="role-card student-theme">
+            <span class="hinglish-tag" style="background:#f59e0b;">Role 3</span>
+            <h3 style="margin: 8px 0;">🎓 Campus Student</h3>
+            <p style="font-size: 0.9rem; color: var(--slate-600); margin-bottom: 12px;">
+              Dantewada campus ke sabhi students (Zero login friction).
+            </p>
+            <ul style="font-size: 0.85rem; color: var(--slate-700); padding-left: 18px; line-height: 1.5;">
+              <li>Direct <code>/feedback</code> link kholna.</li>
+              <li>14 Councils mein se kisi bhi council ko select karna.</li>
+              <li>Suggestion, Feedback ya Complaint likhna.</li>
+              <li>Optional: Apna naam aur contact dena ya Anonymous rehna.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 30px;">⏱️ Daily Operating Cycle (Council Members ka Daily Routine)</h3>
+        <ol class="step-list">
+          <li>
+            <strong>08:30 AM — Morning Goal Setting (`/council/goals`)</strong>
+            <p style="font-size: 0.9rem; color: var(--slate-600);">
+              Coordinator login karke apne council ke 2 se 4 daily goals banata hai. Priority set karta hai (HIGH, MEDIUM, LOW) aur expected outcome likhta hai.
+            </p>
+          </li>
+          <li>
+            <strong>Day Time — Council Execution</strong>
+            <p style="font-size: 0.9rem; color: var(--slate-600);">
+              Campus mein coordination activities chalte hain (e.g., Workout session, English class prep, IT lab setup).
+            </p>
+          </li>
+          <li>
+            <strong>08:30 PM — Evening Reflection (`/council/reflection`)</strong>
+            <p style="font-size: 0.9rem; color: var(--slate-600);">
+              Mandatory reflection portal: Aaj ke goals ko check kiya jata hai. Jo goal pura hua use <strong>Completed ✓</strong> karte hain. Agar koi goal adhura reh gaya, toh system mandatory reason mangta hai (e.g. <em>"Power cut in lab"</em>).
+            </p>
+          </li>
+          <li>
+            <strong>Automatic Analytics Calculation</strong>
+            <p style="font-size: 0.9rem; color: var(--slate-600);">
+              System formula <code>(Completed / (Completed + Incomplete)) * 100</code> se automatically weekly aur monthly progress calculate karke Admin aur Coordinator dashboards update kar deta hai.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: VISUAL SCREEN MOCKUPS               -->
+    <!-- ========================================== -->
+    <div id="tab-mockups" class="tab-pane">
+      <div class="card">
+        <h2>🖼️ Visual Screen Mockups & UI Walkthrough</h2>
+        <p style="color: var(--slate-600);">
+          Neeche har important page ka high-fidelity visual preview aur uske elements ki detail di gayi hai.
+        </p>
+
+        <!-- MOCKUP 1: ADMIN DASHBOARD -->
+        <h3 style="margin-top: 24px;">1. Admin Executive Dashboard (`/admin/dashboard`)</h3>
+        <div class="mockup-window">
+          <div class="mockup-header">
+            <div class="mockup-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+            <div class="mockup-address">http://localhost:5173/admin/dashboard</div>
+            <div style="color: #64748b; font-size: 0.75rem;">ADMIN PORTAL</div>
+          </div>
+          <div class="mockup-body">
+            <div class="screen-header">
+              <div>
+                <h3 style="margin:0; font-size: 1.25rem;">Executive Council Command Center</h3>
+                <p style="margin:0; font-size: 0.85rem; color:#64748b;">NavGurukul Dantewada • Real-time Monitoring</p>
+              </div>
+              <span class="pill" style="background:#10b981; color:white;">● 14 Councils Online</span>
+            </div>
+
+            <div class="screen-stat-grid">
+              <div class="stat-pill">
+                <div class="stat-val">14</div>
+                <div class="stat-label">Total Councils</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-val">25</div>
+                <div class="stat-label">Active Coordinators</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-val">38</div>
+                <div class="stat-label">Today's Daily Goals</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-val" style="color: #10b981;">84%</div>
+                <div class="stat-label">Campus Completion Rate</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="screen-card">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                  <strong>Discipline Council</strong>
+                  <span style="font-size:0.75rem; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px; font-weight:700;">100% Rate</span>
+                </div>
+                <p style="font-size:0.85rem; color:#64748b;">Coordinators: Akanksha, Mohan</p>
+                <div style="font-size:0.8rem; margin-top:8px; padding:6px; background:#f1f5f9; border-radius:4px;">
+                  ✓ Morning assembly line formation completed<br>
+                  ✓ Curfew biometric roster checked
+                </div>
+              </div>
+
+              <div class="screen-card">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                  <strong>IT Council</strong>
+                  <span style="font-size:0.75rem; background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:4px; font-weight:700;">75% Rate</span>
+                </div>
+                <p style="font-size:0.85rem; color:#64748b;">Coordinators: Khushi, Subhash</p>
+                <div style="font-size:0.8rem; margin-top:8px; padding:6px; background:#f1f5f9; border-radius:4px;">
+                  ✓ Secondary router bandwidth configured<br>
+                  ✕ Lab 2 Ubuntu updates pending (Reason: Slow internet)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOCKUP 2: DAILY GOALS CREATION -->
+        <h3 style="margin-top: 32px;">2. Council Member: Daily Goals Creation (`/council/goals`)</h3>
+        <div class="mockup-window">
+          <div class="mockup-header">
+            <div class="mockup-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+            <div class="mockup-address">http://localhost:5173/council/goals</div>
+            <div style="color: #64748b; font-size: 0.75rem;">COUNCIL PORTAL</div>
+          </div>
+          <div class="mockup-body">
+            <div class="screen-header">
+              <div>
+                <h3 style="margin:0; font-size: 1.25rem;">My Daily Goals — English Council</h3>
+                <p style="margin:0; font-size: 0.85rem; color:#64748b;">Logged in as: Dilip (English Coordinator)</p>
+              </div>
+              <button class="action-btn">+ Create Morning Goal</button>
+            </div>
+
+            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; margin-bottom: 16px;">
+              <div style="display:flex; gap:12px; align-items:center; margin-bottom: 10px;">
+                <span style="background: #fee2e2; color:#b91c1c; font-weight:700; font-size:0.75rem; padding: 2px 8px; border-radius:4px;">HIGH PRIORITY</span>
+                <strong>Conduct Evening Extempore Debate (Batch B)</strong>
+                <span style="margin-left:auto; font-size:0.8rem; color:#64748b;">Status: PENDING</span>
+              </div>
+              <p style="font-size:0.88rem; color:#475569;">
+                Target: Ensure 100% participation from Batch B students on impromptu public speaking topics.
+              </p>
+              <div style="display:flex; gap: 8px; margin-top: 12px;">
+                <button class="action-btn" style="background:#10b981; font-size:0.75rem;">Mark Completed</button>
+                <button class="action-btn" style="background:#ef4444; font-size:0.75rem;">Mark Incomplete (Give Reason)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOCKUP 3: EVENING REFLECTION & REASON POPUP -->
+        <h3 style="margin-top: 32px;">3. Mandatory Evening Reflection & Incomplete Reason Workflow (`/council/reflection`)</h3>
+        <div class="mockup-window">
+          <div class="mockup-header">
+            <div class="mockup-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+            <div class="mockup-address">http://localhost:5173/council/reflection</div>
+            <div style="color: #64748b; font-size: 0.75rem;">EVENING SUBMISSION</div>
+          </div>
+          <div class="mockup-body" style="background: #e2e8f0; display:flex; justify-content:center; align-items:center; min-height: 320px;">
+            <div style="background: white; border-radius: 12px; padding: 24px; max-width: 500px; width:100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#ef4444;">
+                <span style="font-size:1.5rem;">⚠️</span>
+                <h4 style="margin:0; font-size:1.1rem; color:#0f172a;">Why was this goal incomplete?</h4>
+              </div>
+              <p style="font-size:0.85rem; color:#64748b; margin-bottom: 12px;">
+                As per NavGurukul Governance Rules, an explicit impediment reason is strictly required before evening lock.
+              </p>
+              <textarea style="width:100%; border:1px solid #cbd5e1; border-radius:6px; padding:10px; font-size:0.85rem;" rows="3" placeholder="Enter reason (e.g. Electricity outage from 4pm to 7pm prevented lab session)..."></textarea>
+              <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 14px;">
+                <button class="action-btn secondary">Cancel</button>
+                <button class="action-btn" style="background:#ef4444;">Save Incomplete Reason</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOCKUP 4: PUBLIC FEEDBACK & COMPLAINTS -->
+        <h3 style="margin-top: 32px;">4. Public Student Voice & Complaint Portal (`/feedback`)</h3>
+        <div class="mockup-window">
+          <div class="mockup-header">
+            <div class="mockup-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+            <div class="mockup-address">http://localhost:5173/feedback</div>
+            <div style="color: #64748b; font-size: 0.75rem;">PUBLIC ACCESS (NO LOGIN)</div>
+          </div>
+          <div class="mockup-body">
+            <div style="max-width: 600px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin-top:0; color:#0f172a;">📢 Student Feedback & Grievance Box</h3>
+              <p style="font-size:0.85rem; color:#64748b; margin-bottom: 16px;">
+                NavGurukul Dantewada Campus • Submit feedback or complaints directly to any council.
+              </p>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:0.8rem; font-weight:700; color:#334155;">Select Council:</label>
+                <select style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;">
+                  <option>Workout Council</option>
+                  <option>Discipline Council</option>
+                  <option>Academic Council (SOP)</option>
+                  <option>Health Council</option>
+                  <option>Operations Council (Ops)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:0.8rem; font-weight:700; color:#334155;">Type:</label>
+                <div style="display:flex; gap:16px; margin-top:4px; font-size:0.85rem;">
+                  <label><input type="radio" name="ftype" checked> Complaint</label>
+                  <label><input type="radio" name="ftype"> Suggestion</label>
+                  <label><input type="radio" name="ftype"> General Feedback</label>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="font-size:0.8rem; font-weight:700; color:#334155;">Your Message / Issue:</label>
+                <textarea style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;" rows="3" placeholder="Describe the issue clearly..."></textarea>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom: 16px;">
+                <input type="checkbox" id="anonCheck">
+                <label for="anonCheck" style="font-size:0.85rem; color:#475569;">Submit anonymously (Do not reveal my identity)</label>
+              </div>
+
+              <button class="action-btn" style="width:100%; padding:10px; font-size:0.95rem;">Submit Feedback</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: INTERACTIVE DAILY SIMULATOR         -->
+    <!-- ========================================== -->
+    <div id="tab-simulator" class="tab-pane">
+      <div class="card">
+        <h2>🎮 Interactive Council Daily Simulator</h2>
+        <div class="bilingual-box green">
+          <div class="bilingual-title">🧪 Try Karke Dekhein (Interactive Demonstration):</div>
+          <p>
+            Yahan aap khud dekh sakte hain ki subah goal kaise set hota hai, shaam ko incomplete reason kaise enforce hota hai, aur system live progress percentage kaise calculate karta hai.
+          </p>
+        </div>
+
+        <div class="sim-box">
+          <div class="sim-steps">
+            <button class="sim-step-btn active" id="sim-btn-1" onclick="runSimStep(1)">1. 🌅 Morning Goal Setting</button>
+            <button class="sim-step-btn" id="sim-btn-2" onclick="runSimStep(2)">2. ☀️ Daytime Status</button>
+            <button class="sim-step-btn" id="sim-btn-3" onclick="runSimStep(3)">3. 🌆 Evening Reflection & Reason</button>
+            <button class="sim-step-btn" id="sim-btn-4" onclick="runSimStep(4)">4. 📊 Final Progress Calculation</button>
+          </div>
+
+          <div id="sim-content" style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0;">
+            <!-- Step 1 Content by default -->
+            <h4 style="margin-bottom:8px; color:var(--primary);">🌅 Subah 08:30 AM — Setting Discipline Council Goals</h4>
+            <p style="font-size:0.9rem; margin-bottom:14px;">
+              Coordinator <strong>Akanksha</strong> creates 3 daily morning priorities:
+            </p>
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:8px;">
+              <strong>Goal 1:</strong> Organize 7:00 AM assembly line & prayer check (Priority: HIGH)
+            </div>
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:8px;">
+              <strong>Goal 2:</strong> Check student ID cards at academic block entry (Priority: MEDIUM)
+            </div>
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px;">
+              <strong>Goal 3:</strong> Conduct campus quiet-hours room inspection at 9:30 PM (Priority: HIGH)
+            </div>
+            <div style="margin-top:16px;">
+              <button class="action-btn" onclick="runSimStep(2)">Proceed to Daytime Review ➔</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: UPDATE ADMIN ID / PASSWORD GUIDE   -->
+    <!-- ========================================== -->
+    <div id="tab-admin-update" class="tab-pane">
+      <div class="card">
+        <h2>🔑 Where and How to Update Admin ID, Email & Password</h2>
+        
+        <div class="bilingual-box amber">
+          <div class="bilingual-title">⚡ Seedhe Jawab (Quick Summary):</div>
+          <p>
+            Aap Admin ka email, ID ya password <strong>3 alag tareeqon se</strong> update kar sakte hain:
+            <br>1. <strong>Sabse Aasan (Via Web UI):</strong> Web Portal ke andar <code>/admin/members</code> page par jakar Admin User ko <em>Edit</em> karein.
+            <br>2. <strong>Direct Data File (Local Mode):</strong> <code>counciltrack-ai/backend/data/counciltrack_store.json</code> file kholkar <code>USR_001</code> ke email aur password ko update karein.
+            <br>3. <strong>Google Sheets Mode:</strong> Apni Google Sheet ke <strong>`Users`</strong> tab mein jakar Row 2 ko update karein.
+          </p>
+        </div>
+
+        <h3 style="margin-top: 24px;">Tareeqa 1: Frontend Admin Portal Se Update Karna (Recommended)</h3>
+        <ol class="step-list">
+          <li>
+            Admin Portal par login karein:
+            <br>URL: <code>http://localhost:5173/admin/login</code>
+            <br>Email: <code>admin@counciltrack.org</code> | Password: <code>Admin@123</code>
+          </li>
+          <li>
+            Left sidebar menu se <strong>"Members"</strong> (<code>/admin/members</code>) par click karein.
+          </li>
+          <li>
+            Members list mein sabse pehla user <strong>"Admin User"</strong> (ID: <code>USR_001</code>) dikhega.
+          </li>
+          <li>
+            Right side mein diye gaye <strong>"Edit (Pencil Icon)"</strong> par click karein.
+          </li>
+          <li>
+            Modal khulega jisme aap:
+            <ul style="margin-top:6px; padding-left:20px;">
+              <li><strong>Email / Login ID:</strong> Naya admin email daal sakte hain.</li>
+              <li><strong>New Password:</strong> Naya password daal kar Save karein (System automatically bcrypt se hash karke secure kar dega).</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h3 style="margin-top: 28px;">Tareeqa 2: Local Database File (`counciltrack_store.json`) Se Update Karna</h3>
+        <p style="font-size:0.9rem; color:var(--slate-600);">
+          Agar server locally chal raha hai, toh data is JSON file mein persist hota hai:
+        </p>
+        <div class="code-box">
+          <span class="badge-file">counciltrack-ai/backend/data/counciltrack_store.json</span>
+{
+  "Users": [
+    {
+      "userId": "USR_001",
+      "name": "Admin User",
+      "email": "<span style="color:#38bdf8;">admin@counciltrack.org</span>", <span style="color:#94a3b8;">/* &lt;-- Yahan naya email likhein */</span>
+      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "role": "ADMIN",
+      "position": "Administrator",
+      "status": "ACTIVE"
+    },
+    ...
+  ]
+}
+        </div>
+
+        <h3 style="margin-top: 28px;">Tareeqa 3: Backend Controller Mein Fallback Master Passwords & Aliases</h3>
+        <p style="font-size:0.9rem; color:var(--slate-600);">
+          Backend ke <code>authController.js</code> mein safety aur testing ke liye convenience logins configured hain:
+        </p>
+        <div class="code-box">
+          <span class="badge-file">counciltrack-ai/backend/src/controllers/authController.js (Lines 19-20 & 56-60)</span>
+// 1. In Identifier Aliases:
+if (identifier === "admin" && uRole === "admin") return true;
+if (identifier === "admin@navgurukul.org" && uRole === "admin") return true;
+
+// 2. In Fallback Admin Passwords:
+if (userRole === "ADMIN") {
+  if (password === "admin@navgurukul.org" || password === "Admin@123" || password === "admin123") {
+    isMatch = true;
+  }
+}
+        </div>
+        <p style="font-size: 0.85rem; color: var(--slate-600); margin-top: 6px;">
+          💡 <strong>Tip:</strong> Agar aap fallback passwords badalna ya remove karna chahte hain, toh aap seedhe <code>authController.js</code> mein lines 56-60 modify kar sakte hain!
+        </p>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: CREDENTIALS DIRECTORY               -->
+    <!-- ========================================== -->
+    <div id="tab-credentials" class="tab-pane">
+      <div class="card">
+        <h2>📋 Official Councils & 25 Coordinators Login Directory</h2>
+        <p style="color:var(--slate-600); margin-bottom:16px;">
+          Sabhi accounts ka default password <strong><code>Admin@123</code></strong> hai. Kisi bhi email ke aage click karke copy kar sakte hain.
+        </p>
+
+        <input type="text" id="credSearch" class="search-bar" placeholder="🔍 Search by Council name, Coordinator name, or email..." onkeyup="filterCredentials()">
+
+        <div style="overflow-x:auto;">
+          <table id="credTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Council Name</th>
+                <th>Coordinator Name</th>
+                <th>Official Email</th>
+                <th>Default Password</th>
+                <th>Designation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:#eff6ff; font-weight:700;">
+                <td>👑</td>
+                <td><strong>Platform Admin</strong></td>
+                <td>Admin User</td>
+                <td><code>admin@counciltrack.org</code></td>
+                <td><code>Admin@123</code></td>
+                <td>Campus Administrator</td>
+                <td><button class="copy-btn" onclick="copyText('admin@counciltrack.org')">Copy Email</button></td>
+              </tr>
+              <tr><td>1</td><td>Discipline Council</td><td>Akanksha</td><td><code>akanksha@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Discipline Coordinator (Disco)</td><td><button class="copy-btn" onclick="copyText('akanksha@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>1</td><td>Discipline Council</td><td>Mohan</td><td><code>mohan@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Discipline Coordinator (Disco)</td><td><button class="copy-btn" onclick="copyText('mohan@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>2</td><td>Workout Council</td><td>Lalita</td><td><code>lalita@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Workout Coordinator</td><td><button class="copy-btn" onclick="copyText('lalita@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>2</td><td>Workout Council</td><td>Radheshyam</td><td><code>radheshyam@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Workout Coordinator</td><td><button class="copy-btn" onclick="copyText('radheshyam@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>3</td><td>Academic Council (SOP)</td><td>Gungun</td><td><code>gungun@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Academic Coordinator (SOP)</td><td><button class="copy-btn" onclick="copyText('gungun@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>4</td><td>Academic Council (SOB)</td><td>Dinesh</td><td><code>dinesh@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Academic Coordinator (SOB)</td><td><button class="copy-btn" onclick="copyText('dinesh@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>4</td><td>Academic Council (SOB)</td><td>Anjali</td><td><code>anjali@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Academic Coordinator (SOB)</td><td><button class="copy-btn" onclick="copyText('anjali@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>5</td><td>Academic Council (SOF)</td><td>Mukesh</td><td><code>mukesh@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Academic Coordinator (SOF)</td><td><button class="copy-btn" onclick="copyText('mukesh@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>5</td><td>Academic Council (SOF)</td><td>Nikita</td><td><code>nikita@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Academic Coordinator (SOF)</td><td><button class="copy-btn" onclick="copyText('nikita@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>6</td><td>English Council</td><td>Dilip</td><td><code>dilip@counciltrack.org</code></td><td><code>Admin@123</code></td><td>English Coordinator</td><td><button class="copy-btn" onclick="copyText('dilip@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>6</td><td>English Council</td><td>Deepa</td><td><code>deepa@counciltrack.org</code></td><td><code>Admin@123</code></td><td>English Coordinator</td><td><button class="copy-btn" onclick="copyText('deepa@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>7</td><td>IT Council</td><td>Khushi</td><td><code>khushi.it@counciltrack.org</code></td><td><code>Admin@123</code></td><td>IT Coordinator</td><td><button class="copy-btn" onclick="copyText('khushi.it@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>7</td><td>IT Council</td><td>Subhash</td><td><code>subhash@counciltrack.org</code></td><td><code>Admin@123</code></td><td>IT Coordinator</td><td><button class="copy-btn" onclick="copyText('subhash@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>8</td><td>Health Council</td><td>Khushi</td><td><code>khushi.health@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Health Coordinator</td><td><button class="copy-btn" onclick="copyText('khushi.health@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>8</td><td>Health Council</td><td>Sahdev</td><td><code>sahdev@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Health Coordinator</td><td><button class="copy-btn" onclick="copyText('sahdev@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>9</td><td>Hackathon Council</td><td>Vikky Podiyam</td><td><code>vikky@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Hackathon Coordinator</td><td><button class="copy-btn" onclick="copyText('vikky@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>10</td><td>Placement Council</td><td>Himanshu</td><td><code>himanshu@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Placement Coordinator</td><td><button class="copy-btn" onclick="copyText('himanshu@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>11</td><td>Outreach Council</td><td>Aakashi</td><td><code>aakashi@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Outreach Coordinator</td><td><button class="copy-btn" onclick="copyText('aakashi@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>12</td><td>Operations Council</td><td>Sanjana</td><td><code>sanjana@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Operations Coordinator (Ops)</td><td><button class="copy-btn" onclick="copyText('sanjana@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>12</td><td>Operations Council</td><td>Ramlal</td><td><code>ramlal@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Operations Coordinator (Ops)</td><td><button class="copy-btn" onclick="copyText('ramlal@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>13</td><td>Culture Council</td><td>Kranti Kashyap</td><td><code>kranti@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Culture Coordinator</td><td><button class="copy-btn" onclick="copyText('kranti@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>13</td><td>Culture Council</td><td>Vidya</td><td><code>vidya@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Culture Coordinator</td><td><button class="copy-btn" onclick="copyText('vidya@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>13</td><td>Culture Council</td><td>Himani</td><td><code>himani@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Culture Coordinator</td><td><button class="copy-btn" onclick="copyText('himani@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>14</td><td>Induction Council</td><td>Sona</td><td><code>sona@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Induction Coordinator</td><td><button class="copy-btn" onclick="copyText('sona@counciltrack.org')">Copy</button></td></tr>
+              <tr><td>14</td><td>Induction Council</td><td>Kajal</td><td><code>kajal@counciltrack.org</code></td><td><code>Admin@123</code></td><td>Induction Coordinator</td><td><button class="copy-btn" onclick="copyText('kajal@counciltrack.org')">Copy</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 6: DATABASE & ARCHITECTURE            -->
+    <!-- ========================================== -->
+    <div id="tab-architecture" class="tab-pane">
+      <div class="card">
+        <h2>⚙️ System Architecture & 8-Worksheet Database Model</h2>
+        <div class="bilingual-box blue">
+          <div class="bilingual-title">💾 Dual-Storage Engine:</div>
+          <p>
+            Backend mein <strong>Dual-Mode Storage Engine</strong> (`sheetsService.js`) implement kiya gaya hai.
+            <br>• Agar <code>GOOGLE_SHEET_ID</code> aur credentials present hain, toh direct Google Sheets API se sync karta hai.
+            <br>• Local development ya testing ke waqt bina kisi setup ke zero-friction local JSON storage (`data/counciltrack_store.json`) use karta hai.
+          </p>
+        </div>
+
+        <h3 style="margin-top:20px;">The 8 Database Worksheets</h3>
+        <div class="grid-2">
+          <div class="screen-card">
+            <strong>1. `Users`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Admin & 25 Coordinator accounts with bcrypt hash, roles (ADMIN/COUNCIL), and status.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>2. `Councils`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              All 14 Campus Council entities, descriptions, and active status.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>3. `Goals`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Daily goals with Priority, Target Date, Status (PENDING/COMPLETED/INCOMPLETE), and Incomplete Reason.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>4. `Reflections`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Daily evening reflections containing achievements, challenges, learnings, and improvements.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>5. `Student_Feedback`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Public complaints & suggestions with status (NEW/UNDER_REVIEW/RESOLVED) and private admin notes.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>6. `Goal_History`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Immutable audit log of every goal status transition (who changed it, oldStatus, newStatus, timestamp).
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>7. `Audit_Logs`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              System-level activity tracking for account creation, council updates, and sensitive mutations.
+            </p>
+          </div>
+          <div class="screen-card">
+            <strong>8. `Settings`</strong>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">
+              Dynamic campus configuration, curfew timings, and platform parameters.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="margin-top:24px;">PRD Standard Automated Progress Formula</h3>
+        <p style="font-size:0.9rem; color:var(--slate-600);">
+          Pending goals ko denominator se exclude karke strictly finalized goals par percentage calculate hoti hai:
+        </p>
+        <div class="code-box">
+Progress Rate (%) = (Completed Goals / (Completed Goals + Incomplete Goals)) * 100
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 7: DISCORD AUTOMATION                  -->
+    <!-- ========================================== -->
+    <div id="tab-discord" class="tab-pane">
+      <div class="card">
+        <h2>🔔 Discord Webhook Integration & Live Alerts</h2>
+        <div class="bilingual-box green">
+          <div class="bilingual-title">🤖 Real-Time Campus Discord Alerts:</div>
+          <p>
+            NavGurukul ke Discord server par daily goals, completions aur evening reflections ke automated embeds bhejne ke liye native webhook support ready hai.
+          </p>
+        </div>
+
+        <h3 style="margin-top:20px;">Webhook Setup Steps:</h3>
+        <ol class="step-list">
+          <li>Apne Discord server par jaayein ➔ Channel Settings ➔ <strong>Integrations</strong> ➔ <strong>Webhooks</strong>.</li>
+          <li><strong>New Webhook</strong> banayein aur Webhook URL copy karein.</li>
+          <li><code>counciltrack-ai/backend/.env</code> file mein paste karein:</li>
+        </ol>
+
+        <div class="code-box">
+          <span class="badge-file">counciltrack-ai/backend/.env</span>
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1234567890/abcdefghijklmnopqrstuvwxyz
+        </div>
+
+        <h3 style="margin-top:20px;">Discord Embed Preview:</h3>
+        <div style="background:#2b2d31; border-left:4px solid #5865f2; border-radius:6px; padding:16px; color:#dbdee1; max-width:550px; font-size:0.88rem;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <strong style="color:white; font-size:1rem;">🎯 New Council Goal Created!</strong>
+          </div>
+          <p><strong>Council:</strong> Discipline Council</p>
+          <p><strong>Coordinator:</strong> Akanksha</p>
+          <p><strong>Goal:</strong> Organize 7:00 AM assembly line & prayer check</p>
+          <p><strong>Priority:</strong> <span style="color:#ef4444; font-weight:700;">🔴 HIGH</span></p>
+          <div style="margin-top:8px; font-size:0.75rem; color:#949ba4;">CouncilTrack AI Bot • Today at 08:31 AM</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">Copied to clipboard!</div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const targetPane = document.getElementById(tabId);
+      if (targetPane) targetPane.classList.add('active');
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = 'Copied: ' + text;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+      });
+    }
+
+    function filterCredentials() {
+      const q = document.getElementById('credSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('#credTable tbody tr');
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    function runSimStep(step) {
+      document.querySelectorAll('.sim-step-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById('sim-btn-' + step);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const simContent = document.getElementById('sim-content');
+      if (step === 1) {
+        simContent.innerHTML = `
+          <h4 style="margin-bottom:8px; color:var(--primary);">🌅 Subah 08:30 AM — Setting Discipline Council Goals</h4>
+          <p style="font-size:0.9rem; margin-bottom:14px;">
+            Coordinator <strong>Akanksha</strong> creates 3 daily morning priorities:
+          </p>
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:8px;">
+            <strong>Goal 1:</strong> Organize 7:00 AM assembly line & prayer check (Priority: HIGH)
+          </div>
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:8px;">
+            <strong>Goal 2:</strong> Check student ID cards at academic block entry (Priority: MEDIUM)
+          </div>
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:12px;">
+            <strong>Goal 3:</strong> Conduct campus quiet-hours room inspection at 9:30 PM (Priority: HIGH)
+          </div>
+          <div style="margin-top:16px;">
+            <button class="action-btn" onclick="runSimStep(2)">Proceed to Daytime Review ➔</button>
+          </div>
+        `;
+      } else if (step === 2) {
+        simContent.innerHTML = `
+          <h4 style="margin-bottom:8px; color:#f59e0b;">☀️ Daytime Status — Council In Action</h4>
+          <p style="font-size:0.9rem; margin-bottom:14px;">
+            During the day, Goal 1 was completed smoothly. However, Goal 2 encountered rain and delay:
+          </p>
+          <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:6px; padding:12px; margin-bottom:8px;">
+            <span style="color:#16a34a; font-weight:700;">✓ COMPLETED:</span> Goal 1 (Assembly check done on time).
+          </div>
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:12px;">
+            <span style="color:#b45309; font-weight:700;">⏳ PENDING:</span> Goal 2 and Goal 3 awaiting evening review.
+          </div>
+          <div style="margin-top:16px; display:flex; gap:8px;">
+            <button class="action-btn secondary" onclick="runSimStep(1)">⬅ Back</button>
+            <button class="action-btn" onclick="runSimStep(3)">Go to Evening Reflection ➔</button>
+          </div>
+        `;
+      } else if (step === 3) {
+        simContent.innerHTML = `
+          <h4 style="margin-bottom:8px; color:#ef4444;">🌆 Shaam 08:30 PM — Evening Reflection & Incomplete Reason Enforced</h4>
+          <p style="font-size:0.9rem; margin-bottom:14px;">
+            Akanksha reviews today's goals. Goal 2 could not be completed. The platform strictly enforces entering a reason:
+          </p>
+          <div style="background:white; border:2px solid #ef4444; border-radius:8px; padding:16px; margin-bottom:12px;">
+            <strong>Goal 2: Check student ID cards at academic block entry</strong>
+            <div style="margin-top:8px;">
+              <span style="background:#fee2e2; color:#b91c1c; font-size:0.8rem; font-weight:700; padding:2px 8px; border-radius:4px;">STATUS: INCOMPLETE</span>
+            </div>
+            <div style="margin-top:10px; font-size:0.88rem; background:#f8fafc; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">
+              <strong>Enforced Reason Logged:</strong> <em>"Heavy continuous rain during morning block entry; students rushed directly to classrooms."</em>
+            </div>
+          </div>
+          <div style="margin-top:16px; display:flex; gap:8px;">
+            <button class="action-btn secondary" onclick="runSimStep(2)">⬅ Back</button>
+            <button class="action-btn" onclick="runSimStep(4)">Calculate Final Progress ➔</button>
+          </div>
+        `;
+      } else if (step === 4) {
+        simContent.innerHTML = `
+          <h4 style="margin-bottom:8px; color:#10b981;">📊 Final Automated Calculation & Audit Record</h4>
+          <p style="font-size:0.9rem; margin-bottom:14px;">
+            System calculates progress using PRD Formula: <code>(Completed / (Completed + Incomplete)) * 100</code>
+          </p>
+          <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:16px; margin-bottom:14px;">
+            <div style="font-size:1.1rem; font-weight:800; color:#1e3a8a;">
+              Calculated Daily Completion Rate: 67% (2 Completed / 3 Finalized)
+            </div>
+            <p style="font-size:0.85rem; color:#475569; margin-top:6px;">
+              • Total Finalized: 3 goals (2 Completed, 1 Incomplete with reason).<br>
+              • Audit Record logged to <code>Goal_History</code> with Akanksha's timestamp.<br>
+              • Campus Executive Dashboard & Weekly chart automatically refreshed via Socket.io.
+            </p>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="action-btn secondary" onclick="runSimStep(1)">🔄 Restart Simulation</button>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

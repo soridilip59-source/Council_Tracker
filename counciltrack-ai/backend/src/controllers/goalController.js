@@ -59,6 +59,7 @@ async function createGoal(req, res) {
       expectedOutcome: expectedOutcome.trim(),
       priority: priority.toUpperCase(),
       goalDate,
+      goalType: "daily",
       status: "PENDING",
       incompleteReason: "",
       assignedTo: targetUserId,
@@ -122,15 +123,22 @@ async function createGoal(req, res) {
 async function getMyGoals(req, res) {
   try {
     const userId = req.user.userId;
-    const { goalDate, status, startDate, endDate, scope } = req.query;
+    const councilId = req.user.councilId;
+    const { goalDate, status, startDate, endDate, scope, memberName } = req.query;
 
     let goals = await sheetsService.find("Goals", (g) => {
+      const belongsToCouncil = councilId && g.councilId === councilId;
       const isAssignedToMe = g.userId === userId || g.assignedTo === userId;
       const isAssignedByMe = g.assignedBy === userId;
       if (scope === "assigned_by_me") return isAssignedByMe;
       if (scope === "assigned_to_me") return isAssignedToMe;
-      return isAssignedToMe || isAssignedByMe;
+      return belongsToCouncil || isAssignedToMe || isAssignedByMe;
     });
+
+    if (memberName && memberName !== "all") {
+      const targetMember = memberName.toLowerCase().trim();
+      goals = goals.filter((g) => (g.assignedToName || "").toLowerCase().trim() === targetMember);
+    }
 
     if (goalDate) {
       goals = goals.filter((g) => g.goalDate === goalDate);

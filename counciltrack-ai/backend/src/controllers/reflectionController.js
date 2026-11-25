@@ -16,11 +16,12 @@ async function submitReflection(req, res) {
     } = req.body;
 
     const userId = req.user.userId;
+    const councilId = req.user.councilId;
 
-    // Check if reflection already exists for this date and user
+    // Check if reflection already exists for this date and user/council
     const existing = await sheetsService.findOne(
       "Reflections",
-      (r) => r.userId === userId && r.reflectionDate === reflectionDate
+      (r) => (r.userId === userId || (councilId && r.councilId === councilId)) && r.reflectionDate === reflectionDate
     );
 
     const now = new Date().toISOString();
@@ -31,7 +32,7 @@ async function submitReflection(req, res) {
       for (const item of goalStatuses) {
         if (!item.goalId) continue;
         const goal = await sheetsService.getById("Goals", "goalId", item.goalId);
-        if (goal && goal.userId === userId) {
+        if (goal && (goal.userId === userId || goal.councilId === councilId)) {
           const newStatus = (item.status || "PENDING").toUpperCase();
           const reason = item.incompleteReason || "";
 
@@ -77,6 +78,7 @@ async function submitReflection(req, res) {
       reflectionRecord = {
         reflectionId: generateId("REF"),
         userId,
+        councilId: councilId || "",
         reflectionDate,
         achievements: achievements.trim(),
         incompleteGoals: incompleteSummary.join("; ") || "None",
@@ -90,6 +92,7 @@ async function submitReflection(req, res) {
       await sheetsService.insert("Reflections", reflectionRecord);
       await sheetsService.logAudit(userId, "REFLECTION_SUBMITTED", "REFLECTION", reflectionRecord.reflectionId, {
         date: reflectionDate,
+        councilId,
       });
     }
 
@@ -122,7 +125,11 @@ async function submitReflection(req, res) {
 async function getMyReflections(req, res) {
   try {
     const userId = req.user.userId;
-    const reflections = await sheetsService.find("Reflections", (r) => r.userId === userId);
+    const councilId = req.user.councilId;
+    const reflections = await sheetsService.find(
+      "Reflections",
+      (r) => r.userId === userId || (councilId && r.councilId === councilId)
+    );
     reflections.sort((a, b) => (b.reflectionDate || "").localeCompare(a.reflectionDate || ""));
 
     return successResponse(res, reflections, "Reflections retrieved successfully");

@@ -57,20 +57,30 @@ class DiscordService {
     return record;
   }
 
-  // Event 1: New Goal Created -> #council-goals
+  // Event 1: New Daily Goal Created -> #council-goals
   async notifyGoalCreated(goal, user, council) {
     const channel = channels.goals;
+    const coordinatorName = goal.assignedToName || user?.name || "Council Coordinator";
+    const councilName = council?.councilName || "Council";
+    const goalDate = goal.goalDate || new Date().toISOString().split("T")[0];
+
+    const fields = [
+      { name: "🏛️ Council", value: councilName, inline: true },
+      { name: "👤 Coordinator", value: coordinatorName, inline: true },
+      { name: "🔥 Priority", value: goal.priority || "MEDIUM", inline: true },
+      { name: "📅 Date", value: goalDate, inline: true },
+    ];
+
+    if (goal.expectedOutcome) {
+      fields.push({ name: "🎯 Target Outcome", value: goal.expectedOutcome.slice(0, 1024), inline: false });
+    }
+
     const embed = {
-      title: `🎯 New ${goal.goalType === "daily" ? "Daily" : "Weekly"} Goal Established`,
+      title: `🎯 [DAILY GOAL] ${councilName}`,
       description: `**${goal.title}**\n${goal.description || "No description provided."}`,
-      color: 0x22c55e, // Green
-      fields: [
-        { name: "Council", value: council?.councilName || "General Council", inline: true },
-        { name: "Owner", value: user?.name || "Council Member", inline: true },
-        { name: "Priority", value: goal.priority || "Medium", inline: true },
-        { name: "Due Date", value: goal.dueDate || "Not set", inline: true },
-      ],
-      footer: { text: "CouncilTrack AI • Automated Notification" },
+      color: 0x22c55e, // Emerald Green
+      fields,
+      footer: { text: "CouncilTrack AI • Daily Morning Goal" },
       timestamp: new Date().toISOString(),
     };
 
@@ -79,21 +89,53 @@ class DiscordService {
       embeds: [embed],
     });
 
-    await this.logNotification("goal_created", channel.name, goal.title, res.success ? "Sent" : "Pending");
+    await this.logNotification("daily_goal_created", channel.name, `[DAILY] ${goal.title} (${coordinatorName})`, res.success ? "Sent" : "Pending");
+    return res;
+  }
+
+  // Event 1B: New Weekly Goal Established -> #council-goals
+  async notifyWeeklyGoalCreated(weeklyGoal, council, user) {
+    const channel = channels.goals;
+    const councilName = council?.councilName || "Council";
+    const weekPeriod = `${weeklyGoal.weekStart} to ${weeklyGoal.weekEnd}`;
+
+    const fields = [
+      { name: "🏛️ Council", value: councilName, inline: true },
+      { name: "👤 Set By", value: user?.name || "Council Coordinators", inline: true },
+      { name: "🗓️ Week Period", value: weekPeriod, inline: true },
+      { name: "⚡ Status", value: weeklyGoal.status || "ACTIVE", inline: true },
+    ];
+
+    const embed = {
+      title: `📅 [WEEKLY GOAL] ${councilName}`,
+      description: `**Weekly Focus:** ${weeklyGoal.title}\n\n**Action Plan:**\n${weeklyGoal.description || "No plan description provided."}`,
+      color: 0x8b5cf6, // Purple
+      fields,
+      footer: { text: "CouncilTrack AI • Weekly Strategic Planning (Once a Week)" },
+      timestamp: new Date().toISOString(),
+    };
+
+    const res = await sendWebhook(channel.url, {
+      username: "CouncilTrack AI",
+      embeds: [embed],
+    });
+
+    await this.logNotification("weekly_goal_created", channel.name, `[WEEKLY] ${weeklyGoal.title}`, res.success ? "Sent" : "Pending");
     return res;
   }
 
   // Event 2: Goal Completed -> #goal-completions
   async notifyGoalCompleted(goal, user, council) {
     const channel = channels.completions;
+    const isDaily = goal.goalType === "daily" || Boolean(goal.goalDate);
     const embed = {
-      title: `🎉 Goal Completed!`,
+      title: `🎉 ${isDaily ? "[Daily Goal]" : "[Weekly Goal]"} Completed!`,
       description: `**${goal.title}** has been marked as 100% completed.`,
       color: 0x3b82f6, // Blue
       fields: [
         { name: "Council", value: council?.councilName || "General Council", inline: true },
-        { name: "Completed By", value: user?.name || "Council Member", inline: true },
-        { name: "Goal Type", value: goal.goalType === "daily" ? "Daily Goal" : "Weekly Goal", inline: true },
+        { name: "Completed By", value: goal.assignedToName || user?.name || "Council Member", inline: true },
+        { name: "Goal Type", value: isDaily ? "Daily Morning Goal" : "Weekly Goal", inline: true },
       ],
       footer: { text: "CouncilTrack AI • Automated Notification" },
       timestamp: new Date().toISOString(),

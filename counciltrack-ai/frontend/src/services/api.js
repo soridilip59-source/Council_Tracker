@@ -37,6 +37,14 @@ export const authApi = {
   login: (credentials) => api.post("/auth/login", credentials),
   logout: () => api.post("/auth/logout"),
   getMe: () => api.get("/auth/me"),
+  updateProfile: (data) => api.patch("/auth/profile", data),
+  changePassword: (data) => api.patch("/auth/change-password", data),
+};
+
+export const weeklyGoalApi = {
+  getMy: (params) => api.get("/weekly-goals/my", { params }),
+  create: (data) => api.post("/weekly-goals", data),
+  delete: (id) => api.delete(`/weekly-goals/${id}`),
 };
 
 export const userApi = {

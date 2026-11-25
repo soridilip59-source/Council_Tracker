@@ -1,0 +1,393 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CouncilTrack AI — Platform Walkthrough & Operations Manual</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.5;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+      color: #ffffff;
+      padding: 24px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .header-banner h1 {
+      margin: 0 0 6px 0;
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .header-banner .subtitle {
+      font-size: 11pt;
+      color: #cbd5e1;
+      margin: 0 0 12px 0;
+    }
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 8.5pt;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11.5pt;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 0 0 10px 0;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      page-break-inside: avoid;
+    }
+    .card.accent {
+      border-left: 4px solid #4f46e5;
+    }
+    .card.green {
+      border-left: 4px solid #10b981;
+    }
+    .card.amber {
+      border-left: 4px solid #f59e0b;
+    }
+    .card.blue {
+      border-left: 4px solid #0284c7;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 10pt;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .card-body {
+      font-size: 9pt;
+      color: #475569;
+      line-height: 1.4;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px 0;
+      font-size: 9pt;
+      page-break-inside: auto;
+    }
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #0f172a;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .code-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 8.5pt;
+      margin: 8px 0 12px 0;
+      line-height: 1.4;
+      page-break-inside: avoid;
+    }
+    .note-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 9pt;
+      color: #1e40af;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8pt;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER / HEADER BANNER -->
+  <div class="header-banner">
+    <h1>CouncilTrack AI</h1>
+    <div class="subtitle">Platform Walkthrough & Operations Manual • NavGurukul Dantewada Campus</div>
+    <div class="badge-bar">
+      <span class="badge">Version 2.0 (Production Ready)</span>
+      <span class="badge">14 Official Councils</span>
+      <span class="badge">25 Council Coordinators</span>
+      <span class="badge">Discord Webhooks Integrated</span>
+      <span class="badge">PostgreSQL & Dual-Mode Store</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: EXECUTIVE SUMMARY -->
+  <h2>1. Platform Executive Summary</h2>
+  <p>
+    <strong>CouncilTrack AI</strong> is an automated student governance, daily goal tracking, evening reflection, and public complaint management platform built specifically for NavGurukul Dantewada. It enforces accountability across campus coordinator bodies, provides real-time transparency to campus leadership, and provides a frictionless channel for student voice.
+  </p>
+
+  <div class="card-grid">
+    <div class="card accent">
+      <div class="card-title">🛡️ Role-Based Access Control</div>
+      <div class="card-body">Strict separation between Campus Administrators (<code>ADMIN</code>), Council Coordinators (<code>COUNCIL</code>), and Students (Public Access with zero login friction).</div>
+    </div>
+    <div class="card green">
+      <div class="card-title">🎯 Daily Goals & Evening Reflections</div>
+      <div class="card-body">Morning goal creation paired with mandatory evening reflection checklists. Goals marked incomplete strictly require explicit reasons.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-title">🔒 Confidential Feedback System</div>
+      <div class="card-body">Public feedback form for all 14 councils with anonymous options. Administrative notes are cryptographically shielded from council members.</div>
+    </div>
+    <div class="card blue">
+      <div class="card-title">📊 Automated Progress Formulas</div>
+      <div class="card-body">Monday-to-Sunday weekly and monthly analytics computed dynamically using the PRD standard formula: <code>(Completed / (Completed + Incomplete)) * 100</code>.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: OFFICIAL COUNCILS & CREDENTIALS DIRECTORY -->
+  <h2>2. Official Councils & Coordinators Directory</h2>
+  <p>All coordinator and admin accounts come pre-configured with the default password: <strong><code>Admin@123</code></strong></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 5%;">#</th>
+        <th style="width: 25%;">Council Name</th>
+        <th style="width: 22%;">Coordinator Name</th>
+        <th style="width: 26%;">Login Email</th>
+        <th style="width: 22%;">Official Designation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>—</td><td><strong>Platform Admin</strong></td><td>Admin User</td><td><code>admin@counciltrack.org</code></td><td>Campus Administrator</td></tr>
+      <tr><td>1</td><td>Discipline Council</td><td>Akanksha</td><td><code>akanksha@counciltrack.org</code></td><td>Discipline Coordinator (Disco)</td></tr>
+      <tr><td>1</td><td>Discipline Council</td><td>Mohan</td><td><code>mohan@counciltrack.org</code></td><td>Discipline Coordinator (Disco)</td></tr>
+      <tr><td>2</td><td>Workout Council</td><td>Lalita</td><td><code>lalita@counciltrack.org</code></td><td>Workout Coordinator</td></tr>
+      <tr><td>2</td><td>Workout Council</td><td>Radheshyam</td><td><code>radheshyam@counciltrack.org</code></td><td>Workout Coordinator</td></tr>
+      <tr><td>3</td><td>Academic Council (SOP)</td><td>Gungun</td><td><code>gungun@counciltrack.org</code></td><td>Academic Coordinator (SOP)</td></tr>
+      <tr><td>4</td><td>Academic Council (SOB)</td><td>Dinesh</td><td><code>dinesh@counciltrack.org</code></td><td>Academic Coordinator (SOB)</td></tr>
+      <tr><td>4</td><td>Academic Council (SOB)</td><td>Anjali</td><td><code>anjali@counciltrack.org</code></td><td>Academic Coordinator (SOB)</td></tr>
+      <tr><td>5</td><td>Academic Council (SOF)</td><td>Mukesh</td><td><code>mukesh@counciltrack.org</code></td><td>Academic Coordinator (SOF)</td></tr>
+      <tr><td>5</td><td>Academic Council (SOF)</td><td>Nikita</td><td><code>nikita@counciltrack.org</code></td><td>Academic Coordinator (SOF)</td></tr>
+      <tr><td>6</td><td>English Council</td><td>Dilip</td><td><code>dilip@counciltrack.org</code></td><td>English Coordinator</td></tr>
+      <tr><td>6</td><td>English Council</td><td>Deepa</td><td><code>deepa@counciltrack.org</code></td><td>English Coordinator</td></tr>
+      <tr><td>7</td><td>IT Council</td><td>Khushi</td><td><code>khushi.it@counciltrack.org</code></td><td>IT Coordinator</td></tr>
+      <tr><td>7</td><td>IT Council</td><td>Subhash</td><td><code>subhash@counciltrack.org</code></td><td>IT Coordinator</td></tr>
+      <tr><td>8</td><td>Health Council</td><td>Khushi</td><td><code>khushi.health@counciltrack.org</code></td><td>Health Coordinator</td></tr>
+      <tr><td>8</td><td>Health Council</td><td>Sahdev</td><td><code>sahdev@counciltrack.org</code></td><td>Health Coordinator</td></tr>
+      <tr><td>9</td><td>Hackathon Council</td><td>Vikky Podiyam</td><td><code>vikky@counciltrack.org</code></td><td>Hackathon Coordinator</td></tr>
+      <tr><td>10</td><td>Placement Council</td><td>Himanshu</td><td><code>himanshu@counciltrack.org</code></td><td>Placement Coordinator</td></tr>
+      <tr><td>11</td><td>Outreach Council</td><td>Aakashi</td><td><code>aakashi@counciltrack.org</code></td><td>Outreach Coordinator</td></tr>
+      <tr><td>12</td><td>Operations Council</td><td>Sanjana</td><td><code>sanjana@counciltrack.org</code></td><td>Operations Coordinator (Ops)</td></tr>
+      <tr><td>12</td><td>Operations Council</td><td>Ramlal</td><td><code>ramlal@counciltrack.org</code></td><td>Operations Coordinator (Ops)</td></tr>
+      <tr><td>13</td><td>Culture Council</td><td>Kranti Kashyap</td><td><code>kranti@counciltrack.org</code></td><td>Culture Coordinator</td></tr>
+      <tr><td>13</td><td>Culture Council</td><td>Vidya</td><td><code>vidya@counciltrack.org</code></td><td>Culture Coordinator</td></tr>
+      <tr><td>13</td><td>Culture Council</td><td>Himani</td><td><code>himani@counciltrack.org</code></td><td>Culture Coordinator</td></tr>
+      <tr><td>14</td><td>Induction Council</td><td>Sona</td><td><code>sona@counciltrack.org</code></td><td>Induction Coordinator</td></tr>
+      <tr><td>14</td><td>Induction Council</td><td>Kajal</td><td><code>kajal@counciltrack.org</code></td><td>Induction Coordinator</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 3: CORE PORTALS & WORKFLOWS -->
+  <h2>3. Core Portals & Daily Operating Workflows</h2>
+
+  <h3>3.1 Public Student Voice & Complaint Portal (<code>/feedback</code>)</h3>
+  <p>
+    Students access a single, common feedback link without needing accounts or logging in. They can select any of the 14 councils, choose between <em>General Feedback</em>, <em>Suggestion</em>, or <em>Complaint</em>, and optionally submit anonymously. Once submitted, feedback is immediately dispatched via WebSockets to the Admin dashboard and council views.
+  </p>
+
+  <h3>3.2 Council Member Daily Cycle (<code>/council/*</code>)</h3>
+  <div class="card-grid">
+    <div class="card green">
+      <div class="card-title">🌅 Morning: Daily Goal Setting (<code>/council/goals</code>)</div>
+      <div class="card-body">Coordinators establish actionable goals for their council before morning assembly. Each goal includes a title, description, priority badge (HIGH, MEDIUM, LOW), and targeted outcome.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-title">🌆 Evening: Daily Reflection (<code>/council/reflection</code>)</div>
+      <div class="card-body">Mandatory check-in before curfew. The coordinator reviews today's goals. Marking a goal COMPLETED updates audit history; marking INCOMPLETE enforces entering a mandatory impediment reason.</div>
+    </div>
+    <div class="card blue">
+      <div class="card-title">📈 Progress Tracking (<code>/council/weekly-progress</code>)</div>
+      <div class="card-body">Automatic weekly consistency percentage calculated across active weekdays (Monday to Sunday) with day-by-day historical records.</div>
+    </div>
+    <div class="card accent">
+      <div class="card-title">💬 Council Complaints View (<code>/council/feedback</code>)</div>
+      <div class="card-body">Coordinators can inspect and act upon student feedback submitted specifically for their council. Private administrator notes remain strictly hidden.</div>
+    </div>
+  </div>
+
+  <h3>3.3 Campus Administrator Control Center (<code>/admin/*</code>)</h3>
+  <div class="card-grid">
+    <div class="card accent">
+      <div class="card-title">📊 Executive Dashboard (<code>/admin/dashboard</code>)</div>
+      <div class="card-body">Real-time metrics: Total Councils (14), Active Coordinators (25), Today's Active Goals, and Overall Campus Completion Rate.</div>
+    </div>
+    <div class="card green">
+      <div class="card-title">👥 Member Management (<code>/admin/members</code>)</div>
+      <div class="card-body">Create new coordinators, re-assign coordinators across councils, edit designations, and toggle ACTIVE / INACTIVE account status.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-title">🏛️ Council Management (<code>/admin/councils</code>)</div>
+      <div class="card-body">Create and edit council domains, adjust descriptions, and view current member rosters per council.</div>
+    </div>
+    <div class="card blue">
+      <div class="card-title">🎯 Council Goals & Audit Timeline (<code>/admin/goals</code>)</div>
+      <div class="card-body">Inspect goal cards across all councils. Click any goal to open the audit trail showing who changed the status, old vs new state, and timestamps.</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <strong>Admin Confidential Notes Feature:</strong> Under <code>/admin/feedback</code>, administrators can update complaint statuses (<code>NEW</code> ➔ <code>UNDER_REVIEW</code> ➔ <code>RESOLVED</code>) and attach private notes (e.g. staff meetings, student counseling notes). These notes are cryptographically omitted from council member payloads.
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 4: DISCORD INTEGRATION -->
+  <h2>4. Discord Webhook Integration</h2>
+  <p>
+    CouncilTrack AI includes native Discord webhook support to push real-time embed cards for all campus milestones.
+  </p>
+
+  <h3>Step-by-step Setup:</h3>
+  <ol style="font-size: 9.5pt; color: #334155; padding-left: 20px;">
+    <li>Open your Discord Server ➔ Channel Settings (Gear Icon) ➔ <strong>Integrations</strong> ➔ <strong>Webhooks</strong>.</li>
+    <li>Click <strong>New Webhook</strong>, assign a name (e.g. <code>CouncilTrack Bot</code>), and copy the Webhook URL.</li>
+    <li>Paste the URL into <code>counciltrack-ai/backend/.env</code>:</li>
+  </ol>
+
+  <div class="code-box">
+# Single Webhook for all alerts:
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1234567890/abcdefghijklmnopqrstuvwxyz
+
+# Or Dedicated Channels:
+DISCORD_WEBHOOK_GOALS=https://discord.com/api/webhooks/...      # Target: #council-goals
+DISCORD_WEBHOOK_COMPLETIONS=https://discord.com/api/webhooks/...# Target: #goal-completions
+DISCORD_WEBHOOK_REFLECTIONS=https://discord.com/api/webhooks/...# Target: #weekly-reflections
+  </div>
+
+  <h3>Supported Automated Discord Embeds:</h3>
+  <div class="card-grid">
+    <div class="card green">
+      <div class="card-title">🎯 Goal Created / Completed</div>
+      <div class="card-body">Sent when a coordinator sets a morning priority or marks it completed during evening reflection, tagging Council name and priority.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-title">📝 Evening Reflection Submitted</div>
+      <div class="card-body">Pushed when an evening review is logged, showcasing achievements, key learnings, and improvement plans.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: DEPLOYMENT REFERENCE -->
+  <h2>5. Production Deployment Reference</h2>
+  <p>Recommended zero-cost cloud architecture:</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Component</th>
+        <th style="width: 25%;">Recommended Host</th>
+        <th style="width: 25%;">Config / Build</th>
+        <th style="width: 25%;">Environment Variables</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend (React/Vite)</strong></td>
+        <td>Vercel</td>
+        <td>Root: <code>counciltrack-ai/frontend</code><br>Build: <code>npm run build</code><br>Output: <code>dist</code></td>
+        <td><code>VITE_API_URL=https://backend.onrender.com/api/v1</code><br><code>VITE_SOCKET_URL=https://backend.onrender.com</code></td>
+      </tr>
+      <tr>
+        <td><strong>Backend (Node.js/Socket)</strong></td>
+        <td>Render / Railway</td>
+        <td>Root: <code>counciltrack-ai/backend</code><br>Build: <code>npm install</code><br>Start: <code>npm start</code></td>
+        <td><code>PORT=10000</code><br><code>CORS_ORIGIN=*</code><br><code>JWT_SECRET=your_secret</code><br><code>DATABASE_URL=...</code></td>
+      </tr>
+      <tr>
+        <td><strong>Database (PostgreSQL)</strong></td>
+        <td>Neon.tech / Supabase</td>
+        <td>Automated schema setup via <code>setup_postgres.js</code></td>
+        <td>Direct connection string passed as <code>DATABASE_URL</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>CouncilTrack AI • Official Operations Manual</span>
+    <span>NavGurukul Dantewada • Confidential & Proprietary</span>
+  </div>
+
+</body>
+</html>

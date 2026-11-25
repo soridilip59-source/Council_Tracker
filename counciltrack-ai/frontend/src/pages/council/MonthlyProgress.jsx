@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { analyticsApi } from "../../services/api";
+import { MonthlyAiInsightCard } from "../../components/ai/AiInsightCard";
 import {
   BarChart,
   Bar,
@@ -120,6 +121,11 @@ export default function MonthlyProgress() {
               <p className="text-[10px] text-slate-400 mt-0.5">Completed / Finalized</p>
             </div>
           </div>
+
+          {/* AI Monthly Calculation & Executive Insight */}
+          {monthlyData?.aiMonthlyInsight && (
+            <MonthlyAiInsightCard aiMonthlyInsight={monthlyData.aiMonthlyInsight} />
+          )}
 
           {/* Weekly Comparison Chart within the month */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">

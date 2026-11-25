@@ -89,10 +89,10 @@ async function getWeeklyProgress(req, res) {
   try {
     let { startDate, endDate, councilId, userId } = req.query;
 
-    // Role check: Council members can only query their own data
+    // Role check: Council members can query their entire council data
     if (req.user.role === "COUNCIL") {
-      userId = req.user.userId;
       councilId = req.user.councilId;
+      userId = req.query.userId || null;
     }
 
     if (!startDate || !endDate) {
@@ -106,10 +106,11 @@ async function getWeeklyProgress(req, res) {
     // Filter by date range
     goals = goals.filter((g) => g.goalDate >= startDate && g.goalDate <= endDate);
 
-    if (userId) {
-      goals = goals.filter((g) => g.userId === userId);
-    } else if (councilId) {
+    if (councilId) {
       goals = goals.filter((g) => g.councilId === councilId);
+    }
+    if (userId) {
+      goals = goals.filter((g) => g.userId === userId || g.assignedTo === userId);
     }
 
     const totalGoals = goals.length;
@@ -170,8 +171,8 @@ async function getMonthlyProgress(req, res) {
     let { year, month, councilId, userId } = req.query;
 
     if (req.user.role === "COUNCIL") {
-      userId = req.user.userId;
       councilId = req.user.councilId;
+      userId = req.query.userId || null;
     }
 
     const now = new Date();
@@ -186,10 +187,11 @@ async function getMonthlyProgress(req, res) {
     let goals = await sheetsService.getAll("Goals");
     goals = goals.filter((g) => g.goalDate >= startOfMonth && g.goalDate <= endOfMonth);
 
-    if (userId) {
-      goals = goals.filter((g) => g.userId === userId);
-    } else if (councilId) {
+    if (councilId) {
       goals = goals.filter((g) => g.councilId === councilId);
+    }
+    if (userId) {
+      goals = goals.filter((g) => g.userId === userId || g.assignedTo === userId);
     }
 
     const totalGoals = goals.length;
@@ -225,6 +227,25 @@ async function getMonthlyProgress(req, res) {
       weekIndex += 1;
     }
 
+    const monthlyCompletionRate = calcCompletionRate(completedGoals, incompleteGoals);
+
+    // Get council name for AI monthly insight
+    let councilName = "Council";
+    if (councilId) {
+      const c = await sheetsService.getById("Councils", "councilId", councilId);
+      if (c) councilName = c.councilName;
+    }
+
+    const aiMonthlyInsight = aiService.generateMonthlyInsight({
+      totalGoals,
+      completedGoals,
+      incompleteGoals,
+      pendingGoals,
+      monthlyCompletionRate: typeof monthlyCompletionRate === "number" ? monthlyCompletionRate : 0,
+      weeklyComparison,
+      councilName,
+    });
+
     return successResponse(
       res,
       {
@@ -236,8 +257,9 @@ async function getMonthlyProgress(req, res) {
         completedGoals,
         incompleteGoals,
         pendingGoals,
-        monthlyCompletionRate: calcCompletionRate(completedGoals, incompleteGoals),
+        monthlyCompletionRate,
         weeklyComparison,
+        aiMonthlyInsight,
       },
       "Monthly progress retrieved"
     );

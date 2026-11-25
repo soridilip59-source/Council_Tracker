@@ -10,11 +10,12 @@ async function getAllCouncils(req, res) {
     const result = councils.map((c) => {
       const assignedMembers = users.filter((u) => u.councilId === c.councilId);
       const activeMembers = assignedMembers.filter((u) => (u.status || "").toUpperCase() === "ACTIVE");
+      const memberCount = c.members?.length || assignedMembers.length;
 
       return {
         ...c,
-        memberCount: assignedMembers.length,
-        activeMemberCount: activeMembers.length,
+        memberCount,
+        activeMemberCount: memberCount,
       };
     });
 
@@ -34,14 +35,18 @@ async function getCouncilById(req, res) {
       return errorResponse(res, "Council not found", 404);
     }
 
-    const users = await sheetsService.find("Users", (u) => u.councilId === id);
-    const safeMembers = users.map(({ passwordHash, ...safeUser }) => safeUser);
+    let members = council.members || [];
+    if (!members || members.length === 0) {
+      const users = await sheetsService.find("Users", (u) => u.councilId === id);
+      const councilUser = users.find((u) => u.members && u.members.length > 0);
+      members = councilUser?.members || users.map(({ passwordHash, ...safeUser }) => safeUser);
+    }
 
     return successResponse(
       res,
       {
         ...council,
-        members: safeMembers,
+        members,
       },
       "Council details retrieved"
     );

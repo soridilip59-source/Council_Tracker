@@ -363,6 +363,121 @@ Keep points professional, objective, actionable, and directly tied to the eviden
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // generateMonthlyInsight — returns AI evaluation and calculations for end of month
+  // ─────────────────────────────────────────────────────────────────────────────
+  generateMonthlyInsight({
+    totalGoals = 0,
+    completedGoals = 0,
+    incompleteGoals = 0,
+    pendingGoals = 0,
+    monthlyCompletionRate = 0,
+    weeklyComparison = [],
+    councilName = "Council",
+  }) {
+    const rate = typeof monthlyCompletionRate === "number" ? monthlyCompletionRate : 0;
+
+    let grade = "C";
+    let tierTitle = "Building Momentum";
+    let tone = "neutral";
+    let emoji = "📊";
+
+    if (totalGoals === 0) {
+      return {
+        grade: "N/A",
+        tierTitle: "New Cycle Starting",
+        executiveSummary: `${councilName} ke liye is month abhi koi goals record nahi hue hain. Month ke shuru se daily goals aur weekly goals set karke track karein.`,
+        strengths: ["Clean state ready for fresh goal setting and coordinator tracking."],
+        impediments: ["No goals recorded yet this month."],
+        recommendations: [
+          "Subah 9:00 AM se pehle coordinator daily targets set karein.",
+          "Hafte me ek baar Sunday/Monday ko Weekly Goals section me focus plan karein.",
+          "Evening reflection daily submit karein taaki completion rate accurately calculate ho."
+        ],
+        completionScore: 0,
+        forecast: "Target 80%+ completion rate for optimal council efficiency."
+      };
+    }
+
+    if (rate >= 90) {
+      grade = "A+";
+      tierTitle = "Exceptional Leadership";
+      tone = "outstanding";
+      emoji = "🌟";
+    } else if (rate >= 80) {
+      grade = "A";
+      tierTitle = "Consistent & Reliable";
+      tone = "good";
+      emoji = "🏆";
+    } else if (rate >= 65) {
+      grade = "B+";
+      tierTitle = "Steady Execution";
+      tone = "average";
+      emoji = "📈";
+    } else if (rate >= 50) {
+      grade = "B";
+      tierTitle = "Moderate Delivery";
+      tone = "warning";
+      emoji = "⚡";
+    } else {
+      grade = "C";
+      tierTitle = "Action Required";
+      tone = "alert";
+      emoji = "⚠️";
+    }
+
+    const executiveSummary = `${councilName} ne is mahine kul ${totalGoals} goals set kiye, jisme se ${completedGoals} goals safalta-purvak complete kiye (${rate}% completion rate). ${
+      incompleteGoals > 0 ? `${incompleteGoals} goals me chunautiyan aayi jinke reasons audit trail me darj hain.` : "Sabhi finalized goals complete hue!"
+    } ${pendingGoals > 0 ? `${pendingGoals} goals abhi evening review ke liye pending hain.` : ""}`;
+
+    const strengths = [];
+    if (completedGoals > 0) {
+      strengths.push(`${completedGoals} daily & weekly goals ko successfully execute kiya.`);
+    }
+    if (rate >= 75) {
+      strengths.push("High completion discipline — campus standard ke anuroop steady delivery.");
+    }
+    if (weeklyComparison.length >= 2) {
+      strengths.push(`${weeklyComparison.length} hafton tak continuous tracking aur accountability maintain ki.`);
+    }
+    if (strengths.length === 0) {
+      strengths.push("Active platform engagement aur coordinator presence.");
+    }
+
+    const impediments = [];
+    if (incompleteGoals > 0) {
+      impediments.push(`${incompleteGoals} goals incomplete rahe — time management ya external blockers ki vajah se.`);
+    }
+    if (pendingGoals > 0) {
+      impediments.push(`${pendingGoals} goals bina evening reflection ke pending status me rahe.`);
+    }
+    if (rate < 70 && totalGoals > 3) {
+      impediments.push("Goal backlog accumulate ho raha hai — targets ko smaller, daily tasks me todne ki zaroorat hai.");
+    }
+    if (impediments.length === 0) {
+      impediments.push("Koi significant roadblock observe nahi hua. Process smooth raha.");
+    }
+
+    const recommendations = [
+      "Daily Morning Goals ko mandatory banayein aur shaam ko reflections complete karein.",
+      "Hafte me ek baar Weekly Goals section me specific weekly milestones plan karein.",
+      "Incomplete goals ka root cause check karke agle week ke plan me incorporate karein."
+    ];
+
+    return {
+      grade,
+      tierTitle,
+      tone,
+      emoji,
+      executiveSummary,
+      strengths,
+      impediments,
+      recommendations,
+      completionScore: rate,
+      forecast: rate >= 80 ? "On track for Council of the Month recognition." : "Focus on evening reflections to boost completion metrics.",
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // NEW: generateSmartAlerts — returns alerts for underperforming members (Admin)
   // ─────────────────────────────────────────────────────────────────────────────
   async generateSmartAlerts() {

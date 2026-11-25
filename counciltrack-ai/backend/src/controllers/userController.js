@@ -152,6 +152,11 @@ async function updateUser(req, res) {
     const { id } = req.params;
     const { name, email, councilId, position, status, password } = req.body;
 
+    // Authorization: ADMIN can edit anyone; COUNCIL members can only edit themselves (limited fields)
+    if (req.user.role !== "ADMIN" && req.user.userId !== id) {
+      return errorResponse(res, "Access denied", 403);
+    }
+
     const user = await sheetsService.getById("Users", "userId", id);
     if (!user) {
       return errorResponse(res, "User not found", 404);

@@ -23,10 +23,12 @@ import AdminFeedback from "./pages/admin/Feedback";
 // Council Member Portal Pages
 import CouncilDashboard from "./pages/council/Dashboard";
 import DailyGoals from "./pages/council/DailyGoals";
+import WeeklyGoals from "./pages/council/WeeklyGoals";
 import EveningReflection from "./pages/council/EveningReflection";
 import WeeklyProgress from "./pages/council/WeeklyProgress";
 import MonthlyProgress from "./pages/council/MonthlyProgress";
 import CouncilFeedback from "./pages/council/CouncilFeedback";
+import ProfileSettings from "./pages/council/ProfileSettings";
 
 export default function App() {
   return (
@@ -52,6 +54,7 @@ export default function App() {
               <Route path="goals" element={<AdminGoals />} />
               <Route path="overview" element={<AdminOverview />} />
               <Route path="feedback" element={<AdminFeedback />} />
+              <Route path="settings" element={<ProfileSettings />} />
             </Route>
           </Route>
 
@@ -61,10 +64,12 @@ export default function App() {
               <Route index element={<Navigate to="/council/dashboard" replace />} />
               <Route path="dashboard" element={<CouncilDashboard />} />
               <Route path="goals" element={<DailyGoals />} />
+              <Route path="weekly-goals" element={<WeeklyGoals />} />
               <Route path="reflection" element={<EveningReflection />} />
               <Route path="weekly-progress" element={<WeeklyProgress />} />
               <Route path="monthly-progress" element={<MonthlyProgress />} />
               <Route path="feedback" element={<CouncilFeedback />} />
+              <Route path="settings" element={<ProfileSettings />} />
             </Route>
           </Route>
 

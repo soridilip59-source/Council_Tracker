@@ -12,6 +12,7 @@ const reflectionRoutes = require("./routes/reflectionRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
+const weeklyGoalRoutes = require("./routes/weeklyGoalRoutes");
 
 const { corsOptions } = require("./config/cors");
 const { isConfigured: isSheetsConfigured, getSheetId } = require("./config/googleSheets");
@@ -53,6 +54,7 @@ apiRouter.use("/reflections", reflectionRoutes);
 apiRouter.use("/analytics", analyticsRoutes);
 apiRouter.use("/feedback", feedbackRoutes);
 apiRouter.use("/leaves", leaveRoutes);
+apiRouter.use("/weekly-goals", weeklyGoalRoutes);
 
 app.use("/api/v1", apiRouter);
 

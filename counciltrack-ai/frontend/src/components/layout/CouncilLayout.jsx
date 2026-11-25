@@ -12,6 +12,8 @@ import {
   Menu,
   X,
   Building,
+  Calendar,
+  Settings,
 } from "lucide-react";
 
 export default function CouncilLayout() {
@@ -28,10 +30,12 @@ export default function CouncilLayout() {
   const navItems = [
     { label: "Dashboard", path: "/council/dashboard", icon: LayoutDashboard },
     { label: "My Daily Goals", path: "/council/goals", icon: Target },
+    { label: "Weekly Goals", path: "/council/weekly-goals", icon: Calendar },
     { label: "Evening Reflection", path: "/council/reflection", icon: Sparkles },
     { label: "Weekly Progress", path: "/council/weekly-progress", icon: TrendingUp },
     { label: "Monthly Progress", path: "/council/monthly-progress", icon: CalendarDays },
     { label: "Council Feedback", path: "/council/feedback", icon: MessageSquare },
+    { label: "Profile & Password", path: "/council/settings", icon: Settings },
   ];
 
   return (

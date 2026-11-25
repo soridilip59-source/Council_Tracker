@@ -48,6 +48,14 @@ export function AuthProvider({ children }) {
     return receivedUser;
   };
 
+  const updateUser = (updatedFields) => {
+    setUser((prev) => {
+      const updated = { ...prev, ...updatedFields };
+      localStorage.setItem("counciltrack_user", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const userRole = (user?.role || "").toUpperCase();
   const isAdmin = userRole === "ADMIN";
   const isCouncil = userRole === "COUNCIL";
@@ -64,6 +72,7 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

@@ -4,442 +4,709 @@
       "userId": "USR_001",
       "name": "Admin User",
       "email": "admin@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "ADMIN",
       "councilId": "",
       "position": "Administrator",
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_002",
-      "name": "Akanksha",
-      "email": "akanksha@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_001",
+      "name": "Discipline Council",
+      "email": "discipline@counciltrack.org",
+      "slug": "discipline",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_001",
-      "position": "Discipline Coordinator (Disco)",
+      "position": "Discipline Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_001",
+          "name": "Akanksha Dewangan",
+          "email": "akanksha@counciltrack.org",
+          "position": "Discipline Coordinator (Disco)"
+        },
+        {
+          "memberId": "MEM_002",
+          "name": "Mohan",
+          "email": "mohan@counciltrack.org",
+          "position": "Discipline Coordinator (Disco)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_003",
-      "name": "Mohan",
-      "email": "mohan@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_001",
-      "position": "Discipline Coordinator (Disco)",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_004",
-      "name": "Lalita",
-      "email": "lalita@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_002",
-      "position": "Workout Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_005",
-      "name": "Radheshyam",
-      "email": "radheshyam@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_002",
+      "name": "Workout Council",
+      "email": "workout@counciltrack.org",
+      "slug": "workout",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_002",
-      "position": "Workout Coordinator",
+      "position": "Workout Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_003",
+          "name": "Lalita",
+          "email": "lalita@counciltrack.org",
+          "position": "Workout Coordinator"
+        },
+        {
+          "memberId": "MEM_004",
+          "name": "Radheshyam",
+          "email": "radheshyam@counciltrack.org",
+          "position": "Workout Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_006",
-      "name": "Gungun",
-      "email": "gungun@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_003",
+      "name": "Academic Council (SOP)",
+      "email": "sop@counciltrack.org",
+      "slug": "sop",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_003",
-      "position": "Academic Coordinator (SOP)",
+      "position": "Academic Council (SOP) Lead",
+      "members": [
+        {
+          "memberId": "MEM_005",
+          "name": "Gungun",
+          "email": "gungun@counciltrack.org",
+          "position": "Academic Coordinator (SOP)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_007",
-      "name": "Dinesh",
-      "email": "dinesh@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_004",
+      "name": "Academic Council (SOB)",
+      "email": "sob@counciltrack.org",
+      "slug": "sob",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_004",
-      "position": "Academic Coordinator (SOB)",
+      "position": "Academic Council (SOB) Lead",
+      "members": [
+        {
+          "memberId": "MEM_006",
+          "name": "Dinesh",
+          "email": "dinesh@counciltrack.org",
+          "position": "Academic Coordinator (SOB)"
+        },
+        {
+          "memberId": "MEM_007",
+          "name": "Anjali",
+          "email": "anjali@counciltrack.org",
+          "position": "Academic Coordinator (SOB)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_008",
-      "name": "Anjali",
-      "email": "anjali@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_004",
-      "position": "Academic Coordinator (SOB)",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_009",
-      "name": "Mukesh",
-      "email": "mukesh@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_005",
-      "position": "Academic Coordinator (SOF)",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_010",
-      "name": "Nikita",
-      "email": "nikita@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_005",
+      "name": "Academic Council (SOF)",
+      "email": "sof@counciltrack.org",
+      "slug": "sof",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_005",
-      "position": "Academic Coordinator (SOF)",
+      "position": "Academic Council (SOF) Lead",
+      "members": [
+        {
+          "memberId": "MEM_008",
+          "name": "Mukesh",
+          "email": "mukesh@counciltrack.org",
+          "position": "Academic Coordinator (SOF)"
+        },
+        {
+          "memberId": "MEM_009",
+          "name": "Nikita",
+          "email": "nikita@counciltrack.org",
+          "position": "Academic Coordinator (SOF)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_011",
-      "name": "Dilip",
-      "email": "dilip@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_006",
+      "name": "English Council",
+      "email": "english@counciltrack.org",
+      "slug": "english",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_006",
-      "position": "English Coordinator",
+      "position": "English Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_010",
+          "name": "Dilip",
+          "email": "dilip@counciltrack.org",
+          "position": "English Coordinator"
+        },
+        {
+          "memberId": "MEM_011",
+          "name": "Deepa",
+          "email": "deepa@counciltrack.org",
+          "position": "English Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_012",
-      "name": "Deepa",
-      "email": "deepa@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_006",
-      "position": "English Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_013",
-      "name": "Khushi",
-      "email": "khushi.it@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_007",
-      "position": "IT Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_014",
-      "name": "Subhash",
-      "email": "subhash@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_007",
+      "name": "IT Council",
+      "email": "it@counciltrack.org",
+      "slug": "it",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_007",
-      "position": "IT Coordinator",
+      "position": "IT Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_012",
+          "name": "Khushi",
+          "email": "khushi.it@counciltrack.org",
+          "position": "IT Coordinator"
+        },
+        {
+          "memberId": "MEM_013",
+          "name": "Subhash",
+          "email": "subhash@counciltrack.org",
+          "position": "IT Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_015",
-      "name": "Khushi",
-      "email": "khushi.health@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_008",
+      "name": "Health Council",
+      "email": "health@counciltrack.org",
+      "slug": "health",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_008",
-      "position": "Health Coordinator",
+      "position": "Health Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_014",
+          "name": "Khushi",
+          "email": "khushi.health@counciltrack.org",
+          "position": "Health Coordinator"
+        },
+        {
+          "memberId": "MEM_015",
+          "name": "Sahdev",
+          "email": "sahdev@counciltrack.org",
+          "position": "Health Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_016",
-      "name": "Sahdev",
-      "email": "sahdev@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_008",
-      "position": "Health Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_017",
-      "name": "Vikky Podiyam",
-      "email": "vikky@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_009",
+      "name": "Hackathon Council",
+      "email": "hackathon@counciltrack.org",
+      "slug": "hackathon",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_009",
-      "position": "Hackathon Coordinator",
+      "position": "Hackathon Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_016",
+          "name": "Vikky Podiyam",
+          "email": "vikky@counciltrack.org",
+          "position": "Hackathon Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_018",
-      "name": "Himanshu",
-      "email": "himanshu@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_010",
+      "name": "Placement Council",
+      "email": "placement@counciltrack.org",
+      "slug": "placement",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_010",
-      "position": "Placement Coordinator",
+      "position": "Placement Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_017",
+          "name": "Himanshu",
+          "email": "himanshu@counciltrack.org",
+          "position": "Placement Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_019",
-      "name": "Aakashi",
-      "email": "aakashi@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_011",
+      "name": "Outreach Council",
+      "email": "outreach@counciltrack.org",
+      "slug": "outreach",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_011",
-      "position": "Outreach Coordinator",
+      "position": "Outreach Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_018",
+          "name": "Aakashi",
+          "email": "aakashi@counciltrack.org",
+          "position": "Outreach Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_020",
-      "name": "Sanjana",
-      "email": "sanjana@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_012",
+      "name": "Operations Council",
+      "email": "operations@counciltrack.org",
+      "slug": "operations",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_012",
-      "position": "Operations Coordinator (Ops Coordinator)",
+      "position": "Operations Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_019",
+          "name": "Sanjana",
+          "email": "sanjana@counciltrack.org",
+          "position": "Operations Coordinator (Ops Coordinator)"
+        },
+        {
+          "memberId": "MEM_020",
+          "name": "Ramlal",
+          "email": "ramlal@counciltrack.org",
+          "position": "Operations Coordinator (Ops Coordinator)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_021",
-      "name": "Ramlal",
-      "email": "ramlal@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_012",
-      "position": "Operations Coordinator (Ops Coordinator)",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_022",
-      "name": "Kranti Kashyap",
-      "email": "kranti@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_013",
-      "position": "Culture Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_023",
-      "name": "Vidya",
-      "email": "vidya@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_013",
+      "name": "Culture Council",
+      "email": "culture@counciltrack.org",
+      "slug": "culture",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_013",
-      "position": "Culture Coordinator",
+      "position": "Culture Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_021",
+          "name": "Kranti Kashyap",
+          "email": "kranti@counciltrack.org",
+          "position": "Culture Coordinator"
+        },
+        {
+          "memberId": "MEM_022",
+          "name": "Vidya",
+          "email": "vidya@counciltrack.org",
+          "position": "Culture Coordinator"
+        },
+        {
+          "memberId": "MEM_023",
+          "name": "Himani",
+          "email": "himani@counciltrack.org",
+          "position": "Culture Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
-      "userId": "USR_024",
-      "name": "Himani",
-      "email": "himani@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_013",
-      "position": "Culture Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_025",
-      "name": "Sona",
-      "email": "sona@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
+      "userId": "USR_CNL_014",
+      "name": "Induction Council",
+      "email": "induction@counciltrack.org",
+      "slug": "induction",
+      "passwordHash": "$2b$10$ioXfaPhzs1w2DxPODC/FtekA50Y/YibbthqIXeVPNUGxEzDAHWKu6",
       "role": "COUNCIL",
       "councilId": "CNL_014",
-      "position": "Induction Coordinator",
+      "position": "Induction Council Lead",
+      "members": [
+        {
+          "memberId": "MEM_024",
+          "name": "Sona",
+          "email": "sona@counciltrack.org",
+          "position": "Induction Coordinator"
+        },
+        {
+          "memberId": "MEM_025",
+          "name": "Kajal",
+          "email": "kajal@counciltrack.org",
+          "position": "Induction Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
-    },
-    {
-      "userId": "USR_026",
-      "name": "Kajal",
-      "email": "kajal@counciltrack.org",
-      "passwordHash": "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.",
-      "role": "COUNCIL",
-      "councilId": "CNL_014",
-      "position": "Induction Coordinator",
-      "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     }
   ],
   "Councils": [
     {
       "councilId": "CNL_001",
       "councilName": "Discipline Council",
-      "description": "Discipline Coordinator (Disco) - Campus conduct, attendance, and code of discipline",
+      "slug": "discipline",
+      "loginEmail": "discipline@counciltrack.org",
+      "description": "Campus conduct, attendance, and code of discipline",
+      "members": [
+        {
+          "memberId": "MEM_001",
+          "name": "Akanksha Dewangan",
+          "email": "akanksha@counciltrack.org",
+          "position": "Discipline Coordinator (Disco)"
+        },
+        {
+          "memberId": "MEM_002",
+          "name": "Mohan",
+          "email": "mohan@counciltrack.org",
+          "position": "Discipline Coordinator (Disco)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_002",
       "councilName": "Workout Council",
-      "description": "Workout Coordinator - Morning fitness, sports, yoga, and physical wellbeing",
+      "slug": "workout",
+      "loginEmail": "workout@counciltrack.org",
+      "description": "Morning fitness, sports, yoga, and physical wellbeing",
+      "members": [
+        {
+          "memberId": "MEM_003",
+          "name": "Lalita",
+          "email": "lalita@counciltrack.org",
+          "position": "Workout Coordinator"
+        },
+        {
+          "memberId": "MEM_004",
+          "name": "Radheshyam",
+          "email": "radheshyam@counciltrack.org",
+          "position": "Workout Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_003",
       "councilName": "Academic Council (SOP)",
-      "description": "Academic Coordinator (SOP) - School of Programming curriculum, study halls, and learning progress",
+      "slug": "sop",
+      "loginEmail": "sop@counciltrack.org",
+      "description": "School of Programming curriculum, study halls, and learning progress",
+      "members": [
+        {
+          "memberId": "MEM_005",
+          "name": "Gungun",
+          "email": "gungun@counciltrack.org",
+          "position": "Academic Coordinator (SOP)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_004",
       "councilName": "Academic Council (SOB)",
-      "description": "Academic Coordinator (SOB) - School of Business learning modules, projects, and mentoring",
+      "slug": "sob",
+      "loginEmail": "sob@counciltrack.org",
+      "description": "School of Business learning modules, projects, and mentoring",
+      "members": [
+        {
+          "memberId": "MEM_006",
+          "name": "Dinesh",
+          "email": "dinesh@counciltrack.org",
+          "position": "Academic Coordinator (SOB)"
+        },
+        {
+          "memberId": "MEM_007",
+          "name": "Anjali",
+          "email": "anjali@counciltrack.org",
+          "position": "Academic Coordinator (SOB)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_005",
       "councilName": "Academic Council (SOF)",
-      "description": "Academic Coordinator (SOF) - School of Finance coursework, financial literacy, and evaluations",
+      "slug": "sof",
+      "loginEmail": "sof@counciltrack.org",
+      "description": "School of Finance coursework, financial literacy, and evaluations",
+      "members": [
+        {
+          "memberId": "MEM_008",
+          "name": "Mukesh",
+          "email": "mukesh@counciltrack.org",
+          "position": "Academic Coordinator (SOF)"
+        },
+        {
+          "memberId": "MEM_009",
+          "name": "Nikita",
+          "email": "nikita@counciltrack.org",
+          "position": "Academic Coordinator (SOF)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_006",
       "councilName": "English Council",
-      "description": "English Coordinator - Communication skills, public speaking, daily vocabulary, and reading circles",
+      "slug": "english",
+      "loginEmail": "english@counciltrack.org",
+      "description": "Communication skills, public speaking, daily vocabulary, and reading circles",
+      "members": [
+        {
+          "memberId": "MEM_010",
+          "name": "Dilip",
+          "email": "dilip@counciltrack.org",
+          "position": "English Coordinator"
+        },
+        {
+          "memberId": "MEM_011",
+          "name": "Deepa",
+          "email": "deepa@counciltrack.org",
+          "position": "English Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_007",
       "councilName": "IT Council",
-      "description": "IT Coordinator - Lab hardware, network infrastructure, workstations, and tech support",
+      "slug": "it",
+      "loginEmail": "it@counciltrack.org",
+      "description": "Lab hardware, network infrastructure, workstations, and tech support",
+      "members": [
+        {
+          "memberId": "MEM_012",
+          "name": "Khushi",
+          "email": "khushi.it@counciltrack.org",
+          "position": "IT Coordinator"
+        },
+        {
+          "memberId": "MEM_013",
+          "name": "Subhash",
+          "email": "subhash@counciltrack.org",
+          "position": "IT Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_008",
       "councilName": "Health Council",
-      "description": "Health Coordinator - First aid, medical emergencies, hygiene inspections, and wellness care",
+      "slug": "health",
+      "loginEmail": "health@counciltrack.org",
+      "description": "First aid, medical emergencies, hygiene inspections, and wellness care",
+      "members": [
+        {
+          "memberId": "MEM_014",
+          "name": "Khushi",
+          "email": "khushi.health@counciltrack.org",
+          "position": "Health Coordinator"
+        },
+        {
+          "memberId": "MEM_015",
+          "name": "Sahdev",
+          "email": "sahdev@counciltrack.org",
+          "position": "Health Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_009",
       "councilName": "Hackathon Council",
-      "description": "Hackathon Coordinator - Coding competitions, open source build weekends, and hackathons",
+      "slug": "hackathon",
+      "loginEmail": "hackathon@counciltrack.org",
+      "description": "Coding competitions, open source build weekends, and hackathons",
+      "members": [
+        {
+          "memberId": "MEM_016",
+          "name": "Vikky Podiyam",
+          "email": "vikky@counciltrack.org",
+          "position": "Hackathon Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_010",
       "councilName": "Placement Council",
-      "description": "Placement Coordinator - Resume reviews, mock interviews, recruiter visits, and job pipelines",
+      "slug": "placement",
+      "loginEmail": "placement@counciltrack.org",
+      "description": "Resume reviews, mock interviews, recruiter visits, and job pipelines",
+      "members": [
+        {
+          "memberId": "MEM_017",
+          "name": "Himanshu",
+          "email": "himanshu@counciltrack.org",
+          "position": "Placement Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_011",
       "councilName": "Outreach Council",
-      "description": "Outreach Coordinator - Community partnerships, school visits, alumni relations, and social impact",
+      "slug": "outreach",
+      "loginEmail": "outreach@counciltrack.org",
+      "description": "Community partnerships, school visits, alumni relations, and social impact",
+      "members": [
+        {
+          "memberId": "MEM_018",
+          "name": "Aakashi",
+          "email": "aakashi@counciltrack.org",
+          "position": "Outreach Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_012",
       "councilName": "Operations Council",
-      "description": "Operations Coordinator (Ops) - Campus logistics, mess management, inventory, and facility maintenance",
+      "slug": "operations",
+      "loginEmail": "operations@counciltrack.org",
+      "description": "Campus logistics, mess management, inventory, and facility maintenance",
+      "members": [
+        {
+          "memberId": "MEM_019",
+          "name": "Sanjana",
+          "email": "sanjana@counciltrack.org",
+          "position": "Operations Coordinator (Ops Coordinator)"
+        },
+        {
+          "memberId": "MEM_020",
+          "name": "Ramlal",
+          "email": "ramlal@counciltrack.org",
+          "position": "Operations Coordinator (Ops Coordinator)"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_013",
       "councilName": "Culture Council",
-      "description": "Culture Coordinator - Cultural festivals, morning assemblies, celebration nights, and team building",
+      "slug": "culture",
+      "loginEmail": "culture@counciltrack.org",
+      "description": "Cultural festivals, morning assemblies, celebration nights, and team building",
+      "members": [
+        {
+          "memberId": "MEM_021",
+          "name": "Kranti Kashyap",
+          "email": "kranti@counciltrack.org",
+          "position": "Culture Coordinator"
+        },
+        {
+          "memberId": "MEM_022",
+          "name": "Vidya",
+          "email": "vidya@counciltrack.org",
+          "position": "Culture Coordinator"
+        },
+        {
+          "memberId": "MEM_023",
+          "name": "Himani",
+          "email": "himani@counciltrack.org",
+          "position": "Culture Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "councilId": "CNL_014",
       "councilName": "Induction Council",
-      "description": "Induction Coordinator - Welcoming new cohorts, orientation sessions, campus tours, and onboarding",
+      "slug": "induction",
+      "loginEmail": "induction@counciltrack.org",
+      "description": "Welcoming new cohorts, orientation sessions, campus tours, and onboarding",
+      "members": [
+        {
+          "memberId": "MEM_024",
+          "name": "Sona",
+          "email": "sona@counciltrack.org",
+          "position": "Induction Coordinator"
+        },
+        {
+          "memberId": "MEM_025",
+          "name": "Kajal",
+          "email": "kajal@counciltrack.org",
+          "position": "Induction Coordinator"
+        }
+      ],
       "status": "ACTIVE",
-      "createdAt": "2026-11-24T06:19:25.421Z",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "createdAt": "2026-11-25T02:47:13.122Z",
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     }
   ],
   "Goals": [],
   "Reflections": [],
+  "Weekly_Goals": [],
   "Student_Feedback": [],
   "Goal_History": [],
   "Audit_Logs": [
     {
       "logId": "LOG_001",
       "actorId": "USR_001",
-      "action": "SYSTEM_INITIALIZED",
+      "action": "DATABASE_CLEAN_RESET",
       "entityType": "SYSTEM",
       "entityId": "SYS_INIT",
-      "details": "Initialized 14 Official Councils and 25 Coordinators",
-      "createdAt": "2026-11-24T06:19:25.421Z"
+      "details": "Initialized clean system with 14 Councils (1 account per council) and 25 official Coordinators. All mock data cleared.",
+      "createdAt": "2026-11-25T02:47:13.122Z"
     }
   ],
   "Settings": [
@@ -447,26 +714,27 @@
       "settingKey": "APP_NAME",
       "settingValue": "CouncilTrack AI",
       "description": "Official Platform Name for NavGurukul Dantewada",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "settingKey": "TIMEZONE",
       "settingValue": "Asia/Kolkata",
       "description": "Default Platform Timezone",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "settingKey": "FEEDBACK_ENABLED",
       "settingValue": "TRUE",
       "description": "Enable public feedback submission",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     },
     {
       "settingKey": "FEEDBACK_FORM_PATH",
       "settingValue": "/feedback",
       "description": "Public URL route for student feedback",
-      "updatedAt": "2026-11-24T06:19:25.421Z"
+      "updatedAt": "2026-11-25T02:47:13.122Z"
     }
   ],
-  "Council_Leaves": []
+  "Council_Leaves": [],
+  "Notifications": []
 }

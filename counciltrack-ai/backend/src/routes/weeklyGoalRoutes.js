@@ -1,0 +1,11 @@
+const express = require("express");
+const { upsertWeeklyGoal, getCouncilWeeklyGoals, getAllWeeklyGoals, deleteWeeklyGoal } = require("../controllers/weeklyGoalController");
+const { authenticate } = require("../middleware/authMiddleware");
+const { authorize } = require("../middleware/roleMiddleware");
+const router = express.Router();
+router.use(authenticate);
+router.get("/", authorize("ADMIN"), getAllWeeklyGoals);
+router.get("/my", getCouncilWeeklyGoals);
+router.post("/", authorize("COUNCIL", "ADMIN"), upsertWeeklyGoal);
+router.delete("/:id", deleteWeeklyGoal);
+module.exports = router;

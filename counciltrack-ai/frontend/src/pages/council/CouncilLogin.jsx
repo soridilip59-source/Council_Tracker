@@ -64,24 +64,15 @@ export default function CouncilLogin() {
               </div>
             )}
 
-            {/* Credentials Info Badge */}
-            <div className="mb-5 p-3.5 rounded-xl bg-emerald-50/90 border border-emerald-100 text-xs text-emerald-950 space-y-1.5">
-              <div className="font-semibold flex items-center justify-between">
-                <span>🔑 Council Credentials:</span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 bg-emerald-200/70 rounded text-emerald-800">Ready</span>
-              </div>
-              <p className="text-[11px] text-emerald-800">
-                <strong>Council ID:</strong> <code className="bg-white px-1.5 py-0.5 rounded text-emerald-900 border border-emerald-200 font-mono">council</code> or <code className="bg-white px-1.5 py-0.5 rounded text-emerald-900 border border-emerald-200 font-mono">englishfacilitator@navgurukul.org</code>
-              </p>
-              <p className="text-[11px] text-emerald-800">
-                <strong>Password:</strong> <code className="bg-white px-1.5 py-0.5 rounded text-emerald-900 border border-emerald-200 font-mono">Council@123</code>
-              </p>
+            {/* Clean hint */}
+            <div className="mb-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+              Login with your council email (e.g. <span className="font-mono font-semibold text-slate-800">english@counciltrack.org</span>) and password.
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-slate-700 tracking-wider">
-                  Council Member ID or Email
+                  Council Email
                 </label>
                 <div className="mt-1 relative rounded-lg shadow-xs">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -92,7 +83,7 @@ export default function CouncilLogin() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="council or englishfacilitator@navgurukul.org"
+                    placeholder="english@counciltrack.org"
                     className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
                   />
                 </div>

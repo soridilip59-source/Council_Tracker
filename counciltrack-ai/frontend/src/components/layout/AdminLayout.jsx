@@ -14,6 +14,7 @@ import {
   X,
   CheckCircle2,
   Building2,
+  Settings,
 } from "lucide-react";
 
 export default function AdminLayout() {
@@ -42,6 +43,7 @@ export default function AdminLayout() {
     { label: "Council Goals", path: "/admin/goals", icon: Target },
     { label: "Weekly & Monthly Overview", path: "/admin/overview", icon: BarChart3 },
     { label: "Student Feedback", path: "/admin/feedback", icon: MessageSquareHeart },
+    { label: "Profile & Password", path: "/admin/settings", icon: Settings },
   ];
 
   return (

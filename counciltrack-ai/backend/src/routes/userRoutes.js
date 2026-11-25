@@ -18,7 +18,7 @@ router.use(authenticate);
 router.get("/", authorize("ADMIN"), getAllUsers);
 router.post("/", authorize("ADMIN"), validate(createUserSchema), createUser);
 router.get("/:id", getUserById);
-router.patch("/:id", authorize("ADMIN"), validate(updateUserSchema), updateUser);
+router.patch("/:id", validate(updateUserSchema), updateUser);
 router.patch("/:id/status", authorize("ADMIN"), updateUserStatus);
 
 module.exports = router;

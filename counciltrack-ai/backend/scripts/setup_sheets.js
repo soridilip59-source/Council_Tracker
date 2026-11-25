@@ -7,10 +7,12 @@ const SHEET_HEADERS = {
   Users: ["userId", "name", "email", "passwordHash", "role", "councilId", "position", "status", "createdAt", "updatedAt"],
   Councils: ["councilId", "councilName", "description", "status", "createdAt", "updatedAt"],
   Goals: ["goalId", "userId", "councilId", "title", "description", "expectedOutcome", "priority", "goalDate", "status", "incompleteReason", "createdAt", "updatedAt"],
-  Reflections: ["reflectionId", "userId", "reflectionDate", "achievements", "incompleteGoals", "challenges", "learnings", "improvements", "submittedAt", "updatedAt"],
+  Reflections: ["reflectionId", "userId", "councilId", "reflectionDate", "achievements", "incompleteGoals", "challenges", "learnings", "improvements", "submittedAt", "updatedAt"],
+  Weekly_Goals: ["weeklyGoalId", "councilId", "userId", "weekStart", "weekEnd", "title", "description", "status", "createdAt", "updatedAt"],
   Student_Feedback: ["feedbackId", "studentName", "councilId", "feedbackType", "message", "contact", "status", "adminNotes", "submittedAt", "updatedAt"],
   Goal_History: ["historyId", "goalId", "userId", "oldStatus", "newStatus", "action", "changedAt"],
   Audit_Logs: ["logId", "actorId", "action", "entityType", "entityId", "details", "createdAt"],
+  Council_Leaves: ["leaveId", "userId", "memberName", "councilId", "startDate", "endDate", "totalDays", "reason", "handoverStudentName", "status", "createdAt"],
   Settings: ["settingKey", "settingValue", "description", "updatedAt"],
 };
 
@@ -56,11 +58,11 @@ async function setupGoogleSheet() {
         spreadsheetId,
         requestBody: { requests },
       });
-      console.log("✓ All 8 worksheets created successfully!");
+      console.log("✓ All worksheets created successfully!");
     }
 
     // 3. Sync headers and initial data
-    console.log("Syncing initial data and headers to all 8 worksheets...");
+    console.log("Syncing initial data and headers to all worksheets...");
     for (const title of requiredSheets) {
       await sheetsService.syncToGoogleSheets(title);
       console.log(`✓ Synced: ${title}`);

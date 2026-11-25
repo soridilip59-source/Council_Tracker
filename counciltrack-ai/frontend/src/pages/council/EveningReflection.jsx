@@ -254,7 +254,14 @@ export default function EveningReflection() {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
-                          <h3 className="text-sm font-bold text-slate-900">{g.title}</h3>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-sm font-bold text-slate-900">{g.title}</h3>
+                            {g.assignedToName && (
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                                👤 {g.assignedToName}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-slate-600 mt-0.5">{g.description}</p>
                         </div>
 

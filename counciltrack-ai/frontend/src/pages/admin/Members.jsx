@@ -284,6 +284,11 @@ export default function Members() {
                       <td className="px-5 py-3.5">
                         <div className="font-semibold text-slate-900">{m.name}</div>
                         <div className="text-xs text-slate-400">{m.email}</div>
+                        {m.members && m.members.length > 0 && (
+                          <div className="text-[11px] text-indigo-600 mt-0.5 font-medium">
+                            👥 {m.members.map((x) => x.name).join(", ")}
+                          </div>
+                        )}
                       </td>
                       <td className="px-5 py-3.5">
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
