@@ -4,6 +4,7 @@ const {
   getCouncilById,
   createCouncil,
   updateCouncil,
+  deleteCouncil,
   syncCouncils,
 } = require("../controllers/councilController");
 const { authenticate } = require("../middleware/authMiddleware");
@@ -22,5 +23,6 @@ router.get("/", getAllCouncils);
 router.post("/", authorize("ADMIN"), validate(createCouncilSchema), createCouncil);
 router.get("/:id", getCouncilById);
 router.patch("/:id", authorize("ADMIN"), validate(updateCouncilSchema), updateCouncil);
+router.delete("/:id", authorize("ADMIN"), deleteCouncil);
 
 module.exports = router;

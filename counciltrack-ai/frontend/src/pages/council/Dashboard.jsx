@@ -259,9 +259,7 @@ export default function CouncilDashboard() {
       </ScrollReveal>
 
       {/* Campus Council & Coordinator Directory */}
-      <ScrollReveal direction="up" delay={250}>
-        <CouncilDirectoryTable title="Campus Council Directory & Coordinator Contacts" />
-      </ScrollReveal>
+      <CouncilDirectoryTable title="Campus Council Directory & Coordinator Contacts" />
     </div>
   );
 }

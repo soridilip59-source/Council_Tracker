@@ -15,12 +15,13 @@ import {
 export const COUNCIL_DIRECTORY = [
   {
     id: 1,
-    councilName: "Discipline Council",
-    coordinatorName: "Akanksha / Mohan",
-    coordinators: ["Akanksha", "Mohan"],
+    councilName: "Discipline Council (DISCO)",
+    coordinatorName: "Mohan Kunjam / Akanksha Dewangan",
+    coordinators: ["Mohan Kunjam", "Akanksha Dewangan"],
     councilPost: "Discipline Coordinator (Disco)",
-    emails: ["akanksha@counciltrack.org", "mohan@counciltrack.org"],
-    councilEmail: "discipline@counciltrack.org",
+    emails: ["disco@counciltrack.org"],
+    loginHandle: "disco",
+    councilEmail: "disco@counciltrack.org",
     defaultPassword: "Admin@123",
   },
   {
@@ -29,7 +30,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Lalita / Radheshyam",
     coordinators: ["Lalita", "Radheshyam"],
     councilPost: "Workout Coordinator",
-    emails: ["lalita@counciltrack.org", "radheshyam@counciltrack.org"],
+    emails: ["workout@counciltrack.org"],
+    loginHandle: "workout",
     councilEmail: "workout@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -39,7 +41,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Gungun",
     coordinators: ["Gungun"],
     councilPost: "Academic Coordinator (SOP)",
-    emails: ["gungun@counciltrack.org"],
+    emails: ["sop@counciltrack.org"],
+    loginHandle: "sop",
     councilEmail: "sop@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -49,7 +52,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Dinesh / Anjali",
     coordinators: ["Dinesh", "Anjali"],
     councilPost: "Academic Coordinator (SOB)",
-    emails: ["dinesh@counciltrack.org", "anjali@counciltrack.org"],
+    emails: ["sob@counciltrack.org"],
+    loginHandle: "sob",
     councilEmail: "sob@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -59,17 +63,19 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Mukesh / Nikita",
     coordinators: ["Mukesh", "Nikita"],
     councilPost: "Academic Coordinator (SOF)",
-    emails: ["mukesh@counciltrack.org", "nikita@counciltrack.org"],
+    emails: ["sof@counciltrack.org"],
+    loginHandle: "sof",
     councilEmail: "sof@counciltrack.org",
     defaultPassword: "Admin@123",
   },
   {
     id: 6,
     councilName: "English Council",
-    coordinatorName: "Dilip / Deepa",
-    coordinators: ["Dilip", "Deepa"],
-    councilPost: "English Coordinator",
-    emails: ["dilip@counciltrack.org", "deepa@counciltrack.org"],
+    coordinatorName: "Dilip Kumar Sori / Deepa Sodi",
+    coordinators: ["Dilip Kumar Sori", "Deepa Sodi"],
+    councilPost: "English Facilitator",
+    emails: ["english@counciltrack.org"],
+    loginHandle: "english",
     councilEmail: "english@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -79,7 +85,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Khushi / Subhash",
     coordinators: ["Khushi", "Subhash"],
     councilPost: "IT Coordinator",
-    emails: ["khushi.it@counciltrack.org", "subhash@counciltrack.org"],
+    emails: ["it@counciltrack.org"],
+    loginHandle: "it",
     councilEmail: "it@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -89,7 +96,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Khushi / Sahdev",
     coordinators: ["Khushi", "Sahdev"],
     councilPost: "Health Coordinator",
-    emails: ["khushi.health@counciltrack.org", "sahdev@counciltrack.org"],
+    emails: ["health@counciltrack.org"],
+    loginHandle: "health",
     councilEmail: "health@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -99,7 +107,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Vikky Podiyam",
     coordinators: ["Vikky Podiyam"],
     councilPost: "Hackathon Coordinator",
-    emails: ["vikky@counciltrack.org"],
+    emails: ["hackathon@counciltrack.org"],
+    loginHandle: "hackathon",
     councilEmail: "hackathon@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -109,7 +118,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Himanshu",
     coordinators: ["Himanshu"],
     councilPost: "Placement Coordinator",
-    emails: ["himanshu@counciltrack.org"],
+    emails: ["placement@counciltrack.org"],
+    loginHandle: "placement",
     councilEmail: "placement@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -119,7 +129,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Aakashi",
     coordinators: ["Aakashi"],
     councilPost: "Outreach Coordinator",
-    emails: ["aakashi@counciltrack.org"],
+    emails: ["outreach@counciltrack.org"],
+    loginHandle: "outreach",
     councilEmail: "outreach@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -129,7 +140,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Sanjana / Ramlal",
     coordinators: ["Sanjana", "Ramlal"],
     councilPost: "Operations Coordinator (Ops Coordinator)",
-    emails: ["sanjana@counciltrack.org", "ramlal@counciltrack.org"],
+    emails: ["operations@counciltrack.org"],
+    loginHandle: "operations",
     councilEmail: "operations@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -139,7 +151,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Kranti Kashyap / Vidya / Himani",
     coordinators: ["Kranti Kashyap", "Vidya", "Himani"],
     councilPost: "Culture Coordinator",
-    emails: ["kranti@counciltrack.org", "vidya@counciltrack.org", "himani@counciltrack.org"],
+    emails: ["culture@counciltrack.org"],
+    loginHandle: "culture",
     councilEmail: "culture@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -149,7 +162,8 @@ export const COUNCIL_DIRECTORY = [
     coordinatorName: "Sona / Kajal",
     coordinators: ["Sona", "Kajal"],
     councilPost: "Induction Coordinator",
-    emails: ["sona@counciltrack.org", "kajal@counciltrack.org"],
+    emails: ["induction@counciltrack.org"],
+    loginHandle: "induction",
     councilEmail: "induction@counciltrack.org",
     defaultPassword: "Admin@123",
   },
@@ -276,32 +290,44 @@ export default function CouncilDirectoryTable({ onSelectEmail = null, title = "O
 
                   {/* Login Email / ID */}
                   <td className="px-5 py-3.5">
-                    <div className="space-y-1">
-                      {c.emails.map((email, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 group/email">
-                          <code
-                            onClick={() => onSelectEmail && onSelectEmail(email)}
-                            className={`font-mono text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-800 ${
-                              onSelectEmail ? "cursor-pointer hover:bg-indigo-100 hover:text-indigo-900" : ""
-                            }`}
-                            title={onSelectEmail ? "Click to use in login" : undefined}
-                          >
-                            {email}
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(email)}
-                            className="p-1 text-slate-400 hover:text-indigo-600 transition"
-                            title="Copy email"
-                          >
-                            {copiedText === email ? (
-                              <Check size={12} className="text-emerald-600" />
-                            ) : (
-                              <Copy size={12} />
-                            )}
-                          </button>
-                        </div>
-                      ))}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 group/email">
+                        <code
+                          onClick={() => onSelectEmail && onSelectEmail(c.councilEmail)}
+                          className={`font-mono text-xs px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 font-semibold border border-indigo-100 ${
+                            onSelectEmail ? "cursor-pointer hover:bg-indigo-100 hover:text-indigo-900" : ""
+                          }`}
+                          title={onSelectEmail ? "Click to use in login" : undefined}
+                        >
+                          {c.councilEmail}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(c.councilEmail)}
+                          className="p-1 text-slate-400 hover:text-indigo-600 transition"
+                          title="Copy email"
+                        >
+                          {copiedText === c.councilEmail ? (
+                            <Check size={12} className="text-emerald-600" />
+                          ) : (
+                            <Copy size={12} />
+                          )}
+                        </button>
+                      </div>
+                      <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                        <span>Alias / Handle:</span>
+                        <code
+                          onClick={() => onSelectEmail && onSelectEmail(c.loginHandle)}
+                          className={`font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-bold ${
+                            onSelectEmail ? "cursor-pointer hover:bg-slate-200" : ""
+                          }`}
+                        >
+                          {c.loginHandle}
+                        </code>
+                      </div>
+                      <div className="text-[10px] text-slate-400 italic">
+                        (Dono coordinators ka 1 hi shared login)
+                      </div>
                     </div>
                   </td>
 

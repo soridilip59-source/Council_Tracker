@@ -227,7 +227,7 @@ async function getMe(req, res) {
 async function updateProfile(req, res) {
   try {
     const userId = req.user.userId;
-    const { name, email, password } = req.body;
+    const { name, email, customUserId, password } = req.body;
 
     const user = await sheetsService.getById("Users", "userId", userId);
     if (!user) {
@@ -237,6 +237,20 @@ async function updateProfile(req, res) {
     const updates = {};
     if (name !== undefined && name.trim()) {
       updates.name = name.trim();
+    }
+    if (customUserId !== undefined && customUserId.trim()) {
+      const slugTrimmed = customUserId.toLowerCase().trim().replace(/[^a-z0-9_-]/g, "");
+      const existing = await sheetsService.findOne(
+        "Users",
+        (u) => (u.slug?.toLowerCase() === slugTrimmed || u.email?.toLowerCase() === slugTrimmed || u.userId?.toLowerCase() === slugTrimmed) && u.userId !== userId
+      );
+      if (existing) {
+        return errorResponse(res, "This User ID is already taken by another account", 409);
+      }
+      updates.slug = slugTrimmed;
+      if (user.councilId) {
+        await sheetsService.update("Councils", "councilId", user.councilId, { slug: slugTrimmed });
+      }
     }
     if (email !== undefined && email.trim()) {
       const emailTrimmed = email.toLowerCase().trim();
@@ -248,6 +262,9 @@ async function updateProfile(req, res) {
         return errorResponse(res, "This email/login ID is already taken by another account", 409);
       }
       updates.email = emailTrimmed;
+      if (user.councilId) {
+        await sheetsService.update("Councils", "councilId", user.councilId, { loginEmail: emailTrimmed });
+      }
     }
     if (password && password.trim().length > 0) {
       if (password.trim().length < 4) {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { weeklyGoalApi } from "../../services/api";
+import { weeklyGoalApi, councilApi } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { Calendar, Target, Edit2, Trash2, Plus, CheckCircle } from "lucide-react";
+import { Calendar, Target, Edit2, Trash2, Plus, CheckCircle, Users, CheckCircle2, Clock, Sparkles } from "lucide-react";
 
 export default function WeeklyGoals() {
   const { user } = useAuth();
@@ -10,6 +10,9 @@ export default function WeeklyGoals() {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("ACTIVE");
+  const [assignedToName, setAssignedToName] = useState("Joint / Both Coordinators");
+  const [councilMembers, setCouncilMembers] = useState(user?.members || []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -32,6 +35,13 @@ export default function WeeklyGoals() {
 
   useEffect(() => {
     loadWeeklyGoal();
+    if (user?.councilId && (!councilMembers || councilMembers.length === 0)) {
+      councilApi.getById(user.councilId).then((res) => {
+        if (res.data?.data?.members) {
+          setCouncilMembers(res.data.data.members);
+        }
+      }).catch(console.error);
+    }
   }, []);
 
   const loadWeeklyGoal = async () => {
@@ -44,6 +54,8 @@ export default function WeeklyGoals() {
       if (current) {
         setTitle(current.title);
         setDescription(current.description || "");
+        setStatus(current.status || "ACTIVE");
+        setAssignedToName(current.assignedToName || "Joint / Both Coordinators");
       }
     } catch (e) {
       console.error(e);
@@ -57,13 +69,38 @@ export default function WeeklyGoals() {
     setError("");
     setSaving(true);
     try {
-      await weeklyGoalApi.create({ title, description, weekStart, weekEnd, status: "ACTIVE" });
+      await weeklyGoalApi.create({
+        title,
+        description,
+        weekStart,
+        weekEnd,
+        status,
+        assignedToName,
+      });
       await loadWeeklyGoal();
       setEditing(false);
     } catch (e) {
       setError("Failed to save weekly goal");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    if (!weeklyGoal) return;
+    const newStatus = weeklyGoal.status === "COMPLETED" ? "ACTIVE" : "COMPLETED";
+    try {
+      await weeklyGoalApi.create({
+        title: weeklyGoal.title,
+        description: weeklyGoal.description,
+        weekStart: weeklyGoal.weekStart,
+        weekEnd: weeklyGoal.weekEnd,
+        status: newStatus,
+        assignedToName: weeklyGoal.assignedToName,
+      });
+      await loadWeeklyGoal();
+    } catch (e) {
+      console.error("Failed to toggle status:", e);
     }
   };
 
@@ -74,6 +111,7 @@ export default function WeeklyGoals() {
       setWeeklyGoal(null);
       setTitle("");
       setDescription("");
+      setStatus("ACTIVE");
       setEditing(true);
     } catch (e) {
       setError("Failed to delete");
@@ -81,6 +119,7 @@ export default function WeeklyGoals() {
   };
 
   const weekLabel = `${weekStart} to ${weekEnd}`;
+  const members = councilMembers.length > 0 ? councilMembers : (user?.members || []);
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
@@ -140,6 +179,39 @@ export default function WeeklyGoals() {
               className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+              Lead / Assigned Coordinator
+            </label>
+            <select
+              value={assignedToName}
+              onChange={(e) => setAssignedToName(e.target.value)}
+              className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="Joint / Both Coordinators">👥 Joint / Both Coordinators</option>
+              {members.map((m, i) => (
+                <option key={i} value={m.name}>
+                  👤 {m.name} {m.position ? `(${m.position})` : ""}
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Dono coordinators milkar ye weekly goal establish kar rahe hain.
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+              Status
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="ACTIVE">⚡ ACTIVE (In Progress)</option>
+              <option value="COMPLETED">✓ COMPLETED (Achieved)</option>
+            </select>
+          </div>
           <div className="flex gap-3">
             <button
               onClick={handleSave}
@@ -159,34 +231,62 @@ export default function WeeklyGoals() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-indigo-200 shadow-sm p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-emerald-500" size={20} />
-              <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                This Week's Goal Set
+        <div className="bg-white rounded-2xl border border-indigo-200/90 shadow-xs p-6 space-y-4 hover:shadow-md transition">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                weeklyGoal.status === "COMPLETED"
+                  ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                  : "bg-purple-50 text-purple-700 border border-purple-200"
+              }`}>
+                {weeklyGoal.status === "COMPLETED" ? <CheckCircle2 size={13} /> : <Clock size={13} />}
+                <span>{weeklyGoal.status === "COMPLETED" ? "Completed Goal" : "Active Weekly Focus"}</span>
               </span>
+              {weeklyGoal.assignedToName && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                  <Users size={12} className="text-slate-500" />
+                  <span>{weeklyGoal.assignedToName}</span>
+                </span>
+              )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleToggleStatus}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  weeklyGoal.status === "COMPLETED"
+                    ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                }`}
+                title="Toggle completion status"
+              >
+                {weeklyGoal.status === "COMPLETED" ? "Mark Incomplete" : "Mark as Completed"}
+              </button>
               <button
                 onClick={() => setEditing(true)}
-                className="p-2 hover:bg-slate-100 rounded-lg transition"
+                className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-indigo-600 transition"
+                title="Edit weekly goal"
               >
-                <Edit2 size={16} className="text-slate-500" />
+                <Edit2 size={15} />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-2 hover:bg-rose-50 rounded-lg transition"
+                className="p-1.5 hover:bg-rose-50 rounded-lg text-slate-500 hover:text-rose-600 transition"
+                title="Delete weekly goal"
               >
-                <Trash2 size={16} className="text-rose-500" />
+                <Trash2 size={15} />
               </button>
             </div>
           </div>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">{weeklyGoal.title}</h2>
+
+          <h2 className="text-xl font-bold text-slate-900 leading-snug">{weeklyGoal.title}</h2>
           {weeklyGoal.description && (
-            <p className="text-slate-600 text-sm leading-relaxed">{weeklyGoal.description}</p>
+            <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{weeklyGoal.description}</p>
           )}
-          <p className="text-xs text-slate-400 mt-4">Set by: {user?.name || user?.councilName}</p>
+
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>🏛️ Council: <strong>{user?.councilName}</strong></span>
+            <span>📅 Week: {weekLabel}</span>
+          </div>
         </div>
       )}
     </div>

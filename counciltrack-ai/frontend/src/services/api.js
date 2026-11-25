@@ -60,6 +60,7 @@ export const councilApi = {
   getById: (id) => api.get(`/councils/${id}`),
   create: (data) => api.post("/councils", data),
   update: (id, data) => api.patch(`/councils/${id}`, data),
+  delete: (id) => api.delete(`/councils/${id}`),
 };
 
 export const goalApi = {

@@ -6,7 +6,7 @@ const { successResponse, errorResponse } = require("../utils/response");
 // Council creates/updates weekly goal (shared for the whole council)
 async function upsertWeeklyGoal(req, res) {
   try {
-    const { title, description, weekStart, weekEnd, status = "ACTIVE" } = req.body;
+    const { title, description, weekStart, weekEnd, status = "ACTIVE", assignedToName = "" } = req.body;
     const userId = req.user.userId;
     const councilId = req.user.councilId;
 
@@ -25,6 +25,7 @@ async function upsertWeeklyGoal(req, res) {
         title: title.trim(),
         description: (description || "").trim(),
         status: status.toUpperCase(),
+        assignedToName: (assignedToName || "").trim(),
         userId,
         updatedAt: now,
       });
@@ -38,6 +39,7 @@ async function upsertWeeklyGoal(req, res) {
         title: title.trim(),
         description: (description || "").trim(),
         status: status.toUpperCase(),
+        assignedToName: (assignedToName || "").trim(),
         createdAt: now,
         updatedAt: now,
       };

@@ -335,9 +335,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Council & Coordinator Official Directory Table */}
-      <ScrollReveal direction="up" delay={120}>
-        <CouncilDirectoryTable title="Official Council & Coordinator Directory (14 Councils • 25 Coordinators)" />
-      </ScrollReveal>
+      <CouncilDirectoryTable title="Official Council & Coordinator Directory (14 Councils • 25 Coordinators)" />
 
       {/* Quick Links & Shortcuts Banner */}
       <ScrollReveal direction="up" delay={150}>

@@ -11,12 +11,12 @@ async function seedClean() {
     {
       councilId: "CNL_001",
       councilName: "Discipline Council",
-      slug: "discipline",
-      loginEmail: "discipline@counciltrack.org",
+      slug: "disco",
+      loginEmail: "disco@counciltrack.org",
       description: "Campus conduct, attendance, and code of discipline",
       members: [
-        { memberId: "MEM_001", name: "Akanksha", email: "akanksha@counciltrack.org", position: "Discipline Coordinator (Disco)" },
-        { memberId: "MEM_002", name: "Mohan", email: "mohan@counciltrack.org", position: "Discipline Coordinator (Disco)" }
+        { memberId: "MEM_001", name: "Mohan Kunjam", email: "mohan@counciltrack.org", position: "Discipline Coordinator (Disco)" },
+        { memberId: "MEM_002", name: "Akanksha Dewangan", email: "akanksha@counciltrack.org", position: "Discipline Coordinator (Disco)" }
       ],
       status: "ACTIVE",
       createdAt: now,
@@ -84,8 +84,8 @@ async function seedClean() {
       loginEmail: "english@counciltrack.org",
       description: "Communication skills, public speaking, daily vocabulary, and reading circles",
       members: [
-        { memberId: "MEM_010", name: "Dilip", email: "dilip@counciltrack.org", position: "English Coordinator" },
-        { memberId: "MEM_011", name: "Deepa", email: "deepa@counciltrack.org", position: "English Coordinator" }
+        { memberId: "MEM_010", name: "Dilip Kumar Sori", email: "dilip@counciltrack.org", position: "English Facilitator" },
+        { memberId: "MEM_011", name: "Deepa Sodi", email: "deepa@counciltrack.org", position: "English Facilitator" }
       ],
       status: "ACTIVE",
       createdAt: now,
@@ -233,27 +233,6 @@ async function seedClean() {
       status: "ACTIVE",
       createdAt: now,
       updatedAt: now
-    });
-  });
-
-  // Individual coordinator accounts
-  let userCounter = 2;
-  councils.forEach((c) => {
-    (c.members || []).forEach((m) => {
-      users.push({
-        userId: `USR_${String(userCounter++).padStart(3, "0")}`,
-        name: m.name,
-        email: m.email,
-        slug: c.slug,
-        passwordHash: DEFAULT_HASH,
-        role: "COUNCIL",
-        councilId: c.councilId,
-        position: m.position,
-        members: c.members,
-        status: "ACTIVE",
-        createdAt: now,
-        updatedAt: now
-      });
     });
   });
 

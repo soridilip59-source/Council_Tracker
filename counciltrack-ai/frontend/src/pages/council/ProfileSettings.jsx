@@ -9,6 +9,7 @@ export default function ProfileSettings() {
   // Profile update state
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [customUserId, setCustomUserId] = useState(user?.slug || "");
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState("");
   const [profileError, setProfileError] = useState("");
@@ -28,7 +29,11 @@ export default function ProfileSettings() {
     if (!name.trim()) { setProfileError("Name is required."); return; }
     setProfileSaving(true);
     try {
-      const res = await authApi.updateProfile({ name: name.trim(), email: email.trim() });
+      const res = await authApi.updateProfile({
+        name: name.trim(),
+        email: email.trim(),
+        customUserId: customUserId.trim(),
+      });
       const updatedUser = res.data.data;
       updateUser(updatedUser);
       setProfileSuccess("Profile updated successfully!");
@@ -113,6 +118,23 @@ export default function ProfileSettings() {
               placeholder="Your full name"
               className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
             />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Custom Login User ID / Handle
+            </label>
+            <input
+              type="text"
+              value={customUserId}
+              onChange={(e) => setCustomUserId(e.target.value)}
+              placeholder={user?.role === "ADMIN" ? "admin" : "e.g. disco, english"}
+              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 font-mono"
+            />
+            <p className="text-[11px] text-slate-500 mt-1">
+              {user?.role === "COUNCIL"
+                ? "💡 Dono coordinators is custom User ID se login kar sakte hain (jaise 'disco')."
+                : "💡 Aap is custom User ID se direct Admin Portal me login kar sakte hain."}
+            </p>
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
