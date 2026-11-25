@@ -9,11 +9,11 @@ const DATA_DIR = process.env.DATA_DIR
 const STORE_PATH = path.join(DATA_DIR, "counciltrack_store.json");
 
 const SHEET_HEADERS = {
-  Users: ["userId", "name", "email", "passwordHash", "role", "councilId", "position", "status", "createdAt", "updatedAt"],
-  Councils: ["councilId", "councilName", "description", "status", "createdAt", "updatedAt"],
+  Users: ["userId", "name", "email", "slug", "passwordHash", "role", "councilId", "position", "members", "status", "createdAt", "updatedAt"],
+  Councils: ["councilId", "councilName", "slug", "loginEmail", "members", "memberCount", "description", "status", "createdAt", "updatedAt"],
   Goals: ["goalId", "userId", "councilId", "title", "description", "expectedOutcome", "priority", "goalDate", "status", "incompleteReason", "assignedTo", "assignedToName", "assignedBy", "assignedByName", "isOnLeave", "leaveStartDate", "leaveEndDate", "leaveDays", "leaveReason", "createdAt", "updatedAt"],
   Reflections: ["reflectionId", "userId", "councilId", "reflectionDate", "achievements", "incompleteGoals", "challenges", "learnings", "improvements", "submittedAt", "updatedAt"],
-  Weekly_Goals: ["weeklyGoalId", "councilId", "userId", "weekStart", "weekEnd", "title", "description", "status", "createdAt", "updatedAt"],
+  Weekly_Goals: ["weeklyGoalId", "councilId", "userId", "weekStart", "weekEnd", "title", "description", "assignedToName", "status", "createdAt", "updatedAt"],
   Student_Feedback: ["feedbackId", "studentName", "councilId", "feedbackType", "message", "contact", "status", "adminNotes", "submittedAt", "updatedAt"],
   Goal_History: ["historyId", "goalId", "userId", "oldStatus", "newStatus", "action", "changedAt"],
   Audit_Logs: ["logId", "actorId", "action", "entityType", "entityId", "details", "createdAt"],
@@ -125,8 +125,23 @@ class SheetsService {
 
       const values = [headers];
       for (const row of rows) {
-        values.push(headers.map((h) => (row[h] !== undefined && row[h] !== null ? String(row[h]) : "")));
+        values.push(
+          headers.map((h) => {
+            if (h === "memberCount" && sheetName === "Councils" && (row[h] === undefined || row[h] === null)) {
+              return String(Array.isArray(row.members) ? row.members.length : 0);
+            }
+            const val = row[h];
+            if (val === undefined || val === null) return "";
+            if (typeof val === "object") return JSON.stringify(val);
+            return String(val);
+          })
+        );
       }
+
+      await sheets.spreadsheets.values.clear({
+        spreadsheetId,
+        range: `${sheetName}!A:Z`,
+      });
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
@@ -160,7 +175,22 @@ class SheetsService {
         if (!row || row.length === 0) continue;
         const item = {};
         headers.forEach((h, colIndex) => {
-          item[h] = row[colIndex] !== undefined ? row[colIndex] : "";
+          const rawVal = row[colIndex] !== undefined ? row[colIndex] : "";
+          if (h === "members") {
+            if (typeof rawVal === "string" && rawVal.trim().startsWith("[")) {
+              try {
+                item[h] = JSON.parse(rawVal);
+              } catch {
+                item[h] = [];
+              }
+            } else {
+              item[h] = [];
+            }
+          } else if (h === "memberCount") {
+            item[h] = Number(rawVal) || 0;
+          } else {
+            item[h] = rawVal;
+          }
         });
         parsedRows.push(item);
       }
