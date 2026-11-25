@@ -39,13 +39,6 @@ export default function Home() {
               <span>Council Login</span>
             </Link>
             <Link
-              to="/disco/login"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 transition hover-underline-link border border-purple-200/60"
-            >
-              <Shield size={14} className="text-purple-600" />
-              <span>DISCO Portal</span>
-            </Link>
-            <Link
               to="/admin/login"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-indigo-500/25 transition group"
             >
@@ -252,8 +245,7 @@ export default function Home() {
           <p>© 2026 NavGurukul Dantewada. Council Portal v2.0.</p>
           <div className="flex items-center gap-5">
             <Link to="/feedback" className="hover:text-indigo-600 transition hover-underline-link">Feedback Form</Link>
-            <Link to="/council/login" className="hover:text-emerald-600 transition hover-underline-link">Council Portal</Link>
-            <Link to="/disco/login" className="hover:text-purple-600 transition hover-underline-link">DISCO Portal</Link>
+            <Link to="/council/login" className="hover:text-indigo-600 transition hover-underline-link">Council Portal</Link>
             <Link to="/admin/login" className="hover:text-indigo-600 transition hover-underline-link">Admin Portal</Link>
           </div>
         </div>

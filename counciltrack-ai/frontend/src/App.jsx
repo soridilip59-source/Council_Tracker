@@ -5,13 +5,11 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 // Layouts
 import AdminLayout from "./components/layout/AdminLayout";
 import CouncilLayout from "./components/layout/CouncilLayout";
-import DiscoLayout from "./components/layout/DiscoLayout";
 
 // Public Pages
 import Home from "./pages/Home";
 import AdminLogin from "./pages/admin/AdminLogin";
 import CouncilLogin from "./pages/council/CouncilLogin";
-import DiscoLogin from "./pages/disco/DiscoLogin";
 import FeedbackForm from "./pages/public/FeedbackForm";
 
 // Admin Portal Pages
@@ -21,9 +19,6 @@ import AdminCouncils from "./pages/admin/Councils";
 import AdminGoals from "./pages/admin/CouncilGoals";
 import AdminOverview from "./pages/admin/Overview";
 import AdminFeedback from "./pages/admin/Feedback";
-
-// DISCO Portal Pages
-import DiscoDashboard from "./pages/disco/Dashboard";
 
 // Council Member Portal Pages
 import CouncilDashboard from "./pages/council/Dashboard";
@@ -44,11 +39,10 @@ export default function App() {
 
           {/* Dedicated Login Routes (PRD Section 3.1) */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/disco/login" element={<DiscoLogin />} />
           <Route path="/council/login" element={<CouncilLogin />} />
           <Route path="/login" element={<Navigate to="/council/login" replace />} />
 
-          {/* Staff Admin Protected Routes */}
+          {/* Admin Protected Routes */}
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -61,19 +55,8 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* DISCO Protected Routes (Staff Admin & DISCO) */}
-          <Route element={<ProtectedRoute allowedRoles={["ADMIN", "DISCO"]} />}>
-            <Route path="/disco" element={<DiscoLayout />}>
-              <Route index element={<Navigate to="/disco/dashboard" replace />} />
-              <Route path="dashboard" element={<DiscoDashboard />} />
-              <Route path="goals" element={<DiscoDashboard />} />
-              <Route path="councils" element={<DiscoDashboard />} />
-              <Route path="blockers" element={<DiscoDashboard />} />
-            </Route>
-          </Route>
-
           {/* Council Member Protected Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["COUNCIL", "DISCO", "ADMIN"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["COUNCIL"]} />}>
             <Route path="/council" element={<CouncilLayout />}>
               <Route index element={<Navigate to="/council/dashboard" replace />} />
               <Route path="dashboard" element={<CouncilDashboard />} />

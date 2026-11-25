@@ -18,8 +18,6 @@ async function login(req, res) {
       if (uEmail === identifier || uId === identifier) return true;
       if (identifier === "admin" && uRole === "admin") return true;
       if (identifier === "admin@navgurukul.org" && uRole === "admin") return true;
-      if (identifier === "disco" && (uRole === "disco" || uPosition.includes("disco"))) return true;
-      if (identifier === "disco@navgurukul.org" && (uRole === "disco" || uPosition.includes("disco"))) return true;
       if (identifier === "council" && uRole === "council") return true;
       if (identifier === "council@navgurukul.org" && uRole === "council") return true;
 
@@ -58,16 +56,6 @@ async function login(req, res) {
       if (userRole === "ADMIN") {
         // Specific Admin password as requested by user
         if (password === "admin@navgurukul.org" || password === "Admin@123" || password === "admin123") {
-          isMatch = true;
-        }
-      } else if (userRole === "DISCO") {
-        if (
-          password === "Disco@123" ||
-          password === "disco123" ||
-          password === "Council@123" ||
-          password === "council123" ||
-          password === "Admin@123"
-        ) {
           isMatch = true;
         }
       } else if (userRole === "COUNCIL") {
