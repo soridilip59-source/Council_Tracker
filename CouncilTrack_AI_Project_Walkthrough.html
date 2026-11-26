@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CouncilTrack AI — Complete Project Walkthrough</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 14mm 15mm 14mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.55;
+      font-size: 10pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .cover-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #3730a3 100%);
+      color: #ffffff;
+      padding: 26px 28px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+    }
+    .cover-banner .eyebrow {
+      font-size: 8.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #a5b4fc;
+      margin-bottom: 6px;
+    }
+    .cover-banner h1 {
+      margin: 0 0 8px 0;
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+    .cover-banner p {
+      margin: 0 0 14px 0;
+      font-size: 10.5pt;
+      color: #e2e8f0;
+      max-width: 92%;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 8.2pt;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    h2 {
+      font-size: 13.5pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 20px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #e2e8f0;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #312e81;
+      margin: 14px 0 6px 0;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 0 0 8px 0;
+    }
+    ul, ol {
+      margin: 4px 0 10px 0;
+      padding-left: 18px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0 16px 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 10px 0 14px 0;
+    }
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      break-inside: avoid;
+    }
+    .card.indigo {
+      border-top: 3px solid #4f46e5;
+      background: #eef2ff;
+    }
+    .card.emerald {
+      border-top: 3px solid #059669;
+      background: #ecfdf5;
+    }
+    .card.amber {
+      border-top: 3px solid #d97706;
+      background: #fffbeb;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 10.2pt;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px 0;
+      font-size: 9.2pt;
+      break-inside: avoid;
+    }
+    th {
+      background: #1e293b;
+      color: #ffffff;
+      text-align: left;
+      padding: 7px 10px;
+      font-weight: 600;
+    }
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 8.8pt;
+      background: #f1f5f9;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    .flow-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 10px 0 14px 0;
+      break-inside: avoid;
+    }
+    .flow-step {
+      flex: 1;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 6px;
+    }
+    .flow-step strong {
+      display: block;
+      font-size: 9pt;
+      color: #1e1b4b;
+      margin-bottom: 2px;
+    }
+    .flow-step span {
+      font-size: 8pt;
+      color: #475569;
+    }
+    .flow-arrow {
+      font-weight: 800;
+      color: #6366f1;
+      font-size: 12pt;
+    }
+    .callout {
+      border-left: 4px solid #4f46e5;
+      background: #eef2ff;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0 14px 0;
+      font-size: 9.4pt;
+      break-inside: avoid;
+    }
+    .footer {
+      margin-top: 22px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8.5pt;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover Header -->
+  <div class="cover-banner">
+    <div class="eyebrow">NavGurukul Dantewada • Platform Guide</div>
+    <h1>CouncilTrack AI — Complete Functionality Walkthrough</h1>
+    <p>
+      A centralized campus governance, daily &amp; weekly goal tracking, evening reflection, AI performance analytics, and student feedback management platform.
+    </p>
+    <div class="pill-row">
+      <span class="pill">3 Dedicated Portals</span>
+      <span class="pill">Daily &amp; Weekly Goals</span>
+      <span class="pill">Evening Reflections</span>
+      <span class="pill">AI Monthly Reports</span>
+      <span class="pill">Real-Time Updates</span>
+      <span class="pill">Public Student Voice</span>
+    </div>
+  </div>
+
+  <!-- 1. Overview -->
+  <h2>1. What is CouncilTrack AI?</h2>
+  <p>
+    <strong>CouncilTrack AI</strong> brings all campus council operations onto a single structured platform. Instead of tracking daily tasks in scattered notebooks or chat groups, council coordinators set clear morning goals, log mandatory evening reflections, track weekly/monthly progress, and resolve student feedback transparently—while campus leadership monitors everything in real time.
+  </p>
+
+  <div class="grid-3">
+    <div class="card indigo">
+      <div class="card-title">Admin Portal</div>
+      <div class="card-sub">Route: <code>/admin/login</code></div>
+      <p>Full campus oversight: manage councils, assign coordinators, monitor daily goals, review analytics, and oversee feedback resolution.</p>
+    </div>
+    <div class="card emerald">
+      <div class="card-title">Council Member Portal</div>
+      <div class="card-sub">Route: <code>/council/login</code></div>
+      <p>Coordinator workspace: set daily &amp; weekly goals, submit evening reflections, view progress trends, and handle council-specific feedback.</p>
+    </div>
+    <div class="card amber">
+      <div class="card-title">Public Student Feedback</div>
+      <div class="card-sub">Route: <code>/feedback</code></div>
+      <p>Open access with zero login required. Any student can submit suggestions, feedback, or grievances directly to the relevant council.</p>
+    </div>
+  </div>
+
+  <!-- 2. Daily Operating Workflow -->
+  <h2>2. End-to-End Daily Workflow</h2>
+  <p>The platform is built around a simple, high-accountability daily and weekly rhythm:</p>
+  <div class="flow-box">
+    <div class="flow-step">
+      <strong>1. Morning Goals</strong>
+      <span>Coordinators set daily priorities &amp; weekly milestones</span>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <strong>2. Execution &amp; Feedback</strong>
+      <span>Councils work on tasks &amp; review student submissions</span>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <strong>3. Evening Reflection</strong>
+      <span>Mark goals done or log impediment reasons &amp; learnings</span>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <strong>4. Live Analytics &amp; AI</strong>
+      <span>Dashboards update &amp; AI scores monthly performance</span>
+    </div>
+  </div>
+
+  <!-- 3. Council Member Portal -->
+  <h2>3. Council Member Portal Features (<code>/council/*</code>)</h2>
+  <p>Once a coordinator signs in at <code>/council/login</code> using their assigned council email/handle and password, they get access to:</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 24%;">Module / Route</th>
+        <th>What It Does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Dashboard</strong><br><code>/council/dashboard</code></td>
+        <td>Displays today's active goals, completion rate, reflection status, quick-action shortcuts, and recent council activity at a glance.</td>
+      </tr>
+      <tr>
+        <td><strong>Daily Goals</strong><br><code>/council/goals</code></td>
+        <td>Create, edit, and track daily tasks with status updates (Pending, In Progress, Completed, Incomplete).</td>
+      </tr>
+      <tr>
+        <td><strong>Weekly Goals</strong><br><code>/council/weekly-goals</code></td>
+        <td>Plan broader weekly milestones and track multi-day deliverables across the week.</td>
+      </tr>
+      <tr>
+        <td><strong>Evening Reflection</strong><br><code>/council/reflection</code></td>
+        <td>End-of-day self-audit. Completed goals are summarized automatically; incomplete goals require an impediment reason, plus key learnings and next steps.</td>
+      </tr>
+      <tr>
+        <td><strong>Weekly Progress</strong><br><code>/council/weekly-progress</code></td>
+        <td>Visual charts and metrics showing weekly goal completion rates, consistency across weekdays, and reflection compliance.</td>
+      </tr>
+      <tr>
+        <td><strong>Monthly Progress</strong><br><code>/council/monthly-progress</code></td>
+        <td>Month-level performance summary, historical trends, and AI-evaluated strengths, improvement areas, and recommendations.</td>
+      </tr>
+      <tr>
+        <td><strong>Council Feedback</strong><br><code>/council/feedback</code></td>
+        <td>Inbox of student feedback/complaints routed specifically to that council, allowing coordinators to track and update resolution status.</td>
+      </tr>
+      <tr>
+        <td><strong>Profile &amp; Settings</strong><br><code>/council/settings</code></td>
+        <td>Update display name, custom login user ID/handle, email address, and account password.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- 4. Admin Portal -->
+  <h2>4. Admin Portal Features (<code>/admin/*</code>)</h2>
+  <p>Campus administrators sign in at <code>/admin/login</code> to access campus-wide governance and monitoring tools:</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 24%;">Module / Route</th>
+        <th>What It Does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Admin Dashboard</strong><br><code>/admin/dashboard</code></td>
+        <td>Executive summary of all campus councils—live goal completion percentages, active vs. pending reflections, and open student feedback counts.</td>
+      </tr>
+      <tr>
+        <td><strong>Councils Management</strong><br><code>/admin/councils</code></td>
+        <td>Create and configure campus councils (e.g., Discipline, Workout, English, IT, Health, Placement, Culture, etc.), set shared login handles, and assign up to 3 coordinators per council.</td>
+      </tr>
+      <tr>
+        <td><strong>Members Directory</strong><br><code>/admin/members</code></td>
+        <td>Add, edit, activate/deactivate user accounts, assign roles (<code>ADMIN</code> or <code>COUNCIL</code>), and reset passwords securely.</td>
+      </tr>
+      <tr>
+        <td><strong>Council Goals Monitor</strong><br><code>/admin/goals</code></td>
+        <td>View and filter daily and weekly goals across every council by date, council, or status to spot bottlenecks early.</td>
+      </tr>
+      <tr>
+        <td><strong>Campus Overview</strong><br><code>/admin/overview</code></td>
+        <td>Detailed daily breakdown table and council-by-council performance comparison charts for leadership reviews.</td>
+      </tr>
+      <tr>
+        <td><strong>Feedback &amp; Grievances</strong><br><code>/admin/feedback</code></td>
+        <td>Campus-wide view of all student submissions across every council, enabling escalation monitoring and resolution tracking.</td>
+      </tr>
+      <tr>
+        <td><strong>Settings</strong><br><code>/admin/settings</code></td>
+        <td>Manage administrator profile details and update login credentials.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5. Public Student Feedback -->
+  <h2>5. Public Student Voice Portal (<code>/feedback</code>)</h2>
+  <ul>
+    <li><strong>Zero-Friction Access:</strong> Available directly from the home page without requiring any login or account registration.</li>
+    <li><strong>Targeted Routing:</strong> Students select the relevant campus council and submit suggestions, appreciation, or complaints.</li>
+    <li><strong>Instant Visibility:</strong> Submissions appear immediately in the target council's Feedback inbox and the Admin Feedback console for action.</li>
+  </ul>
+
+  <!-- 6. Automation, AI & Backend Architecture -->
+  <h2>6. Intelligence, Automation &amp; Technical Architecture</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">AI Performance &amp; Scoring Engine</div>
+      <p>Evaluates monthly coordinator performance across 5 dimensions: <strong>Goal Score</strong>, <strong>Consistency Score</strong>, <strong>Reflection Score</strong>, <strong>Feedback Score</strong>, and <strong>Improvement Score</strong>. Generates qualitative strengths, improvement areas, and actionable recommendations (supports Gemini, OpenAI, or built-in heuristic analysis).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Real-Time Sync &amp; Notifications</div>
+      <p><strong>Socket.io</strong> pushes live updates to Admin and Council dashboards whenever goals, reflections, or feedback change. <strong>Discord Webhooks</strong> and scheduled background jobs automate daily goal reminders, meeting alerts, and monthly report generation.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Dual-Mode Storage Engine</div>
+      <p>Supports both <strong>Local Storage</strong> (<code>counciltrack_store.json</code>) for fast local/offline setups and <strong>Google Sheets API</strong> (8-worksheet cloud database) for cloud-synced deployments—no code changes required to switch.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Security &amp; Role Isolation</div>
+      <p>Uses <strong>JWT authentication</strong>, <strong>bcrypt password hashing</strong>, rate limiting, and strict route-level role guards so Admin tools and Council workspaces remain cleanly separated.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Tech Stack Summary:</strong> React 19 + Vite + Tailwind CSS + Recharts (Frontend) &bull; Node.js + Express + Socket.io + JWT + bcrypt (Backend REST API <code>/api/v1</code>) &bull; Google Sheets / JSON Store + Discord Webhooks + AI Service.
+  </div>
+
+  <div class="footer">
+    <span>CouncilTrack AI • NavGurukul Dantewada</span>
+    <span>Shareable Project Walkthrough</span>
+  </div>
+
+</body>
+</html>

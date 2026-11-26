@@ -64,11 +64,6 @@ export default function CouncilLogin() {
               </div>
             )}
 
-            {/* Clean hint */}
-            <div className="mb-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-              Login with your council email (e.g. <span className="font-mono font-semibold text-slate-800">english@counciltrack.org</span>) and password.
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-slate-700 tracking-wider">
@@ -83,7 +78,7 @@ export default function CouncilLogin() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="english@counciltrack.org"
+                    placeholder="Enter your council email"
                     className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
                   />
                 </div>

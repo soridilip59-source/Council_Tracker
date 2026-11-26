@@ -64,20 +64,6 @@ export default function AdminLogin() {
               </div>
             )}
 
-            {/* Credentials Info Badge */}
-            <div className="mb-5 p-3.5 rounded-xl bg-indigo-50/90 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
-              <div className="font-semibold flex items-center justify-between">
-                <span>🔑 Admin Credentials:</span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 bg-indigo-200/70 rounded text-indigo-800">Official</span>
-              </div>
-              <p className="text-[11px] text-indigo-800">
-                <strong>ID / Email:</strong> <code className="bg-white px-1.5 py-0.5 rounded text-indigo-900 border border-indigo-200 font-mono">admin@navgurukul.org</code> or <code className="bg-white px-1.5 py-0.5 rounded text-indigo-900 border border-indigo-200 font-mono">admin</code>
-              </p>
-              <p className="text-[11px] text-indigo-800">
-                <strong>Password:</strong> <code className="bg-white px-1.5 py-0.5 rounded text-indigo-900 border border-indigo-200 font-mono">admin@navgurukul.org</code>
-              </p>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-slate-700 tracking-wider">
@@ -92,7 +78,7 @@ export default function AdminLogin() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@navgurukul.org or admin"
+                    placeholder="Enter your admin ID or email"
                     className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm"
                   />
                 </div>
