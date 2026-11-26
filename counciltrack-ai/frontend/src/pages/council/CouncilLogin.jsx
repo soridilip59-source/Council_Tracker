@@ -17,7 +17,9 @@ export default function CouncilLogin() {
     setLoading(true);
 
     try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 1200));
       const user = await login(email, password);
+      await minDelay;
       if ((user.role || "").toUpperCase() !== "COUNCIL") {
         setError("This portal is for Council Members. Please use the Admin Portal Login.");
         setLoading(false);

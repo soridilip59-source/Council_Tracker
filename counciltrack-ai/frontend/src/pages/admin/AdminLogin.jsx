@@ -17,7 +17,9 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 1200));
       const user = await login(email, password);
+      await minDelay;
       if ((user.role || "").toUpperCase() !== "ADMIN") {
         setError("This account is not authorized for the Admin portal. Please use the Council Member Login.");
         setLoading(false);
