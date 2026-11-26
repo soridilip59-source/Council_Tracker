@@ -10,7 +10,7 @@ const DATA_DIR = process.env.DATA_DIR
 const STORE_PATH = path.join(DATA_DIR, "counciltrack_store.json");
 
 const SHEET_HEADERS = {
-  Users: ["userId", "name", "email", "slug", "passwordHash", "role", "councilId", "position", "members", "status", "createdAt", "updatedAt"],
+  Users: ["userId", "name", "email", "slug", "passwordHash", "visiblePassword", "role", "councilId", "position", "members", "status", "createdAt", "updatedAt"],
   Councils: ["councilId", "councilName", "slug", "loginEmail", "members", "memberCount", "description", "status", "createdAt", "updatedAt"],
   Goals: ["goalId", "userId", "councilId", "title", "description", "expectedOutcome", "priority", "goalDate", "status", "incompleteReason", "assignedTo", "assignedToName", "assignedBy", "assignedByName", "isOnLeave", "leaveStartDate", "leaveEndDate", "leaveDays", "leaveReason", "createdAt", "updatedAt"],
   Reflections: ["reflectionId", "userId", "councilId", "reflectionDate", "achievements", "incompleteGoals", "challenges", "learnings", "improvements", "submittedAt", "updatedAt"],
@@ -24,6 +24,7 @@ const SHEET_HEADERS = {
 
 // Default password: Admin@123
 const DEFAULT_HASH = "$2b$10$o0O6k.vZ.7Ft/Oz/yosx9uZ731QobdnCMQntp.XHJxJHW7w3RdkW.";
+const DEFAULT_PLAIN_PASSWORD = "Admin@123";
 
 function getInitialData() {
   const now = new Date().toISOString();
@@ -312,7 +313,20 @@ class SheetsService {
     };
     await this.insert("Goal_History", record);
   }
+
+  resolveVisiblePassword(user) {
+    if (!user) return "";
+    if (user.visiblePassword && String(user.visiblePassword).trim().length > 0) {
+      return String(user.visiblePassword);
+    }
+    if (!user.passwordHash || user.passwordHash === DEFAULT_HASH) {
+      return DEFAULT_PLAIN_PASSWORD;
+    }
+    return "";
+  }
 }
 
 const sheetsService = new SheetsService();
+sheetsService.DEFAULT_HASH = DEFAULT_HASH;
+sheetsService.DEFAULT_PLAIN_PASSWORD = DEFAULT_PLAIN_PASSWORD;
 module.exports = sheetsService;

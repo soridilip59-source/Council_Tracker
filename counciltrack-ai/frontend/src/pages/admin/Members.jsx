@@ -440,6 +440,12 @@ export default function Members() {
                     </label>
                     <span className="text-[10px] text-slate-400">Optional</span>
                   </div>
+                  <div className="px-2.5 py-1.5 rounded-lg bg-white border border-indigo-100 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-500 font-medium">Current Password:</span>
+                    <span className="font-mono font-bold text-slate-900">
+                      {editingMember.currentPassword || "Not set"}
+                    </span>
+                  </div>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}

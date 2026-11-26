@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { authApi } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { User, Lock, CheckCircle, AlertCircle, Settings } from "lucide-react";
+import { User, Lock, CheckCircle, AlertCircle, Settings, Eye, EyeOff } from "lucide-react";
 
 export default function ProfileSettings() {
   const { user, updateUser } = useAuth();
@@ -18,6 +18,9 @@ export default function ProfileSettings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [pwSaving, setPwSaving] = useState(false);
   const [pwSuccess, setPwSuccess] = useState("");
   const [pwError, setPwError] = useState("");
@@ -54,8 +57,8 @@ export default function ProfileSettings() {
     if (newPassword !== confirmPassword) {
       setPwError("New password and confirm password do not match."); return;
     }
-    if (newPassword.length < 6) {
-      setPwError("New password must be at least 6 characters."); return;
+    if (newPassword.trim().length < 4) {
+      setPwError("New password must be at least 4 characters."); return;
     }
     setPwSaving(true);
     try {
@@ -165,9 +168,9 @@ export default function ProfileSettings() {
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
         <div className="flex items-center gap-2 mb-1">
           <Lock size={18} className="text-indigo-600" />
-          <h2 className="text-base font-bold text-slate-900">Change Password</h2>
+          <h2 className="text-base font-bold text-slate-900">Change / Reset Password</h2>
         </div>
-        <p className="text-xs text-slate-500 -mt-2">Use a strong password of at least 6 characters.</p>
+        <p className="text-xs text-slate-500 -mt-2">Update your login password (minimum 4 characters).</p>
 
         {pwError && (
           <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
@@ -187,41 +190,72 @@ export default function ProfileSettings() {
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
               Current Password *
             </label>
-            <input
-              type="password"
-              required
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
-            />
+            <div className="relative">
+              <input
+                type={showCurrentPw ? "text" : "password"}
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full border border-slate-300 rounded-xl px-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPw(!showCurrentPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                title={showCurrentPw ? "Hide password" : "Show password"}
+              >
+                {showCurrentPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
               New Password *
             </label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
-            />
+            <div className="relative">
+              <input
+                type={showNewPw ? "text" : "password"}
+                required
+                minLength={4}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full border border-slate-300 rounded-xl px-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPw(!showNewPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                title={showNewPw ? "Hide password" : "Show password"}
+              >
+                {showNewPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
               Confirm New Password *
             </label>
-            <input
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPw ? "text" : "password"}
+                required
+                minLength={4}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full border border-slate-300 rounded-xl px-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPw(!showConfirmPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                title={showConfirmPw ? "Hide password" : "Show password"}
+              >
+                {showConfirmPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <div className="pt-1">
             <button

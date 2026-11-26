@@ -10,7 +10,8 @@
       "position": "Administrator",
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_001",
@@ -37,7 +38,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_002",
@@ -64,7 +66,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_003",
@@ -85,7 +88,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_004",
@@ -112,7 +116,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_005",
@@ -139,7 +144,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_006",
@@ -166,7 +172,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_007",
@@ -193,7 +200,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_008",
@@ -220,7 +228,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_009",
@@ -241,7 +250,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_010",
@@ -262,7 +272,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_011",
@@ -283,7 +294,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_012",
@@ -310,7 +322,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_013",
@@ -343,7 +356,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     },
     {
       "userId": "USR_CNL_014",
@@ -370,7 +384,8 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-25T05:11:26.122Z",
-      "updatedAt": "2026-11-25T05:11:26.122Z"
+      "updatedAt": "2026-11-25T05:11:26.122Z",
+      "visiblePassword": "Admin@123"
     }
   ],
   "Councils": [

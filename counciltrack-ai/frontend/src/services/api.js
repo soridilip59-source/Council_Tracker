@@ -60,6 +60,7 @@ export const councilApi = {
   getById: (id) => api.get(`/councils/${id}`),
   create: (data) => api.post("/councils", data),
   update: (id, data) => api.patch(`/councils/${id}`, data),
+  resetPassword: (id, newPassword) => api.patch(`/councils/${id}/password`, { newPassword }),
   delete: (id) => api.delete(`/councils/${id}`),
 };
 

@@ -17,6 +17,9 @@ import {
   KeyRound,
   Copy,
   Check,
+  Eye,
+  EyeOff,
+  Lock,
 } from "lucide-react";
 
 export default function Councils() {
@@ -25,6 +28,7 @@ export default function Councils() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState(null);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -32,6 +36,12 @@ export default function Councils() {
   const [viewingCouncilMembers, setViewingCouncilMembers] = useState(null);
   const [councilToDelete, setCouncilToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [passwordModalCouncil, setPasswordModalCouncil] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [pwError, setPwError] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
 
   // Form State
   const [councilName, setCouncilName] = useState("");
@@ -165,6 +175,47 @@ export default function Councils() {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
+  const togglePasswordVisibility = (councilId) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [councilId]: !prev[councilId],
+    }));
+  };
+
+  const openPasswordModal = (council) => {
+    setPasswordModalCouncil(council);
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowNewPassword(false);
+    setPwError("");
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!passwordModalCouncil) return;
+    setPwError("");
+
+    if (!newPassword.trim() || newPassword.trim().length < 4) {
+      setPwError("New password must be at least 4 characters long.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwError("New password and confirm password do not match.");
+      return;
+    }
+
+    setPwSaving(true);
+    try {
+      await councilApi.resetPassword(passwordModalCouncil.councilId, newPassword.trim());
+      setPasswordModalCouncil(null);
+      await loadData();
+    } catch (err) {
+      setPwError(err.response?.data?.message || "Failed to update council password.");
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
   const filteredCouncils = councils.filter((c) => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return true;
@@ -269,27 +320,76 @@ export default function Councils() {
                   </p>
 
                   {/* Shared Login Credential Box */}
-                  <div className="mt-3 p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
-                        <KeyRound size={11} />
-                        <span>Shared Login ID</span>
-                        <span className="px-1.5 py-0.2 rounded bg-white text-indigo-600 border border-indigo-200 lowercase">
-                          @{sharedHandle}
-                        </span>
+                  <div className="mt-3 p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-100 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
+                          <KeyRound size={11} />
+                          <span>Shared Login ID</span>
+                          <span className="px-1.5 py-0.2 rounded bg-white text-indigo-600 border border-indigo-200 lowercase">
+                            @{sharedHandle}
+                          </span>
+                        </div>
+                        <p className="text-xs font-mono font-semibold text-slate-800 truncate mt-0.5">
+                          {sharedLogin}
+                        </p>
                       </div>
-                      <p className="text-xs font-mono font-semibold text-slate-800 truncate mt-0.5">
-                        {sharedLogin}
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyLogin(c.councilId, sharedLogin)}
+                        className="shrink-0 p-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition"
+                        title="Copy Shared Login Email"
+                      >
+                        {copiedId === c.councilId ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyLogin(c.councilId, sharedLogin)}
-                      className="shrink-0 p-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition"
-                      title="Copy Shared Login Email"
-                    >
-                      {copiedId === c.councilId ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
-                    </button>
+
+                    {/* Current Password & Admin Reset */}
+                    <div className="pt-2 border-t border-indigo-200/60 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1 text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
+                          <Lock size={10} />
+                          <span>Password</span>
+                        </div>
+                        <p className="text-xs font-mono font-semibold text-slate-800 truncate mt-0.5">
+                          {visiblePasswords[c.councilId]
+                            ? c.currentPassword || "Not set (Reset to set)"
+                            : "••••••••"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => togglePasswordVisibility(c.councilId)}
+                          className="p-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition"
+                          title={visiblePasswords[c.councilId] ? "Hide Password" : "Show Password"}
+                        >
+                          {visiblePasswords[c.councilId] ? <EyeOff size={13} /> : <Eye size={13} />}
+                        </button>
+                        {c.currentPassword && (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyLogin(`${c.councilId}-pw`, c.currentPassword)}
+                            className="p-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-100 transition"
+                            title="Copy Current Password"
+                          >
+                            {copiedId === `${c.councilId}-pw` ? (
+                              <Check size={13} className="text-emerald-600" />
+                            ) : (
+                              <Copy size={13} />
+                            )}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => openPasswordModal(c)}
+                          className="px-2 py-1 rounded-lg bg-indigo-600 text-white text-[10px] font-semibold hover:bg-indigo-700 transition"
+                          title="Change / Reset Council Password"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Assigned Coordinators Summary */}
@@ -605,6 +705,126 @@ export default function Councils() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset / Change Council Password Modal */}
+      {passwordModalCouncil && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setPasswordModalCouncil(null)}
+              className="absolute right-4 top-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-2.5 mb-1">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
+                <Lock size={18} />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Change Council Password</h2>
+                <p className="text-xs text-slate-500">
+                  {passwordModalCouncil.councilName} ({passwordModalCouncil.loginEmail})
+                </p>
+              </div>
+            </div>
+
+            {/* Current Password Display */}
+            <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                  Current Password
+                </span>
+                <span className="text-sm font-mono font-bold text-slate-900">
+                  {passwordModalCouncil.currentPassword || "Not set"}
+                </span>
+              </div>
+              {passwordModalCouncil.currentPassword && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleCopyLogin(`${passwordModalCouncil.councilId}-modal-pw`, passwordModalCouncil.currentPassword)
+                  }
+                  className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition"
+                  title="Copy Current Password"
+                >
+                  {copiedId === `${passwordModalCouncil.councilId}-modal-pw` ? (
+                    <Check size={14} className="text-emerald-600" />
+                  ) : (
+                    <Copy size={14} />
+                  )}
+                </button>
+              )}
+            </div>
+
+            {pwError && (
+              <div className="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+                <span>{pwError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleResetPassword} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  New Password *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    required
+                    minLength={4}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password (min 4 chars)"
+                    className="w-full pl-3 pr-9 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    title={showNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showNewPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Confirm New Password *
+                </label>
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  minLength={4}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setPasswordModalCouncil(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={pwSaving}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {pwSaving ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -35,6 +35,10 @@ const updateCouncilSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE", "active", "inactive"]).optional(),
 });
 
+const resetCouncilPasswordSchema = z.object({
+  newPassword: z.string().min(4, "New password must be at least 4 characters"),
+});
+
 const createGoalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(3, "Description must be at least 3 characters"),
@@ -100,6 +104,7 @@ module.exports = {
   updateUserSchema,
   createCouncilSchema,
   updateCouncilSchema,
+  resetCouncilPasswordSchema,
   createGoalSchema,
   updateGoalStatusSchema,
   submitReflectionSchema,

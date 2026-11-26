@@ -273,15 +273,17 @@ async function updateProfile(req, res) {
         return errorResponse(res, "Password must be at least 4 characters long", 400);
       }
       updates.passwordHash = await bcrypt.hash(password.trim(), SALT_ROUNDS);
+      updates.visiblePassword = password.trim();
     }
 
     const updated = await sheetsService.update("Users", "userId", userId, updates);
     await sheetsService.logAudit(userId, "PROFILE_UPDATED", "USER", userId, {
       ...updates,
       passwordHash: updates.passwordHash ? "[UPDATED]" : undefined,
+      visiblePassword: updates.visiblePassword ? "[UPDATED]" : undefined,
     });
 
-    const { passwordHash: _, ...safeUser } = updated;
+    const { passwordHash: _, visiblePassword: __, ...safeUser } = updated;
     return successResponse(res, safeUser, "Profile updated successfully");
   } catch (err) {
     console.error("updateProfile error:", err);
@@ -312,8 +314,12 @@ async function changePassword(req, res) {
       }
     }
 
-    const newHash = await bcrypt.hash(newPassword.trim(), SALT_ROUNDS);
-    await sheetsService.update("Users", "userId", userId, { passwordHash: newHash });
+    const trimmedNew = newPassword.trim();
+    const newHash = await bcrypt.hash(trimmedNew, SALT_ROUNDS);
+    await sheetsService.update("Users", "userId", userId, {
+      passwordHash: newHash,
+      visiblePassword: trimmedNew,
+    });
 
     await sheetsService.logAudit(userId, "PASSWORD_CHANGED", "USER", userId, {
       action: "Self password change"

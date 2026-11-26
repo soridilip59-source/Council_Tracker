@@ -32,10 +32,11 @@ async function getAllUsers(req, res) {
       const finalized = completedGoals + incompleteGoals;
       const completionRate = finalized > 0 ? Math.round((completedGoals / finalized) * 100) : "N/A";
 
-      // Do not return passwordHash
-      const { passwordHash, ...safeUser } = u;
+      // Do not return passwordHash; expose currentPassword only for Admin view
+      const { passwordHash, visiblePassword, ...safeUser } = u;
       return {
         ...safeUser,
+        currentPassword: sheetsService.resolveVisiblePassword(u),
         councilName: councilMap.get(u.councilId) || "None",
         todayStats: {
           totalGoals,
@@ -90,12 +91,13 @@ async function getUserById(req, res) {
     const goals = await sheetsService.find("Goals", (g) => g.userId === id);
     const reflections = await sheetsService.find("Reflections", (r) => r.userId === id);
 
-    const { passwordHash, ...safeUser } = user;
+    const { passwordHash, visiblePassword, ...safeUser } = user;
 
     return successResponse(
       res,
       {
         ...safeUser,
+        ...(req.user.role === "ADMIN" ? { currentPassword: sheetsService.resolveVisiblePassword(user) } : {}),
         councilName: councilMap.get(user.councilId) || "None",
         recentGoals: goals.slice(-10).reverse(),
         reflections: reflections.slice(-10).reverse(),
@@ -119,13 +121,15 @@ async function createUser(req, res) {
       return errorResponse(res, "A user with this email already exists", 409);
     }
 
-    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    const trimmedPassword = password.trim();
+    const passwordHash = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
     const now = new Date().toISOString();
     const newUser = {
       userId: generateId("USR"),
       name: name.trim(),
       email: email.toLowerCase().trim(),
       passwordHash,
+      visiblePassword: trimmedPassword,
       role: role.toUpperCase(),
       councilId: councilId || "",
       position: position.trim(),
@@ -141,8 +145,8 @@ async function createUser(req, res) {
       councilId: newUser.councilId,
     });
 
-    const { passwordHash: _, ...safeUser } = newUser;
-    return successResponse(res, safeUser, "Member created successfully", 201);
+    const { passwordHash: _, visiblePassword: __, ...safeUser } = newUser;
+    return successResponse(res, { ...safeUser, currentPassword: trimmedPassword }, "Member created successfully", 201);
   } catch (err) {
     console.error("createUser error:", err);
     return errorResponse(res, "Failed to create user", 500);
@@ -184,17 +188,27 @@ async function updateUser(req, res) {
       if (password.trim().length < 4) {
         return errorResponse(res, "Password must be at least 4 characters long", 400);
       }
-      updates.passwordHash = await bcrypt.hash(password.trim(), SALT_ROUNDS);
+      const trimmedPassword = password.trim();
+      updates.passwordHash = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
+      updates.visiblePassword = trimmedPassword;
     }
 
     const updated = await sheetsService.update("Users", "userId", id, updates);
     await sheetsService.logAudit(req.user.userId, "MEMBER_UPDATED", "USER", id, {
       ...updates,
       passwordHash: updates.passwordHash ? "[UPDATED]" : undefined,
+      visiblePassword: updates.visiblePassword ? "[UPDATED]" : undefined,
     });
 
-    const { passwordHash: _, ...safeUser } = updated;
-    return successResponse(res, safeUser, "Member updated successfully");
+    const { passwordHash: _, visiblePassword: __, ...safeUser } = updated;
+    return successResponse(
+      res,
+      {
+        ...safeUser,
+        ...(req.user.role === "ADMIN" ? { currentPassword: sheetsService.resolveVisiblePassword(updated) } : {}),
+      },
+      "Member updated successfully"
+    );
   } catch (err) {
     return errorResponse(res, "Failed to update member", 500);
   }

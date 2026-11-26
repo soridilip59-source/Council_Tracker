@@ -1,21 +1,36 @@
+const bcrypt = require("bcryptjs");
 const sheetsService = require("../services/sheetsService");
 const { generateId } = require("../utils/generateId");
 const { successResponse, errorResponse } = require("../utils/response");
+
+const SALT_ROUNDS = Math.min(Math.max(parseInt(process.env.BCRYPT_SALT_ROUNDS || "12", 10) || 12, 4), 15);
 
 async function getAllCouncils(req, res) {
   try {
     const councils = await sheetsService.getAll("Councils");
     const users = await sheetsService.getAll("Users");
+    const isAdmin = (req.user?.role || "").toUpperCase() === "ADMIN";
 
     const result = councils.map((c) => {
       const assignedMembers = users.filter((u) => u.councilId === c.councilId);
       const activeMembers = assignedMembers.filter((u) => (u.status || "").toUpperCase() === "ACTIVE");
       const memberCount = c.members?.length || assignedMembers.length;
+      const councilUser =
+        assignedMembers.find((u) => (u.role || "").toUpperCase() === "COUNCIL") ||
+        assignedMembers[0] ||
+        users.find((u) => c.loginEmail && (u.email || "").toLowerCase() === c.loginEmail.toLowerCase());
 
       return {
         ...c,
         memberCount,
         activeMemberCount: memberCount,
+        ...(isAdmin
+          ? {
+              currentPassword: councilUser
+                ? sheetsService.resolveVisiblePassword(councilUser)
+                : sheetsService.DEFAULT_PLAIN_PASSWORD,
+            }
+          : {}),
       };
     });
 
@@ -100,6 +115,7 @@ async function createCouncil(req, res) {
         email: councilLogin,
         slug: councilSlug,
         passwordHash: defaultHash,
+        visiblePassword: sheetsService.DEFAULT_PLAIN_PASSWORD,
         role: "COUNCIL",
         councilId,
         position: `${newCouncil.councilName} Lead`,
@@ -213,6 +229,78 @@ async function syncCouncils(req, res) {
   }
 }
 
+async function resetCouncilPassword(req, res) {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.trim().length < 4) {
+      return errorResponse(res, "New password must be at least 4 characters long", 400);
+    }
+
+    const council = await sheetsService.getById("Councils", "councilId", id);
+    if (!council) {
+      return errorResponse(res, "Council not found", 404);
+    }
+
+    const trimmedPassword = newPassword.trim();
+    const passwordHash = await bcrypt.hash(trimmedPassword, SALT_ROUNDS);
+    const now = new Date().toISOString();
+
+    let councilUser = await sheetsService.findOne(
+      "Users",
+      (u) =>
+        u.councilId === id ||
+        (council.loginEmail && (u.email || "").toLowerCase() === council.loginEmail.toLowerCase())
+    );
+
+    if (councilUser) {
+      await sheetsService.update("Users", "userId", councilUser.userId, {
+        passwordHash,
+        visiblePassword: trimmedPassword,
+        updatedAt: now,
+      });
+    } else {
+      const councilSlug =
+        council.slug || council.councilName.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+      const councilLogin = council.loginEmail || `${councilSlug}@counciltrack.org`;
+      councilUser = await sheetsService.insert("Users", {
+        userId: generateId("USR_CNL"),
+        name: council.councilName,
+        email: councilLogin,
+        slug: councilSlug,
+        passwordHash,
+        visiblePassword: trimmedPassword,
+        role: "COUNCIL",
+        councilId: id,
+        position: `${council.councilName} Lead`,
+        members: council.members || [],
+        status: "ACTIVE",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    await sheetsService.logAudit(req.user.userId, "COUNCIL_PASSWORD_RESET", "COUNCIL", id, {
+      councilName: council.councilName,
+      userId: councilUser.userId,
+    });
+
+    return successResponse(
+      res,
+      {
+        councilId: id,
+        loginEmail: councilUser.email,
+        currentPassword: trimmedPassword,
+      },
+      "Council password updated successfully"
+    );
+  } catch (err) {
+    console.error("resetCouncilPassword error:", err);
+    return errorResponse(res, "Failed to update council password", 500);
+  }
+}
+
 module.exports = {
   getAllCouncils,
   getCouncilById,
@@ -220,4 +308,5 @@ module.exports = {
   updateCouncil,
   deleteCouncil,
   syncCouncils,
+  resetCouncilPassword,
 };
