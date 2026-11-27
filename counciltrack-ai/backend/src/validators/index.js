@@ -23,16 +23,28 @@ const updateUserSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE", "active", "inactive"]).optional(),
 });
 
+const councilMemberItemSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().optional().default(""),
+  position: z.string().optional().default(""),
+}).passthrough();
+
 const createCouncilSchema = z.object({
   councilName: z.string().min(2, "Council name must be at least 2 characters"),
+  slug: z.string().optional().default(""),
+  loginEmail: z.string().optional().default(""),
   description: z.string().optional().default(""),
   status: z.enum(["ACTIVE", "INACTIVE", "active", "inactive"]).default("ACTIVE"),
+  members: z.array(councilMemberItemSchema).max(3, "A council can have a maximum of 3 members").optional().default([]),
 });
 
 const updateCouncilSchema = z.object({
   councilName: z.string().min(2).optional(),
+  slug: z.string().optional(),
+  loginEmail: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "active", "inactive"]).optional(),
+  members: z.array(councilMemberItemSchema).max(3, "A council can have a maximum of 3 members").optional(),
 });
 
 const resetCouncilPasswordSchema = z.object({

@@ -194,6 +194,18 @@ async function updateUser(req, res) {
     }
 
     const updated = await sheetsService.update("Users", "userId", id, updates);
+
+    // Keep linked Council record's loginEmail in sync when a COUNCIL user's email is updated
+    if (user.councilId && (user.role || "").toUpperCase() === "COUNCIL" && updates.email) {
+      const linkedCouncil = await sheetsService.getById("Councils", "councilId", user.councilId);
+      if (linkedCouncil) {
+        await sheetsService.update("Councils", "councilId", user.councilId, {
+          loginEmail: updates.email,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    }
+
     await sheetsService.logAudit(req.user.userId, "MEMBER_UPDATED", "USER", id, {
       ...updates,
       passwordHash: updates.passwordHash ? "[UPDATED]" : undefined,

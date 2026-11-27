@@ -156,20 +156,36 @@ async function updateCouncil(req, res) {
     if (councilName !== undefined) updates.councilName = councilName.trim();
     if (description !== undefined) updates.description = description.trim();
     if (status !== undefined) updates.status = status.toUpperCase();
-    if (slug !== undefined) updates.slug = slug.trim();
-    if (loginEmail !== undefined) updates.loginEmail = loginEmail.trim();
+    if (slug !== undefined) updates.slug = slug.trim().toLowerCase();
+    if (loginEmail !== undefined) {
+      const normalizedEmail = loginEmail.trim().toLowerCase();
+      if (normalizedEmail) {
+        const duplicateCouncil = await sheetsService.findOne(
+          "Councils",
+          (c) => c.councilId !== id && (c.loginEmail || "").toLowerCase().trim() === normalizedEmail
+        );
+        if (duplicateCouncil) {
+          return errorResponse(res, "This login email is already assigned to another council", 409);
+        }
+      }
+      updates.loginEmail = normalizedEmail;
+    }
     if (members !== undefined) updates.members = members;
     updates.updatedAt = new Date().toISOString();
 
     const updated = await sheetsService.update("Councils", "councilId", id, updates);
 
     // Also update associated council user account
-    const councilUser = await sheetsService.findOne("Users", (u) => u.councilId === id);
+    const councilUser =
+      (await sheetsService.findOne(
+        "Users",
+        (u) => u.councilId === id && (u.role || "").toUpperCase() === "COUNCIL"
+      )) || (await sheetsService.findOne("Users", (u) => u.councilId === id));
     if (councilUser) {
       const userUpdates = {};
       if (councilName !== undefined) userUpdates.name = councilName.trim();
-      if (loginEmail !== undefined) userUpdates.email = loginEmail.trim();
-      if (slug !== undefined) userUpdates.slug = slug.trim();
+      if (loginEmail !== undefined) userUpdates.email = loginEmail.trim().toLowerCase();
+      if (slug !== undefined) userUpdates.slug = slug.trim().toLowerCase();
       if (members !== undefined) userUpdates.members = members;
       if (status !== undefined) userUpdates.status = status.toUpperCase();
       userUpdates.updatedAt = new Date().toISOString();
